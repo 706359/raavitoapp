@@ -9,9 +9,7 @@ export function CartProvider({ children }) {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
-        return prev.map((i) =>
-          i.id === item.id ? { ...i, qty: (i.qty || 1) + 1 } : i
-        );
+        return prev.map((i) => (i.id === item.id ? { ...i, qty: (i.qty || 1) + 1 } : i));
       }
       return [...prev, { ...item, qty: 1 }];
     });
@@ -23,13 +21,10 @@ export function CartProvider({ children }) {
 
   const clearCart = () => setCart([]);
 
-  const getTotal = () =>
-    cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+  const getTotal = () => cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
 
   return (
-    <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, getTotal }}
-    >
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, getTotal }}>
       {children}
     </CartContext.Provider>
   );

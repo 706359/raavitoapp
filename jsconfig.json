@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": { "@/*": ["app/*"] }
+    "paths": {
+      "@/*": ["app/*"]
+    },
+    "types": [],
+    "allowJs": true,
+    "jsx": "react-native",
+    "strict": false,
+    "noEmit": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "include": ["app/**/*"]
 }
