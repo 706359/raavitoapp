@@ -1,49 +1,71 @@
-import { Box, HStack, Image, VStack } from "native-base";
-import { useEffect, useState } from "react";
-import { Animated } from "react-native";
+import { Box, Image } from "native-base";
+import { useEffect, useRef } from "react";
+import { Animated, Easing } from "react-native";
 
-export default function SplashScreen({ navigation }) {
-  const [fadeAnim] = useState(new Animated.Value(0));
+export default function SplashScreen() {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
+    // Fade + pulse loop
     Animated.loop(
       Animated.sequence([
-        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(fadeAnim, { toValue: 0.3, duration: 800, useNativeDriver: true }),
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 800,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1.1,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 0.8,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 0.9,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
       ])
     ).start();
-
-    const timer = setTimeout(() => {
-      navigation.replace("Login");
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  }, []);
 
   return (
-    <Box flex={1} alignItems='center' justifyContent='center' bg='white'>
-      <VStack space={8} alignItems='center'>
+    <Box
+      flex={1}
+      alignItems='center'
+      justifyContent='center'
+      bg={{
+        linearGradient: {
+          colors: ["#FF7A00", "#0F8C2E"],
+          start: [0, 0],
+          end: [1, 1],
+        },
+      }}>
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [{ scale: scaleAnim }],
+        }}>
         <Image
           source={require("@/assets/logo.png")}
           alt='Raavito Logo'
           size='2xl'
           resizeMode='contain'
         />
-        <HStack space={2}>
-          {[0, 1, 2].map((i) => (
-            <Animated.View
-              key={i}
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: i % 2 === 0 ? "#FF7A00" : "#0F8C2E",
-                opacity: fadeAnim,
-              }}
-            />
-          ))}
-        </HStack>
-      </VStack>
+      </Animated.View>
     </Box>
   );
 }

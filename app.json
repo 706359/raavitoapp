@@ -4,7 +4,7 @@
     "slug": "raavitoapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": ".",
+    // "icon": ".",
     "scheme": "raavitoapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

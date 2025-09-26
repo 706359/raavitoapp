@@ -23,7 +23,7 @@ export default function CartScreen() {
   const total = useMemo(() => {
     const t = getTotal();
     return Number.isInteger(t) ? `${t}` : t.toFixed(2);
-  }, [cart]);
+  }, [cart, getTotal]);
 
   if (!cart || cart.length === 0) {
     return (

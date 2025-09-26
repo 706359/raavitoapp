@@ -11,5 +11,5 @@
     "noEmit": true
   },
   "exclude": ["node_modules"],
-  "include": ["app/**/*"]
+  "include": ["app/**/*", "theme.js"]
 }
