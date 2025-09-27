@@ -1,6 +1,6 @@
 // data/menu.js
 
-// sample food images
+// 🔹 Sample food images
 const sampleImages = [
   "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
   "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg",
@@ -19,110 +19,31 @@ function getImageById(id) {
   return { uri: `${url}?auto=compress&cs=tinysrgb&w=800` };
 }
 
-// 🍱 Menu categories
-export const menuCategories = [
-  {
-    title: "Full Tiffin",
-    icon: "fast-food-outline",
-    items: [
-      {
-        id: 1,
-        name: "Full Tiffin (Standard)",
-        price: 120,
-        image: getImageById(1),
-        desc: "Complete homemade thali with dal, sabzi, roti, chawal and salad.",
-      },
-    ],
-  },
-  {
-    title: "Mix Match Tiffin",
-    icon: "restaurant-outline",
-    items: [
-      {
-        id: 2,
-        name: "1 Sabzi + 4 Rotis + Chawal",
-        price: 100,
-        image: getImageById(2),
-        desc: "Balanced plate with sabzi, 4 rotis and rice.",
-      },
-      {
-        id: 3,
-        name: "2 Sabzis + 4 Rotis",
-        price: 120,
-        image: getImageById(3),
-        desc: "Two veg sabzis with rotis.",
-      },
-      {
-        id: 4,
-        name: "1 Sabzi + 6 Rotis",
-        price: 100,
-        image: getImageById(4),
-        desc: "Extra rotis for bigger appetite.",
-      },
-      {
-        id: 5,
-        name: "1 Sabzi + 4 Rotis",
-        price: 80,
-        image: getImageById(5),
-        desc: "Simple and light option.",
-      },
-      {
-        id: 6,
-        name: "1 Sabzi + 2 Bowls Chawal",
-        price: 100,
-        image: getImageById(6),
-        desc: "Sabzi with two bowls of rice.",
-      },
-      {
-        id: 7,
-        name: "Only 1 Sabzi",
-        price: 40,
-        image: getImageById(7),
-        desc: "Single sabzi portion.",
-      },
-    ],
-  },
-  {
-    title: "Khichdi Tiffin",
-    icon: "leaf-outline",
-    items: [
-      {
-        id: 8,
-        name: "Moong Dal Khichdi",
-        price: 120,
-        image: getImageById(8),
-        desc: "Protein-rich moong khichdi.",
-      },
-      {
-        id: 9,
-        name: "Vegetable Khichdi",
-        price: 130,
-        image: getImageById(9),
-        desc: "Khichdi with seasonal vegetables.",
-      },
-      {
-        id: 10,
-        name: "Masala Khichdi",
-        price: 120,
-        image: getImageById(10),
-        desc: "Spiced khichdi with tadka.",
-      },
-    ],
-  },
-];
-
-// flatten all items
-export const allItems = menuCategories.flatMap((c) => c.items);
-
-// 👩‍🍳 Kitchens (10 examples)
+// 🥘 Unique Kitchens with items
 export const kitchens = [
   {
     id: "k1",
-    name: "Taste of India Tiffin Services",
+    name: "Taste of India",
     rating: 4.2,
     time: "30 mins",
     image: getImageById(1),
-    popular: [1, 2, 3], // item ids from menu
+    discount: "20% OFF upto ₹100",
+    items: [
+      {
+        id: "i1",
+        name: "Dal Makhani Thali",
+        price: 120,
+        image: getImageById(2),
+        desc: "Dal makhani, roti, chawal, salad.",
+      },
+      {
+        id: "i2",
+        name: "Paneer Butter Masala Thali",
+        price: 150,
+        image: getImageById(3),
+        desc: "Paneer butter masala, roti, rice.",
+      },
+    ],
   },
   {
     id: "k2",
@@ -130,15 +51,47 @@ export const kitchens = [
     rating: 4.8,
     time: "25 mins",
     image: getImageById(2),
-    popular: [4, 5],
+    discount: "Flat ₹50 OFF",
+    items: [
+      {
+        id: "i3",
+        name: "Rajma Chawal",
+        price: 100,
+        image: getImageById(4),
+        desc: "Homestyle rajma with basmati chawal.",
+      },
+      {
+        id: "i4",
+        name: "Aloo Gobhi + Rotis",
+        price: 90,
+        image: getImageById(5),
+        desc: "Dry sabzi with soft rotis.",
+      },
+    ],
   },
   {
     id: "k3",
-    name: "HomeChef Ritu's Rasoi",
+    name: "Ritu's Rasoi",
     rating: 5.0,
     time: "20 mins",
     image: getImageById(3),
-    popular: [6, 7],
+    discount: "Free Delivery",
+    items: [
+      {
+        id: "i5",
+        name: "Veg Pulao",
+        price: 110,
+        image: getImageById(6),
+        desc: "Fragrant basmati rice with mixed veg.",
+      },
+      {
+        id: "i6",
+        name: "Mix Sabzi + 4 Rotis",
+        price: 100,
+        image: getImageById(7),
+        desc: "Seasonal vegetables with rotis.",
+      },
+    ],
   },
   {
     id: "k4",
@@ -146,7 +99,16 @@ export const kitchens = [
     rating: 4.9,
     time: "20 mins",
     image: getImageById(4),
-    popular: [8],
+    discount: "10% OFF",
+    items: [
+      {
+        id: "i7",
+        name: "Khichdi + Curd",
+        price: 90,
+        image: getImageById(8),
+        desc: "Moong dal khichdi with homemade curd.",
+      },
+    ],
   },
   {
     id: "k5",
@@ -154,7 +116,23 @@ export const kitchens = [
     rating: 4.3,
     time: "35 mins",
     image: getImageById(5),
-    popular: [9, 10],
+    discount: "25% OFF Family Packs",
+    items: [
+      {
+        id: "i8",
+        name: "Vegetable Khichdi",
+        price: 120,
+        image: getImageById(9),
+        desc: "Khichdi with seasonal vegetables.",
+      },
+      {
+        id: "i9",
+        name: "Masala Khichdi",
+        price: 130,
+        image: getImageById(10),
+        desc: "Spiced khichdi with tadka.",
+      },
+    ],
   },
   {
     id: "k6",
@@ -162,7 +140,23 @@ export const kitchens = [
     rating: 4.7,
     time: "28 mins",
     image: getImageById(6),
-    popular: [2, 8],
+    discount: "Buy 1 Get 1 Free",
+    items: [
+      {
+        id: "i10",
+        name: "Low Oil Sabzi + Rotis",
+        price: 110,
+        image: getImageById(1),
+        desc: "Healthy tiffin with less oil.",
+      },
+      {
+        id: "i11",
+        name: "Protein Rich Thali",
+        price: 140,
+        image: getImageById(2),
+        desc: "Dal, paneer, salad and roti.",
+      },
+    ],
   },
   {
     id: "k7",
@@ -170,7 +164,16 @@ export const kitchens = [
     rating: 4.5,
     time: "30 mins",
     image: getImageById(7),
-    popular: [1, 9],
+    discount: "₹30 OFF Above ₹199",
+    items: [
+      {
+        id: "i12",
+        name: "Aloo Paratha + Curd",
+        price: 90,
+        image: getImageById(3),
+        desc: "Stuffed paratha with curd and pickle.",
+      },
+    ],
   },
   {
     id: "k8",
@@ -178,15 +181,33 @@ export const kitchens = [
     rating: 4.6,
     time: "22 mins",
     image: getImageById(8),
-    popular: [3, 10],
+    discount: "15% OFF",
+    items: [
+      {
+        id: "i13",
+        name: "Chole Bhature",
+        price: 120,
+        image: getImageById(4),
+        desc: "Authentic Punjabi chole with fluffy bhature.",
+      },
+    ],
   },
   {
     id: "k9",
-    name: "Home Delight Kitchen",
+    name: "Home Delight",
     rating: 4.4,
     time: "27 mins",
     image: getImageById(9),
-    popular: [5, 6],
+    discount: "Free Sweet with Meal",
+    items: [
+      {
+        id: "i14",
+        name: "Veg Thali Deluxe",
+        price: 150,
+        image: getImageById(5),
+        desc: "Dal, 2 sabzis, roti, rice, salad, dessert.",
+      },
+    ],
   },
   {
     id: "k10",
@@ -194,6 +215,18 @@ export const kitchens = [
     rating: 4.9,
     time: "18 mins",
     image: getImageById(10),
-    popular: [7, 8],
+    discount: "20% OFF First Order",
+    items: [
+      {
+        id: "i15",
+        name: "Paneer Tikka Masala",
+        price: 160,
+        image: getImageById(6),
+        desc: "Grilled paneer cubes in spicy gravy.",
+      },
+    ],
   },
 ];
+
+// 🔹 Flatten all items
+export const allItems = kitchens.flatMap((k) => k.items);

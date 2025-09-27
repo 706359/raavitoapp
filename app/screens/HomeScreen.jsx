@@ -3,20 +3,19 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { Box, FlatList, HStack, Icon, Image, Input, ScrollView, Text, VStack } from "native-base";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions } from "react-native";
+import { Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import HeaderBar from "../components/HeaderBar";
-import { menuCategories } from "../data/menu";
+import { kitchens } from "../data/menu"; // ✅ kitchens instead of menuCategories
 
 const { width } = Dimensions.get("window");
 
-// 🔸 Banners
 const banners = [
   {
     id: "1",
-    title: "Subscription based Packages !!!",
-    subtitle: "Up to 60% OFF | 6 months & more",
+    title: "Subscription Packages",
+    subtitle: "Up to 60% OFF | 6 months+",
     bg: "brand.orange",
   },
   {
@@ -25,15 +24,9 @@ const banners = [
     subtitle: "Get free dessert with every thali",
     bg: "brand.green",
   },
-  {
-    id: "3",
-    title: "Weekend Offer",
-    subtitle: "Flat 20% OFF on family packs",
-    bg: "yellow.400",
-  },
+  { id: "3", title: "Weekend Offer", subtitle: "Flat 20% OFF on family packs", bg: "yellow.400" },
 ];
 
-// 🔸 Categories
 const categories = [
   { id: "1", name: "Dosa Thali", image: require("../assets/Dosa.jpg") },
   { id: "2", name: "Gujarati Thali", image: require("../assets/Gujarati.jpeg") },
@@ -43,20 +36,19 @@ const categories = [
 
 export default function HomeScreen() {
   const [location, setLocation] = useState("Fetching...");
-  const scrollX = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef(null);
 
-  // 🔸 Auto-scroll banners
+  // Auto-scroll banners
   useEffect(() => {
     let currentIndex = 0;
     const interval = setInterval(() => {
       currentIndex = (currentIndex + 1) % banners.length;
-      scrollRef.current?.scrollTo({ x: currentIndex * width, animated: true });
+      scrollRef.current?.scrollTo({ x: currentIndex * width * 0.85, animated: true });
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  // 🔸 Location fetch
+  // Location fetch
   useEffect(() => {
     (async () => {
       try {
@@ -80,22 +72,24 @@ export default function HomeScreen() {
     })();
   }, []);
 
+  // Card dimensions for consistent layout
+  const CARD_WIDTH = width * 0.44;
+  const CARD_HEIGHT = 180;
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Box flex={1} bg='brand.light'>
-        {/* 🔹 Header */}
         <HeaderBar title='Home' showCart location={location} />
 
-        {/* 🔹 Main Content */}
         <FlatList
-          data={menuCategories.slice(0, 6)} // Kitchens grid
-          keyExtractor={(item, idx) => `kitchen-${idx}`}
+          data={kitchens.slice(0, 6)}
+          keyExtractor={(item) => `kitchen-${item.id}`}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: "space-between", paddingHorizontal: 12 }}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 140 }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            <VStack space={6} mb={4}>
+            <VStack space={8} mb={6}>
               {/* Search */}
               <Box px={4} mt={2}>
                 <Input
@@ -110,44 +104,40 @@ export default function HomeScreen() {
                 />
               </Box>
 
-              {/* Banner Carousel */}
+              {/* Banners */}
               <Box>
-                <Animated.ScrollView
+                <ScrollView
                   ref={scrollRef}
                   horizontal
                   pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-                    useNativeDriver: false,
-                  })}
-                  scrollEventThrottle={16}>
+                  showsHorizontalScrollIndicator={false}>
                   {banners.map((banner) => (
                     <Box
-                      key={`banner-${banner.id}`}
+                      key={banner.id}
                       width={width * 0.85}
                       mx={3}
-                      p={5}
-                      rounded='lg'
+                      p={6}
+                      rounded='xl'
                       bg={banner.bg}>
-                      <Text bold fontSize='md' color='white' fontFamily='Poppins'>
+                      <Text bold fontSize='lg' color='white' fontFamily='Poppins'>
                         {banner.title}
                       </Text>
-                      <Text fontSize='xs' color='brand.light' mt={1} fontFamily='OpenSans'>
+                      <Text fontSize='sm' color='brand.light' mt={2} fontFamily='OpenSans'>
                         {banner.subtitle}
                       </Text>
                     </Box>
                   ))}
-                </Animated.ScrollView>
+                </ScrollView>
               </Box>
 
               {/* Categories */}
               <Box px={4}>
-                <Text bold fontSize='md' mb={3} color='brand.dark' fontFamily='Poppins'>
-                  What&apos;s on your mind?
+                <Text bold fontSize='lg' mb={4} color='brand.dark' fontFamily='Poppins'>
+                  <Text>What&apos;s on your mind?</Text>
                 </Text>
                 <HStack justifyContent='space-between'>
                   {categories.map((cat) => (
-                    <VStack key={`cat-${cat.id}`} alignItems='center' flex={1}>
+                    <VStack key={cat.id} alignItems='center' flex={1}>
                       <Image
                         source={cat.image}
                         alt={cat.name}
@@ -156,7 +146,7 @@ export default function HomeScreen() {
                         rounded='full'
                         mb={2}
                       />
-                      <Text fontSize='xs' fontFamily='OpenSans' textAlign='center'>
+                      <Text fontSize='sm' fontFamily='OpenSans' textAlign='center'>
                         {cat.name}
                       </Text>
                     </VStack>
@@ -166,19 +156,19 @@ export default function HomeScreen() {
 
               {/* Offers */}
               <Box px={4}>
-                <Text bold fontSize='md' mb={3}>
+                <Text bold fontSize='lg' mb={4}>
                   Deals for You
                 </Text>
-                <HStack space={3}>
-                  <Box bg='pink.100' px={4} py={3} rounded='lg'>
+                <HStack space={4}>
+                  <Box bg='pink.100' px={5} py={4} rounded='xl'>
                     <Text bold>₹50 OFF</Text>
                     <Text fontSize='xs'>on Mini Thali</Text>
                   </Box>
-                  <Box bg='yellow.100' px={4} py={3} rounded='lg'>
+                  <Box bg='yellow.100' px={5} py={4} rounded='xl'>
                     <Text bold>Combo Saver</Text>
                     <Text fontSize='xs'>Thali + Drink</Text>
                   </Box>
-                  <Box bg='green.100' px={4} py={3} rounded='lg'>
+                  <Box bg='green.100' px={5} py={4} rounded='xl'>
                     <Text bold>Family Pack</Text>
                     <Text fontSize='xs'>Up to 20% OFF</Text>
                   </Box>
@@ -187,20 +177,27 @@ export default function HomeScreen() {
 
               {/* Top Kitchens */}
               <Box px={4}>
-                <Text bold fontSize='md' mb={3}>
+                <Text bold fontSize='lg' mb={4}>
                   Top kitchens near you
                 </Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {menuCategories.slice(0, 5).map((cat, idx) => (
+                  {kitchens.slice(6, 11).map((kitchen) => (
                     <Box
-                      key={`top-${idx}`}
-                      w={56}
+                      key={`top-${kitchen.id}`}
+                      width={CARD_WIDTH}
+                      height={CARD_HEIGHT}
                       mr={4}
-                      rounded='lg'
+                      rounded='xl'
                       overflow='hidden'
                       shadow={2}
                       bg='white'>
-                      <Image source={cat.items[0].image} alt={cat.title} h={32} w='100%' />
+                      <Image
+                        source={kitchen.image}
+                        alt={kitchen.name}
+                        height={CARD_HEIGHT * 0.55}
+                        width='100%'
+                        resizeMode='cover'
+                      />
                       <Box
                         position='absolute'
                         top={2}
@@ -210,17 +207,17 @@ export default function HomeScreen() {
                         py={1}
                         rounded='sm'>
                         <Text fontSize='xs' color='white' bold>
-                          20% OFF upto ₹100
+                          {kitchen.discount}
                         </Text>
                       </Box>
                       <VStack p={3}>
                         <Text bold fontSize='sm' numberOfLines={1}>
-                          {cat.title} Kitchen
+                          {kitchen.name}
                         </Text>
                         <HStack mt={1} alignItems='center' space={1}>
                           <Icon as={Ionicons} name='star' size='xs' color='amber.400' />
                           <Text fontSize='xs' color='coolGray.600'>
-                            4.{idx + 1} • {20 + idx * 5} mins
+                            ⭐ {kitchen.rating} • {kitchen.time}
                           </Text>
                         </HStack>
                       </VStack>
@@ -230,24 +227,31 @@ export default function HomeScreen() {
               </Box>
             </VStack>
           }
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <Box
-              key={`grid-${index}`}
-              w='48%'
-              mb={4}
-              rounded='lg'
+              key={`grid-${item.id}`}
+              width={CARD_WIDTH}
+              height={CARD_HEIGHT}
+              mb={5}
+              rounded='xl'
               overflow='hidden'
               shadow={1}
               bg='white'>
-              <Image source={item.items[0].image} alt={item.title} h={32} w='100%' />
+              <Image
+                source={item.image}
+                alt={item.name}
+                height={CARD_HEIGHT * 0.55}
+                width='100%'
+                resizeMode='cover'
+              />
               <VStack p={3}>
                 <Text bold fontSize='sm' numberOfLines={1}>
-                  {item.title} Kitchen
+                  {item.name}
                 </Text>
                 <HStack mt={1} alignItems='center' space={1}>
                   <Icon as={Ionicons} name='star' size='xs' color='amber.400' />
                   <Text fontSize='xs' color='coolGray.600'>
-                    4.{index + 1} • {15 + index * 5} mins
+                    ⭐ {item.rating} • {item.time}
                   </Text>
                 </HStack>
               </VStack>

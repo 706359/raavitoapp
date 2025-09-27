@@ -1,11 +1,12 @@
 // components/HeaderBar.js
-import { useCart } from "@/context/CartContext"; // ✅ get cart from context
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { Box, HStack, Icon, IconButton, Pressable, Text, VStack } from "native-base";
 import { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useCart } from "../context/CartContext";
 
 export default function HeaderBar({ showBack = false, showCart = true }) {
   const navigation = useNavigation();

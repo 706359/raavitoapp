@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { NativeBaseProvider } from "native-base";

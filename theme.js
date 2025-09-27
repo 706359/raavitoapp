@@ -5,7 +5,8 @@ const theme = extendTheme({
   colors: {
     brand: {
       orange: "#FF7A00",
-      green: "#0F8C2E",
+      // green: "#0F8C2E",
+      green: "rgba(7, 192, 53, 1)",
       dark: "#1A1A1A",
       light: "#F5F5F5",
     },
@@ -28,16 +29,25 @@ const theme = extendTheme({
   components: {
     Button: {
       baseStyle: {
-        rounded: "lg",
+        rounded: "full", // ✅ pill-like rounded style
+        shadow: 3, // ✅ subtle shadow like in the screenshot
+        _text: {
+          fontFamily: "Poppins",
+          fontWeight: "600",
+          fontSize: "md",
+        },
       },
       defaultProps: {
-        colorScheme: "orange",
-      },
-    },
-    Input: {
-      baseStyle: {
-        rounded: "lg",
-        bg: "gray.100",
+        bg: {
+          linearGradient: {
+            colors: ["brand.green", "brand.orange"], // ✅ Raavito gradient
+            start: [0, 0],
+            end: [1, 0],
+          },
+        },
+        _pressed: {
+          opacity: 0.85, // ✅ pressed effect
+        },
       },
     },
   },

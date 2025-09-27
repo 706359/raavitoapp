@@ -1,6 +1,5 @@
-import CustomButton from '@/components/CustomButton';
-import { useNavigation } from '@react-navigation/native';
-import { useRef, useState } from 'react';
+import { useNavigation } from "@react-navigation/native";
+import { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -9,30 +8,31 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CustomButton from "../components/CustomButton";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const slides = [
   {
-    id: '1',
-    image: require('@/assets/download.jpeg'),
-    title: 'Order Tiffin Meals',
-    description: 'Get fresh and healthy tiffins delivered right at your doorstep.',
+    id: "1",
+    image: require("@/assets/download.jpeg"),
+    title: "Order Tiffin Meals",
+    description: "Get fresh and healthy tiffins delivered right at your doorstep.",
   },
   {
-    id: '2',
-    image: require('@/assets/download (1).jpeg'),
-    title: 'Track Your Progress',
+    id: "2",
+    image: require("@/assets/download (1).jpeg"),
+    title: "Track Your Progress",
     description:
-      'Easily monitor your orders and stay updated anytime. You can track your orders, payments, and more in real-time.',
+      "Easily monitor your orders and stay updated anytime. You can track your orders, payments, and more in real-time.",
   },
   {
-    id: '3',
-    image: require('@/assets/food.jpeg'),
-    title: 'Stay Motivated',
-    description: 'Eat well, live well and keep yourself energized every day.',
+    id: "3",
+    image: require("@/assets/food.jpeg"),
+    title: "Stay Motivated",
+    description: "Eat well, live well and keep yourself energized every day.",
   },
 ];
 
@@ -52,7 +52,7 @@ export default function WelcomeScreen() {
   };
 
   const handleContinue = () => {
-    navigation.replace('AuthStack'); // or "MainTabs"
+    navigation.replace("AuthStack"); // or "MainTabs"
   };
 
   return (
@@ -104,42 +104,42 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   slide: {
     width,
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   imageContainer: {
     height: height * 0.5,
-    width: '100%',
+    width: "100%",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   textContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#000',
-    textAlign: 'center',
+    fontWeight: "700",
+    color: "#000",
+    textAlign: "center",
     marginBottom: 10,
   },
   description: {
     fontSize: 16,
-    color: '#555',
-    textAlign: 'center',
+    color: "#555",
+    textAlign: "center",
   },
   dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: 20,
     marginTop: 10,
   },
@@ -147,15 +147,15 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     marginHorizontal: 6,
     marginBottom: 30,
   },
   activeDot: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   buttonContainer: {
     paddingBottom: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
