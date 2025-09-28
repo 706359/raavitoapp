@@ -7,7 +7,7 @@ import { Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import HeaderBar from "../components/HeaderBar";
-import { kitchens } from "../data/menu"; // ✅ kitchens instead of menuCategories
+import { kitchens } from "../data/menu";
 
 const { width } = Dimensions.get("window");
 
