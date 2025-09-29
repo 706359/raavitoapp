@@ -94,7 +94,7 @@ export default function KitchenScreen({ route, navigation }) {
               <Image
                 key={i}
                 source={{ uri: "https://via.placeholder.com/100" }}
-                alt='food'
+                alt=''
                 size='lg'
                 mr={3}
                 rounded='md'

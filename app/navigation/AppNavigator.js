@@ -1,12 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import SplashScreen from '../screens/SplashScreen';
-import WelcomeScreen from '../screens/welcomeScreen'; // ✅ fixed casing
-import AuthStack from './AuthStack';
-import ExtraStack from './ExtraStacks';
-import MainTabs from './MainTabs';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import SplashScreen from "../screens/SplashScreen";
+import WelcomeScreen from "../screens/welcomeScreen"; // ✅ fixed casing
+import AuthStack from "./AuthStack";
+import ExtraStack from "./ExtraStacks";
+import MainTabs from "./MainTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,15 +18,16 @@ export default function AppNavigator() {
   useEffect(() => {
     const checkFirstLaunch = async () => {
       try {
-        const value = await AsyncStorage.getItem('alreadyLaunched');
+        // const value = await AsyncStorage.getItem('alreadyLaunched');
+        const value = null;
         if (value === null) {
-          await AsyncStorage.setItem('alreadyLaunched', 'true');
+          await AsyncStorage.setItem("alreadyLaunched", "true");
           setIsFirstLaunch(true); // ✅ First launch
         } else {
           setIsFirstLaunch(false); // ✅ Returning user
         }
       } catch (err) {
-        console.warn('AsyncStorage error:', err);
+        console.warn("AsyncStorage error:", err);
         setIsFirstLaunch(false);
       }
     };
