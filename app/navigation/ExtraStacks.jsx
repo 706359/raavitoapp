@@ -1,6 +1,6 @@
-import CheckoutScreen from "@/screens/CheckoutScreen";
-import OrderTrackingScreen from "@/screens/OrderTrackingScreen";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import CheckoutScreen from '@/screens/CheckoutScreen';
+import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 

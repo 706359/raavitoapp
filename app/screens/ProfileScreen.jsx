@@ -1,19 +1,19 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Box, Button, HStack, Icon, Pressable, ScrollView, Text, VStack } from "native-base";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
+import { Ionicons } from '@expo/vector-icons';
+import { Box, Button, HStack, Icon, Pressable, ScrollView, Text, VStack } from 'native-base';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
 
   const menuItems = [
-    { icon: "calendar-outline", label: "My Subscription Order", route: "Subscriptions" },
-    { icon: "receipt-outline", label: "My Order", route: "Orders" },
-    { icon: "location-outline", label: "My Address", route: "ManageAddresses" },
-    { icon: "wallet-outline", label: "Wallet", route: "Wallet" },
-    { icon: "heart-outline", label: "Favourites", route: "Favourites" },
-    { icon: "help-circle-outline", label: "Help & Support", route: "Help" },
-    { icon: "alert-circle-outline", label: "FAQ's", route: "FAQ" },
+    { icon: 'calendar-outline', label: 'My Subscription Order', route: 'Subscription' },
+    { icon: 'receipt-outline', label: 'My Order', route: 'Orders' },
+    { icon: 'location-outline', label: 'My Address', route: 'ManageAddresses' },
+    { icon: 'wallet-outline', label: 'Wallet', route: 'Wallet' },
+    { icon: 'heart-outline', label: 'Favourites', route: 'Favourites' },
+    { icon: 'help-circle-outline', label: 'Help & Support', route: 'Help' },
+    { icon: 'alert-circle-outline', label: "FAQ's", route: 'FAQ' },
   ];
 
   return (
@@ -31,16 +31,16 @@ export default function ProfileScreen({ navigation }) {
             alignItems='center'>
             <VStack>
               <Text fontSize='md' bold>
-                {user?.name || "Your Name"}
+                {user?.name || 'Your Name'}
               </Text>
               <Text fontSize='sm' color='muted.500'>
-                {user?.email || "your@email.com"}
+                {user?.email || 'your@email.com'}
               </Text>
               <Text fontSize='sm' color='muted.500'>
-                {user?.mobile || "+91 0000000000"}
+                {user?.mobile || '+91 0000000000'}
               </Text>
             </VStack>
-            <Pressable onPress={() => navigation.navigate("EditProfile")}>
+            <Pressable onPress={() => navigation.navigate('EditProfile')}>
               <Text color='blue.600' bold>
                 Edit
               </Text>

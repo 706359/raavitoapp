@@ -1,44 +1,41 @@
-// screens/MenuScreen.js
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { Box, FlatList, HStack, Icon, Image, Input, Pressable, Text, VStack } from "native-base";
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import HeaderBar from "../components/HeaderBar"; // ✅ custom header
-import { kitchens } from "../data/menu";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { Box, FlatList, HStack, Icon, Image, Pressable, Text, VStack } from 'native-base';
+import { useState } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native'; // ✅ use TextInput from react-native
+import { SafeAreaView } from 'react-native-safe-area-context';
+import HeaderBar from '../components/HeaderBar';
+import { kitchens } from '../data/menu';
 
 export default function MenuScreen() {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Filter kitchens by name or description
   const filteredKitchens = kitchens.filter(
     (k) =>
       k.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (k.desc && k.desc.toLowerCase().includes(searchQuery.toLowerCase()))
+      (k.desc && k.desc.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Box flex={1}>
         {/* Header */}
         <HeaderBar title='Menu' showCart />
 
         {/* Search Bar */}
         <Box px={4} mt={2}>
-          <Input
-            placeholder='Search for Kitchen'
-            variant='filled'
-            bg='gray.100'
-            borderRadius='lg'
-            fontFamily='OpenSans'
-            value={searchQuery} // ✅ controlled
-            onChangeText={setSearchQuery} // ✅ update state
-            InputLeftElement={
-              <Icon as={Ionicons} name='search' size='md' ml={3} color='coolGray.500' />
-            }
-          />
+          <View style={styles.searchContainer}>
+            <Ionicons name='search' size={20} color='#888' style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder='Search for Kitchen'
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor='#888'
+            />
+          </View>
         </Box>
 
         {/* Section Title */}
@@ -48,12 +45,12 @@ export default function MenuScreen() {
 
         {/* Kitchens List */}
         <FlatList
-          data={filteredKitchens} // ✅ filtered list
+          data={filteredKitchens}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
           renderItem={({ item }) => (
-            <Pressable onPress={() => navigation.navigate("KitchenScreen", { kitchen: item })}>
+            <Pressable onPress={() => navigation.navigate('KitchenScreen', { kitchen: item })}>
               <HStack
                 key={item.id}
                 space={3}
@@ -93,7 +90,7 @@ export default function MenuScreen() {
                     </Text>
                   </HStack>
                   <Text fontSize='xs' color='coolGray.500' numberOfLines={2}>
-                    {item.desc || "Multi-cuisine | Fresh & Hygienic Meals"}
+                    {item.desc || 'Multi-cuisine | Fresh & Hygienic Meals'}
                   </Text>
                 </VStack>
               </HStack>
@@ -109,3 +106,23 @@ export default function MenuScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3f3f3', // ✅ Background color
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    fontFamily: 'OpenSans',
+    fontSize: 16,
+    color: '#000',
+    paddingVertical: 8,
+  },
+});
