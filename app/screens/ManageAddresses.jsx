@@ -1,3 +1,4 @@
+import CustomButton from '@/components/CustomButton';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Button, HStack, Icon, Pressable, Text } from 'native-base';
@@ -37,7 +38,7 @@ export default function ManageAddresses() {
           as={MaterialIcons}
           name={item.type === 'Office' ? 'business' : 'home'}
           size='6'
-          color='green.500'
+          color='rgba(255, 122, 0, 1).500'
         />
         <Text fontSize='md' fontFamily='Poppins' fontWeight='600'>
           {item.type}
@@ -50,13 +51,13 @@ export default function ManageAddresses() {
         <Button
           variant='ghost'
           size='sm'
-          _text={{ color: 'green.500', fontFamily: 'Poppins', fontWeight: '600' }}>
+          _text={{ color: 'rgba(255, 122, 0, 1).500', fontFamily: 'Poppins', fontWeight: '600' }}>
           EDIT
         </Button>
         <Button
           variant='ghost'
           size='sm'
-          _text={{ color: 'green.500', fontFamily: 'Poppins', fontWeight: '600' }}>
+          _text={{ color: 'rgba(255, 122, 0, 1).500', fontFamily: 'Poppins', fontWeight: '600' }}>
           DELETE
         </Button>
       </HStack>
@@ -64,7 +65,9 @@ export default function ManageAddresses() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16, backgroundColor: '#F5F5F5' }}>
+    <SafeAreaView
+      style={{ flex: 1, padding: 16, backgroundColor: '#F5F5F5' }}
+      edges={['left', 'right', 'top']}>
       {/* Header with back icon */}
       <HStack alignItems='center' mb={4}>
         <Pressable onPress={() => navigation.goBack()}>
@@ -81,9 +84,17 @@ export default function ManageAddresses() {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
       />
-      <Button mt={4} bg='green.500' _text={{ fontFamily: 'Poppins', fontWeight: '600' }}>
+      {/* <Button
+        mt={4}
+        bg='rgba(255, 122, 0, 1).500'
+        _text={{ fontFamily: 'Poppins', fontWeight: '600' }}>
         ADD NEW ADDRESS
-      </Button>
+      </Button> */}
+      <CustomButton
+        title={'ADD NEW ADDRESS'}
+        color='rgba(255, 122, 0, 1)'
+        pressedColor={'rgba(7, 192, 53, 1)'}
+      />
     </SafeAreaView>
   );
 }

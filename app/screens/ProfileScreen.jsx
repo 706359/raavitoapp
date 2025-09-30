@@ -1,6 +1,8 @@
+import CustomButton from '@/components/CustomButton';
 import { Ionicons } from '@expo/vector-icons';
-import { Box, Button, HStack, Icon, Pressable, ScrollView, Text, VStack } from 'native-base';
+import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from 'native-base';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import theme from '../../theme';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
@@ -41,7 +43,7 @@ export default function ProfileScreen({ navigation }) {
               </Text>
             </VStack>
             <Pressable onPress={() => navigation.navigate('EditProfile')}>
-              <Text color='blue.600' bold>
+              <Text color='orange.600' bold>
                 Edit
               </Text>
             </Pressable>
@@ -73,13 +75,20 @@ export default function ProfileScreen({ navigation }) {
 
           {/* Logout */}
           <Box mt={8} alignItems='center'>
-            <Button
+            {/* <Button
               variant='outline'
               colorScheme='red'
               leftIcon={<Icon as={Ionicons} name='log-out-outline' size='sm' />}
               onPress={logout}>
               LOGOUT
-            </Button>
+            </Button> */}
+            <CustomButton
+              title='Logout'
+              color='#FF7A00'
+              pressedColor={theme.colors.brand.green}
+              onPress={logout}
+              style={{ width: '100%' }}
+            />
             <Text mt={4} fontSize='xs' color='muted.400'>
               App version 1.01
             </Text>

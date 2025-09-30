@@ -1,5 +1,6 @@
 import CheckoutScreen from '@/screens/CheckoutScreen';
 import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
+import UserProfile from '@/screens/UserProfile';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
@@ -9,6 +10,7 @@ export default function ExtraStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Checkout' component={CheckoutScreen} />
       <Stack.Screen name='OrderTracking' component={OrderTrackingScreen} />
+      <Stack.Screen name='UserProfile' component={UserProfile} />
     </Stack.Navigator>
   );
 }

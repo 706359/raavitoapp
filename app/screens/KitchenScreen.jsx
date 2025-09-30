@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import {
   Box,
   HStack,
@@ -9,34 +9,36 @@ import {
   ScrollView,
   Text,
   VStack,
-} from "native-base";
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useCart } from "../context/CartContext";
+} from 'native-base';
+import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCart } from '../context/CartContext';
 
 export default function KitchenScreen({ route, navigation }) {
   const { kitchen } = route.params;
 
   const { addToCart, removeFromCart, cart } = useCart();
 
-  const menuTabs = ["Lunch", "Dinner", "Breakfast", "Snacks"];
-  const [activeTab, setActiveTab] = useState("Lunch");
+  const menuTabs = ['Lunch', 'Dinner', 'Breakfast', 'Snacks'];
+  const [activeTab, setActiveTab] = useState('Lunch');
 
   // Example menu items
   const menuItems = [
     {
-      id: "1",
-      name: "Small Lunch",
+      id: '1',
+      name: 'Small Lunch',
       price: 50,
-      desc: "Max veg 3, Chapati",
-      img: "https://via.placeholder.com/120",
+      desc: 'Max veg 3, Chapati',
+      // img: 'https://via.placeholder.com/120',
+      img: require('../assets/Dosa.jpg'),
     },
     {
-      id: "2",
-      name: "Medium Lunch",
+      id: '2',
+      name: 'Medium Lunch',
       price: 90,
-      desc: "Veg thali with rice, chapati",
-      img: "https://via.placeholder.com/120",
+      desc: 'Veg thali with rice, chapati',
+      // img: 'https://via.placeholder.com/120',
+      img: require('../assets/Gujarati.jpeg'),
     },
   ];
 
@@ -51,14 +53,14 @@ export default function KitchenScreen({ route, navigation }) {
       <Box flex={1} bg='white'>
         <ScrollView>
           {/* Header */}
-          <HStack alignItems='center' justifyContent='space-between' px={4} py={3} bg='green.500'>
+          <HStack alignItems='center' justifyContent='space-between' px={4} py={3} bg='orange.500'>
             <HStack alignItems='center' space={3}>
               <IconButton
                 icon={<Icon as={Ionicons} name='arrow-back' color='white' />}
                 onPress={() => navigation.goBack()}
               />
               <Text color='white' bold fontSize='md'>
-                {kitchen?.name || "Kitchen"}
+                {kitchen?.name || 'Kitchen'}
               </Text>
             </HStack>
             <HStack space={4} alignItems='center'>
@@ -70,31 +72,32 @@ export default function KitchenScreen({ route, navigation }) {
           {/* Restaurant Info */}
           <Box px={4} py={3}>
             <Text bold fontSize='lg'>
-              {kitchen?.name || "Taste of India Tiffin Services"}
+              {kitchen?.name || 'Taste of India Tiffin Services'}
             </Text>
             <Text color='muted.500' fontSize='sm'>
-              {kitchen?.location || "Gotala Nagar"}
+              {kitchen?.location || 'Gotala Nagar'}
             </Text>
             <HStack space={4} mt={2} alignItems='center'>
               <HStack space={1} alignItems='center'>
                 <Icon as={Ionicons} name='star' color='green.500' size={4} />
-                <Text fontSize='sm'>{kitchen?.rating || "4.00"}</Text>
+                <Text fontSize='sm'>{kitchen?.rating || '4.00'}</Text>
               </HStack>
-              <Text fontSize='sm'>{kitchen?.time || "30 min"}</Text>
-              <Text fontSize='sm'>{kitchen?.distance || "14.39 kms"}</Text>
+              <Text fontSize='sm'>{kitchen?.time || '30 min'}</Text>
+              <Text fontSize='sm'>{kitchen?.distance || '14.39 kms'}</Text>
             </HStack>
             <Text mt={1} color='muted.500' fontSize='xs'>
-              {kitchen?.desc || "American, Fast Food Inner Circle, Connaught Place | Change Outlet"}
+              {kitchen?.desc || 'American, Fast Food Inner Circle, Connaught Place | Change Outlet'}
             </Text>
           </Box>
 
           {/* Food Gallery */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} px={4} py={2}>
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1].map((i) => (
               <Image
                 key={i}
-                source={{ uri: "https://via.placeholder.com/100" }}
-                alt=''
+                source={require('../assets/food.jpeg')}
+                // source={{ uri: 'https://via.placeholder.com/100' }}
+                alt='Food'
                 size='lg'
                 mr={3}
                 rounded='md'
@@ -130,9 +133,9 @@ export default function KitchenScreen({ route, navigation }) {
               <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 <Text
                   bold={activeTab === tab}
-                  color={activeTab === tab ? "green.600" : "muted.500"}
+                  color={activeTab === tab ? 'orange.600' : 'muted.500'}
                   borderBottomWidth={activeTab === tab ? 2 : 0}
-                  borderColor='green.600'
+                  borderColor='orange.600'
                   pb={1}>
                   {tab}
                 </Text>
@@ -164,7 +167,8 @@ export default function KitchenScreen({ route, navigation }) {
                       {item.desc}
                     </Text>
                   </VStack>
-                  <Image source={{ uri: item.img }} alt={item.name} size='xl' rounded='md' />
+                  {/* <Image source={{ uri: item.img }} alt={item.name} size='xl' rounded='md' /> */}
+                  <Image source={item.img} alt={item.name} size='xl' rounded='md' />
                   <HStack alignItems='center' space={2}>
                     {qty > 0 ? (
                       <>
@@ -183,7 +187,7 @@ export default function KitchenScreen({ route, navigation }) {
                         onPress={() => addToCart(item)}
                         px={3}
                         py={1}
-                        bg='green.500'
+                        bg='orange.500'
                         rounded='md'>
                         <Text color='white' fontSize='xs'>
                           Add

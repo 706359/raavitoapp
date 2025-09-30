@@ -32,10 +32,6 @@
 //   );
 // }
 
-import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import CartScreen from '@/screens/CartScreen';
 import FAQ from '@/screens/FAQ';
 import Favourites from '@/screens/Favourites';
@@ -48,6 +44,9 @@ import OrdersHistoryScreen from '@/screens/OrdersHistoryScreen';
 import ProfileScreen from '@/screens/ProfileScreen';
 import Subscription from '@/screens/Subscription';
 import Wallet from '@/screens/Wallet';
+import { Ionicons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,6 +90,8 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        tabBarActiveTintColor: 'rgba(255, 122, 0, 1)',
+        tabBarInactiveTintColor: 'gray',
         tabBarIcon: ({ color, size }) => {
           let iconName = 'home';
           if (route.name === 'HomeTab') iconName = 'home-outline';
@@ -102,14 +103,14 @@ export default function MainTabs() {
         },
       })}>
       <Tab.Screen name='HomeTab' component={HomeStackNavigator} options={{ title: 'Home' }} />
-      <Tab.Screen name='MenuTab' component={MenuStackNavigator} options={{ title: 'Menu' }} />
+      <Tab.Screen name='MenuTab' component={MenuStackNavigator} options={{ title: 'Kitchen' }} />
       <Tab.Screen name='Cart' component={CartScreen} />
       <Tab.Screen name='Orders' component={OrdersHistoryScreen} />
       {/* <Tab.Screen name='Profile' component={ProfileScreen} /> */}
       <Tab.Screen
         name='ProfileTab'
         component={ProfileStackNavigator}
-        options={{ title: 'Profile' }}
+        options={{ title: 'Account' }}
       />
     </Tab.Navigator>
   );

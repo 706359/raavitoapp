@@ -230,8 +230,8 @@ export default function Subscription({ navigation }) {
         style={[
           styles.card,
           {
-            borderColor: isSelected ? theme.colors.brand.green : '#fff',
-            borderWidth: isSelected ? 2 : 0,
+            borderColor: isSelected ? theme.colors.brand.orange : '#fff',
+            borderWidth: isSelected ? 1 : 0,
           },
         ]}
         onPress={() => setSelectedPlan(item)}>
@@ -239,13 +239,13 @@ export default function Subscription({ navigation }) {
           <Ionicons
             name={item.icon}
             size={30}
-            color={theme.colors.brand.green}
+            color={theme.colors.brand.orange}
             style={styles.icon}
           />
           <View style={styles.textContainer}>
             <Text style={[styles.title, { color: theme.colors.brand.dark }]}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
-            <Text style={[styles.price, { color: theme.colors.brand.green }]}>{item.price}</Text>
+            <Text style={[styles.price, { color: theme.colors.brand.orange }]}>{item.price}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -276,7 +276,12 @@ export default function Subscription({ navigation }) {
 
       {/* Bottom Selected Plan */}
       {selectedPlan && (
-        <View style={styles.bottomContainer}>
+        // <View style={styles.bottomContainer}>
+        <View
+          style={[
+            styles.bottomContainer,
+            { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: insets.bottom },
+          ]}>
           <View style={styles.planInfo}>
             <Text style={styles.selectedTitle}>{selectedPlan.title}</Text>
             <Text style={styles.selectedPrice}>{selectedPlan.price}</Text>
@@ -327,5 +332,5 @@ const styles = StyleSheet.create({
   },
   planInfo: { flexDirection: 'column' },
   selectedTitle: { fontSize: 18, fontWeight: 'bold', color: theme.colors.brand.dark },
-  selectedPrice: { fontSize: 16, color: theme.colors.brand.green, marginTop: 4 },
+  selectedPrice: { fontSize: 16, color: theme.colors.brand.orange, marginTop: 4 },
 });

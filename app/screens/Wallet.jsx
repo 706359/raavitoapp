@@ -23,11 +23,14 @@ export default function Wallet() {
         <Pressable onPress={() => navigation.goBack()}>
           <HStack alignItems='center' px={4} py={3}>
             <Icon as={MaterialIcons} name='arrow-back' size='md' color='black' />
+            <Text ml={3} fontSize={20} fontWeight={'bold'}>
+              Wallet
+            </Text>
           </HStack>
         </Pressable>
 
         {/* 💰 Top Section */}
-        <Box bg='brand.green' px={6} py={8} borderBottomRadius='3xl'>
+        <Box bg='brand.orange' px={6} py={8} borderBottomRadius='3xl'>
           <VStack space={2} alignItems='start'>
             <Icon as={MaterialIcons} name='account-balance-wallet' size='2xl' color='white' />
             <Text fontSize='4xl' fontWeight='bold' color='white' fontFamily='Poppins'>

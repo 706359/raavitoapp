@@ -1,7 +1,7 @@
-import { Box, Image } from "native-base";
-import { useEffect, useRef } from "react";
-import { Animated, Easing } from "react-native"; // ✅ import Animated + Easing
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Box, Image } from 'native-base';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing } from 'react-native'; // ✅ import Animated + Easing
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SplashScreen() {
   const rotate1 = useRef(new Animated.Value(0)).current;
@@ -16,7 +16,7 @@ export default function SplashScreen() {
           duration,
           easing: Easing.linear,
           useNativeDriver: true,
-        })
+        }),
       ).start();
     };
 
@@ -27,23 +27,23 @@ export default function SplashScreen() {
 
   const spin1 = rotate1.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
   const spin2 = rotate2.interpolate({
     inputRange: [0, 1],
-    outputRange: ["360deg", "0deg"], // opposite direction
+    outputRange: ['360deg', '0deg'], // opposite direction
   });
   const spin3 = rotate3.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Box flex={1} alignItems='center' justifyContent='center'>
         {/* Logo */}
         <Image
-          source={require("@/assets/logo.png")}
+          source={require('@/assets/logo.png')}
           alt='Raavito Logo'
           size='2xl'
           resizeMode='contain'
@@ -54,16 +54,16 @@ export default function SplashScreen() {
           {/* Outer Arc */}
           <Animated.View
             style={{
-              width: 80,
-              height: 80,
+              width: 30,
+              height: 30,
               borderWidth: 6,
               borderRadius: 40,
-              borderTopColor: "#FF7A00", // Raavito orange
-              borderRightColor: "transparent",
-              borderBottomColor: "transparent",
-              borderLeftColor: "transparent",
+              borderTopColor: '#FF7A00', // Raavito orange
+              borderRightColor: 'transparent',
+              borderBottomColor: 'transparent',
+              borderLeftColor: 'transparent',
               transform: [{ rotate: spin1 }],
-              position: "absolute",
+              position: 'absolute',
             }}
           />
 
@@ -74,12 +74,12 @@ export default function SplashScreen() {
               height: 60,
               borderWidth: 6,
               borderRadius: 30,
-              borderTopColor: "rgb(9,202,57)", // Raavito green
-              borderRightColor: "transparent",
-              borderBottomColor: "transparent",
-              borderLeftColor: "transparent",
+              borderTopColor: 'rgb(9,202,57)', // Raavito green
+              borderRightColor: 'transparent',
+              borderBottomColor: 'transparent',
+              borderLeftColor: 'transparent',
               transform: [{ rotate: spin2 }],
-              position: "absolute",
+              position: 'absolute',
             }}
           />
 
@@ -90,12 +90,12 @@ export default function SplashScreen() {
               height: 40,
               borderWidth: 6,
               borderRadius: 20,
-              borderTopColor: "#FFD700", // yellow
-              borderRightColor: "transparent",
-              borderBottomColor: "transparent",
-              borderLeftColor: "transparent",
+              borderTopColor: '#FFD700', // yellow
+              borderRightColor: 'transparent',
+              borderBottomColor: 'transparent',
+              borderLeftColor: 'transparent',
               transform: [{ rotate: spin3 }],
-              position: "absolute",
+              position: 'absolute',
             }}
           />
         </Box>
