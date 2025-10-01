@@ -154,7 +154,6 @@
 //   );
 // }
 
-// screens/LoginScreen.js
 import { Box, Button, Checkbox, HStack, Image, Link, Text, VStack, useTheme } from 'native-base';
 import { useState } from 'react';
 import {

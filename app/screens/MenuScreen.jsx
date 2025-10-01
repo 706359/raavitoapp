@@ -19,7 +19,7 @@ export default function MenuScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} edges={['top']}>
       <Box flex={1}>
         {/* Header */}
         <HeaderBar title='Menu' showCart />
