@@ -1,17 +1,17 @@
 // components/HeaderBar.js
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import * as Location from 'expo-location';
-import { Box, HStack, Icon, IconButton, Pressable, Text, VStack } from 'native-base';
-import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import * as Location from "expo-location";
+import { Box, HStack, Icon, IconButton, Pressable, Text, VStack } from "native-base";
+import { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useCart } from '../context/CartContext';
+import { useCart } from "../context/CartContext";
 
 export default function HeaderBar({ showBack = false, showCart = true }) {
   const navigation = useNavigation();
   const { cart } = useCart(); // get cart items
-  const [location, setLocation] = useState('Fetching...');
+  const [location, setLocation] = useState("Fetching...");
 
   // total items in cart
   const totalQty = cart.reduce((s, it) => s + (it.qty || 0), 0);
@@ -21,8 +21,8 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
     (async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setLocation('Permission denied');
+        if (status !== "granted") {
+          setLocation("Permission denied");
           return;
         }
         let loc = await Location.getCurrentPositionAsync({});
@@ -35,13 +35,13 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
           setLocation(`${place.city || place.district}, ${place.region}`);
         }
       } catch {
-        setLocation('Error');
+        setLocation("Error");
       }
     })();
   }, []);
 
   return (
-    <SafeAreaView edges={['left', 'right']}>
+    <SafeAreaView edges={["left", "right"]}>
       <HStack
         justifyContent='space-between'
         alignItems='center'
@@ -54,7 +54,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
           <IconButton
             icon={<Icon as={Ionicons} name='arrow-back' size='md' />}
             onPress={() => navigation.goBack()}
-            _icon={{ color: 'brand.dark' }}
+            _icon={{ color: "brand.dark" }}
           />
         ) : (
           <VStack>
@@ -93,7 +93,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
           {/* <Pressable onPress={() => navigation.navigate('UserProfile')}>
             <Icon as={Ionicons} name='person-circle-outline' size='lg' color='brand.orange' />
           </Pressable> */}
-          <Pressable onPress={() => navigation.navigate('ExtraStack', { screen: 'UserProfile' })}>
+          <Pressable onPress={() => navigation.navigate("ExtraStack", { screen: "UserProfile" })}>
             <Icon as={Ionicons} name='person-circle-outline' size='lg' color='brand.orange' />
           </Pressable>
         </HStack>

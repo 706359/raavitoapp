@@ -1,21 +1,21 @@
-import CustomButton from '@/components/CustomButton';
-import { Ionicons } from '@expo/vector-icons';
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from 'native-base';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import theme from '../../theme';
-import { useAuth } from '../context/AuthContext';
+import CustomButton from "@/components/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
+import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from "native-base";
+import { SafeAreaView } from "react-native-safe-area-context";
+import theme from "../../theme";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
 
   const menuItems = [
-    { icon: 'calendar-outline', label: 'My Subscription Order', route: 'Subscription' },
-    { icon: 'receipt-outline', label: 'My Order', route: 'Orders' },
-    { icon: 'location-outline', label: 'My Address', route: 'ManageAddresses' },
-    { icon: 'wallet-outline', label: 'Wallet', route: 'Wallet' },
-    { icon: 'heart-outline', label: 'Favourites', route: 'Favourites' },
-    { icon: 'help-circle-outline', label: 'Help & Support', route: 'Help' },
-    { icon: 'alert-circle-outline', label: "FAQ's", route: 'FAQ' },
+    { icon: "calendar-outline", label: "My Subscription Order", route: "Subscription" },
+    { icon: "receipt-outline", label: "My Order", route: "Orders" },
+    { icon: "location-outline", label: "My Address", route: "ManageAddresses" },
+    { icon: "wallet-outline", label: "Wallet", route: "Wallet" },
+    { icon: "heart-outline", label: "Favourites", route: "Favourites" },
+    { icon: "help-circle-outline", label: "Help & Support", route: "Help" },
+    { icon: "alert-circle-outline", label: "FAQ's", route: "FAQ" },
   ];
 
   return (
@@ -33,16 +33,16 @@ export default function ProfileScreen({ navigation }) {
             alignItems='center'>
             <VStack>
               <Text fontSize='md' bold>
-                {user?.name || 'Your Name'}
+                {user?.name || "Your Name"}
               </Text>
               <Text fontSize='sm' color='muted.500'>
-                {user?.email || 'your@email.com'}
+                {user?.email || "your@email.com"}
               </Text>
               <Text fontSize='sm' color='muted.500'>
-                {user?.mobile || '+91 0000000000'}
+                {user?.mobile || "+91 0000000000"}
               </Text>
             </VStack>
-            <Pressable onPress={() => navigation.navigate('EditProfile')}>
+            <Pressable onPress={() => navigation.navigate("EditProfile")}>
               <Text color='orange.600' bold>
                 Edit
               </Text>
@@ -87,7 +87,7 @@ export default function ProfileScreen({ navigation }) {
               color='#FF7A00'
               pressedColor={theme.colors.brand.green}
               onPress={logout}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
             <Text mt={4} fontSize='xs' color='muted.400'>
               App version 1.01

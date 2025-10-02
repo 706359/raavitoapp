@@ -1,104 +1,85 @@
-import { Box, Image } from 'native-base';
-import { useEffect, useRef } from 'react';
-import { Animated, Easing } from 'react-native'; // ✅ import Animated + Easing
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Box, Image } from "native-base";
+import { useEffect, useRef } from "react";
+import { Animated, Easing, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SplashScreen() {
-  const rotate1 = useRef(new Animated.Value(0)).current;
-  const rotate2 = useRef(new Animated.Value(0)).current;
-  const rotate3 = useRef(new Animated.Value(0)).current;
+  const segments = Array.from({ length: 12 }, (_, i) => i);
+  const animations = useRef(segments.map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
-    const spinAnim = (anim, duration) => {
+    animations.forEach((anim, i) => {
       Animated.loop(
-        Animated.timing(anim, {
-          toValue: 1,
-          duration,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }),
+        Animated.sequence([
+          Animated.delay(i * 100), // staggered delay for rotation effect
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: 600,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0.2,
+            duration: 600,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        ])
       ).start();
-    };
-
-    spinAnim(rotate1, 1500);
-    spinAnim(rotate2, 1000);
-    spinAnim(rotate3, 1100);
-  }, [rotate1, rotate2, rotate3]);
-
-  const spin1 = rotate1.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-  const spin2 = rotate2.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['360deg', '0deg'], // opposite direction
-  });
-  const spin3 = rotate3.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+    });
+  }, [animations]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Box flex={1} alignItems='center' justifyContent='center'>
         {/* Logo */}
         <Image
-          source={require('@/assets/logo.png')}
+          source={require("@/assets/logo.png")}
           alt='Raavito Logo'
           size='2xl'
           resizeMode='contain'
         />
 
-        {/* Loader below logo */}
-        <Box mt={10} alignItems='center' justifyContent='center'>
-          {/* Outer Arc */}
-          <Animated.View
-            style={{
-              width: 30,
-              height: 30,
-              borderWidth: 6,
-              borderRadius: 40,
-              borderTopColor: '#FF7A00', // Raavito orange
-              borderRightColor: 'transparent',
-              borderBottomColor: 'transparent',
-              borderLeftColor: 'transparent',
-              transform: [{ rotate: spin1 }],
-              position: 'absolute',
-            }}
-          />
+        {/* Circular Loader */}
+        <View style={{ marginTop: 40, width: 60, height: 60 }}>
+          {segments.map((_, i) => {
+            const rotate = i * 30 + "deg"; // 12 segments = 30° apart
+            const opacity = animations[i].interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.2, 1],
+            });
 
-          {/* Middle Arc */}
-          <Animated.View
-            style={{
-              width: 60,
-              height: 60,
-              borderWidth: 6,
-              borderRadius: 30,
-              borderTopColor: 'rgb(9,202,57)', // Raavito green
-              borderRightColor: 'transparent',
-              borderBottomColor: 'transparent',
-              borderLeftColor: 'transparent',
-              transform: [{ rotate: spin2 }],
-              position: 'absolute',
-            }}
-          />
-
-          {/* Inner Arc */}
-          <Animated.View
-            style={{
-              width: 40,
-              height: 40,
-              borderWidth: 6,
-              borderRadius: 20,
-              borderTopColor: '#FFD700', // yellow
-              borderRightColor: 'transparent',
-              borderBottomColor: 'transparent',
-              borderLeftColor: 'transparent',
-              transform: [{ rotate: spin3 }],
-              position: 'absolute',
-            }}
-          />
-        </Box>
+            return (
+              <Animated.View
+                key={i}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  transform: [{ rotate }],
+                  opacity,
+                }}>
+                <View
+                  style={{
+                    width: 6,
+                    height: 14,
+                    borderRadius: 3,
+                    backgroundColor:
+                      i % 3 === 0
+                        ? "#FF7A00" // orange
+                        : i % 3 === 1
+                          ? "rgb(9,202,57)" // green
+                          : "#FFD700", // yellow
+                  }}
+                />
+              </Animated.View>
+            );
+          })}
+        </View>
       </Box>
     </SafeAreaView>
   );
