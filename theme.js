@@ -3,8 +3,8 @@ import { extendTheme } from "native-base";
 const theme = extendTheme({
   colors: {
     brand: {
-      orange: "#e57002ff",
-      green: "#018923ff",
+      orange: "#b95a01ff",
+      green: "#068125ff",
       dark: "#1A1A1A",
       light: "#F5F5F5",
       gray: "#E5E7EB",
@@ -29,24 +29,25 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         rounded: "full",
-        shadow: 3,
+        shadow: 6, // deeper shadow for 3D effect
         _text: {
           fontFamily: "Poppins",
           fontWeight: "600",
           fontSize: "md",
           color: "white",
         },
+        _pressed: {
+          transform: [{ scale: 0.97 }], // press-in effect
+          shadow: 2, // reduced shadow when pressed
+        },
       },
       defaultProps: {
-        bg: {
-          linearGradient: {
-            colors: ["brand.green", "brand.orange"],
-            start: [0, 0],
-            end: [1, 0],
-          },
-        },
+        size: "md",
+        alignSelf: "center", // keep it centered
+        w: "60%", // smaller width (60% of container)
+        bg: "brand.orange",
         _pressed: {
-          opacity: 0.9,
+          bg: "brand.green",
         },
       },
     },
@@ -90,6 +91,24 @@ const theme = extendTheme({
       baseStyle: {
         color: "brand.dark",
         fontFamily: "OpenSans",
+      },
+      variants: {
+        caption: {
+          fontSize: "xs",
+          color: "coolGray.500",
+        },
+        label: {
+          fontSize: "sm",
+          fontWeight: "600",
+          color: "brand.orange",
+        },
+      },
+    },
+    Heading: {
+      baseStyle: {
+        fontFamily: "Poppins",
+        fontWeight: "700",
+        color: "brand.dark",
       },
     },
     Card: {

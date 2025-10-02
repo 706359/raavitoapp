@@ -19,7 +19,7 @@ export default function AppNavigator() {
     const checkFirstLaunch = async () => {
       try {
         // const value = await AsyncStorage.getItem('alreadyLaunched');
-        const value = null;
+        const value = null; // ✅ preserved for controlled onboarding
         if (value === null) {
           await AsyncStorage.setItem("alreadyLaunched", "true");
           setIsFirstLaunch(true); // ✅ First launch

@@ -1,171 +1,14 @@
-<<<<<<< HEAD
-import { Box, Button, Checkbox, HStack, Image, Link, Text, VStack, useTheme } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Button, Checkbox, HStack, Icon, Image, Link, Text, VStack, useTheme } from "native-base";
 import { useState } from "react";
-=======
-// // screens/LoginScreen.js
-// import { Box, Button, Checkbox, HStack, Image, Link, Text, VStack, useTheme } from 'native-base';
-// import { useState } from 'react';
-// import { Alert, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { useAuth } from '../context/AuthContext';
-
-// export default function LoginScreen({ navigation }) {
-//   const { login } = useAuth();
-//   const [mobile, setMobile] = useState('');
-//   const [password, setPassword] = useState('');
-//   const { colors } = useTheme(); // 👈 use Raavito theme
-
-//   const handleLogin = () => {
-//     if (!mobile || !password) {
-//       Alert.alert('Missing Fields', 'Please enter both mobile number and password.');
-//       return;
-//     }
-
-//     if (mobile === '9999999999' && password === '12345') {
-//       login({ id: Date.now(), mobile });
-//       navigation.replace('Main');
-//     } else {
-//       Alert.alert('Invalid Credentials', 'Mobile number or password is incorrect.');
-//     }
-//   };
-
-//   const handleRegister = () => {
-//     navigation.navigate('Register');
-//   };
-
-//   return (
-//     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-//       <KeyboardAvoidingView
-//         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-//         style={{ flex: 1 }}>
-//         <Box flex={1} px={8} py={6} bg='white'>
-//           <VStack flex={1} justifyContent='space-between'>
-//             {/* Header */}
-//             <HStack alignItems='center' justifyContent='space-between' mb={-5} space={7}>
-//               <VStack>
-//                 <Text fontSize='4xl' bold fontFamily='Poppins' color='brand.dark'>
-//                   Hello,
-//                 </Text>
-//                 <Text fontSize='16' color='coolGray.500' fontFamily='OpenSans'>
-//                   Please Log in to Continue
-//                 </Text>
-//               </VStack>
-//               <Image
-//                 source={require('../assets/logo.png')}
-//                 alt='Raavito'
-//                 size='175'
-//                 // size='75'
-//                 resizeMode='contain'
-//               />
-//             </HStack>
-
-//             {/* Form */}
-//             <VStack space={6}>
-//               {/* Mobile Input */}
-//               <TextInput
-//                 value={mobile}
-//                 onChangeText={setMobile}
-//                 placeholder='Mobile Number'
-//                 keyboardType='phone-pad'
-//                 maxLength={10}
-//                 style={{
-//                   borderWidth: 1,
-//                   borderColor: 'black',
-//                   padding: 14,
-//                   borderRadius: 10,
-//                   fontSize: 16,
-//                   fontFamily: 'OpenSans',
-//                 }}
-//               />
-
-//               {/* Password Input */}
-//               <TextInput
-//                 value={password}
-//                 onChangeText={setPassword}
-//                 placeholder='Password'
-//                 secureTextEntry
-//                 style={{
-//                   borderWidth: 1,
-//                   borderColor: 'black.050',
-//                   padding: 14,
-//                   borderRadius: 10,
-//                   fontSize: 16,
-//                   fontFamily: 'OpenSans',
-//                 }}
-//               />
-
-//               {/* Remember + Forgot */}
-//               <HStack justifyContent='space-between' alignItems='center'>
-//                 <Checkbox value='remember' accessibilityLabel='Remember me'>
-//                   Remember me
-//                 </Checkbox>
-//                 <Link
-//                   _text={{
-//                     color: 'brand.orange',
-//                     fontSize: 'sm',
-//                     fontFamily: 'OpenSans',
-//                   }}>
-//                   Forgot Password?
-//                 </Link>
-//               </HStack>
-
-//               {/* Terms */}
-//               <Text
-//                 fontSize='xs'
-//                 color='coolGray.600'
-//                 textAlign='center'
-//                 lineHeight='lg'
-//                 fontFamily='OpenSans'>
-//                 By clicking Sign In you certify that you agree to our{' '}
-//                 <Text color='brand.orange'>Privacy Policy</Text> and{' '}
-//                 <Text color='brand.orange'>Terms & Conditions</Text>
-//               </Text>
-
-//               {/* Sign In Button */}
-//               <Button
-//                 onPress={handleLogin}
-//                 bg='brand.orange'
-//                 _pressed={{ bg: 'brand.green' }}
-//                 _text={{
-//                   fontFamily: 'Poppins',
-//                   fontWeight: 'bold',
-//                   fontSize: 'lg',
-//                 }}
-//                 rounded='lg'
-//                 py={4}
-//                 mt={4}>
-//                 Sign In
-//               </Button>
-//             </VStack>
-
-//             {/* Footer */}
-//             <VStack space={4} alignItems='center' mt={10}>
-//               <Text fontSize='md' fontFamily='OpenSans'>
-//                 New User?{' '}
-//                 {/* <Text color='brand.green' bold onPress={() => navigation.navigate('Register')}> */}
-//                 <Text color='brand.orange' bold onPress={handleRegister}>
-//                   Register
-//                 </Text>
-//               </Text>
-//               {/* <Text fontSize='sm' color='coolGray.600' fontFamily='OpenSans'>
-//                 Continue as a Guest
-//               </Text> */}
-//             </VStack>
-//           </VStack>
-//         </Box>
-//       </KeyboardAvoidingView>
-//     </SafeAreaView>
-//   );
-// }
-
-import { Box, Button, Checkbox, HStack, Image, Link, Text, VStack, useTheme } from 'native-base';
-import { useState } from 'react';
->>>>>>> 6494936f28ec9788daea78a4a0c304e62e96dc8d
 import {
   Alert,
+  ImageBackground,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard as RNKeyboard,
+  ScrollView,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
@@ -178,16 +21,13 @@ export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [focused, setFocused] = useState(null);
-
-  const { colors } = useTheme();
+  const theme = useTheme();
 
   const handleLogin = () => {
     if (!mobile || !password) {
       Alert.alert("Missing Fields", "Please enter both mobile number and password.");
       return;
     }
-
     if (mobile === "9999999999" && password === "12345") {
       login({ id: Date.now(), mobile });
       navigation.replace("Main");
@@ -196,138 +36,180 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  const handleRegister = () => {
-    navigation.navigate("Register");
-  };
+  const handleRegister = () => navigation.navigate("Register");
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.flex}>
-        <TouchableWithoutFeedback onPress={RNKeyboard.dismiss} accessible={false}>
-          <Box flex={1} px={8} py={6}>
-            <VStack flex={1} justifyContent='space-between'>
-              {/* Header */}
-              <VStack alignItems='center' mt={12} space={2}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <ImageBackground
+        source={require("../assets/loginbg.png")}
+        resizeMode='cover'
+        style={{ flex: 1 }}>
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.flex}>
+            <ScrollView
+              contentContainerStyle={styles.content}
+              keyboardShouldPersistTaps='handled'
+              keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
+              <VStack space={10} alignItems='center' w='100%'>
+                {/* Logo */}
                 <Image
                   source={require("../assets/logo.png")}
                   alt='Raavito'
-                  size='xl'
+                  w={120}
+                  h={120}
                   resizeMode='contain'
+                  mb={2}
                 />
-                <Text fontSize='2xl' bold>
-                  Welcome Back
-                </Text>
-                <Text fontSize='md' color='coolGray.500'>
-                  Please log in to continue
-                </Text>
-              </VStack>
 
-              {/* Form */}
-              <VStack space={5} mt={8}>
-                {/* Mobile Input */}
-                <View
-                  style={[
-                    styles.inputWrapper,
-                    {
-                      borderColor: focused === "mobile" ? colors.brand.orange : colors.brand.gray,
-                    },
-                  ]}>
-                  <TextInput
-                    value={mobile}
-                    onChangeText={setMobile}
-                    placeholder='Mobile Number'
-                    placeholderTextColor='#777'
-                    keyboardType='phone-pad'
-                    maxLength={10}
-                    onFocus={() => setFocused("mobile")}
-                    onBlur={() => setFocused(null)}
-                    style={styles.input}
-                  />
-                </View>
+                {/* Title */}
+                <VStack space={1} alignItems='center'>
+                  <Text
+                    fontSize='3xl'
+                    fontFamily='Poppins'
+                    fontWeight='700'
+                    color='brand.dark'
+                    shadow={2}>
+                    Welcome Back
+                  </Text>
+                  <Text fontSize='md' color='coolGray.700' textAlign='center'>
+                    Trusted app for Desi Homemade food
+                  </Text>
+                </VStack>
 
-                {/* Password Input */}
-                <View
-                  style={[
-                    styles.inputWrapper,
-                    {
-                      borderColor: focused === "password" ? colors.brand.orange : colors.brand.gray,
-                    },
-                  ]}>
-                  <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder='Password'
-                    placeholderTextColor='#777'
-                    secureTextEntry
-                    onFocus={() => setFocused("password")}
-                    onBlur={() => setFocused(null)}
-                    style={styles.input}
-                  />
-                </View>
+                {/* Inputs */}
+                <VStack space={5} w='100%'>
+                  {/* Mobile */}
+                  <View style={styles.inputWrapper}>
+                    <Ionicons
+                      name='call-outline'
+                      size={20}
+                      color={theme.colors.brand.orange}
+                      style={styles.icon}
+                    />
+                    <TextInput
+                      style={[styles.input, { color: theme.colors.brand.dark }]}
+                      value={mobile}
+                      onChangeText={setMobile}
+                      placeholder='Mobile Number'
+                      keyboardType='phone-pad'
+                      maxLength={10}
+                      blurOnSubmit={true}
+                      placeholderTextColor={theme.colors.brand.gray}
+                    />
+                  </View>
 
-                {/* Remember + Forgot */}
-                <HStack justifyContent='space-between' alignItems='center'>
-                  <Checkbox value='remember' accessibilityLabel='Remember me'>
-                    Remember me
-                  </Checkbox>
-                  <Link>Forgot Password?</Link>
-                </HStack>
+                  {/* Password */}
+                  <View style={styles.inputWrapper}>
+                    <Ionicons
+                      name='lock-closed-outline'
+                      size={20}
+                      color={theme.colors.brand.orange}
+                      style={styles.icon}
+                    />
+                    <TextInput
+                      style={[styles.input, { color: theme.colors.brand.dark }]}
+                      value={password}
+                      onChangeText={setPassword}
+                      placeholder='Password'
+                      secureTextEntry
+                      blurOnSubmit={true}
+                      placeholderTextColor={theme.colors.brand.gray}
+                    />
+                  </View>
 
-                {/* Terms */}
-                <Text fontSize='xs' color='coolGray.600' textAlign='center'>
-                  By clicking Sign In you certify that you agree to our{" "}
-                  <Text color='brand.orange'>Privacy Policy</Text> and{" "}
-                  <Text color='brand.orange'>Terms & Conditions</Text>
-                </Text>
+                  {/* Remember + Forgot */}
+                  <HStack justifyContent='space-between' alignItems='center' mt={1}>
+                    <Checkbox value='remember'>Remember me</Checkbox>
+                    <Link _text={{ color: "brand.orange", fontWeight: "600" }}>
+                      Forgot Password?
+                    </Link>
+                  </HStack>
 
-                {/* Sign In Button */}
-                <Button
-                  onPress={handleLogin}
-                  mt={4}
-                  bg='brand.orange'
-                  _pressed={{ bg: "brand.green" }}>
-                  Sign In
-                </Button>
-              </VStack>
+                  {/* Sign-in Button with gradient */}
+                  <Button
+                    onPress={handleLogin}
+                    shadow={6}
+                    variant='outline'
+                    borderColor='brand.light'
+                    _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
+                    leftIcon={<Icon as={Ionicons} name='log-in-outline' size={6} color='white' />}
+                    _linearGradient={{
+                      as: LinearGradient,
+                      colors: [theme.colors.brand.orange, theme.colors.brand.green],
+                      start: [0, 0],
+                      end: [1, 1],
+                    }}>
+                    Sign In
+                  </Button>
 
-              {/* Footer */}
-              <VStack space={4} alignItems='center' mb={12}>
-                <Text fontSize='md'>
-                  New User?{" "}
-                  <Text color='brand.orange' bold onPress={handleRegister}>
+                  {/* Google login */}
+                  <Button
+                    variant='outline'
+                    borderColor='brand.light'
+                    _text={{ color: "brand.light", fontWeight: "600" }}
+                    leftIcon={
+                      <Icon as={Ionicons} name='logo-google' size={5} color='brand.orange' />
+                    }>
+                    Continue with Google
+                  </Button>
+
+                  {/* Terms */}
+                  <Text fontSize='xs' color='coolGray.600' textAlign='center' mt={2}>
+                    By signing in, you agree to our{" "}
+                    <Text variant='label' color='brand.orange'>
+                      Privacy Policy
+                    </Text>{" "}
+                    &{" "}
+                    <Text variant='label' color='brand.orange'>
+                      Terms
+                    </Text>
+                  </Text>
+                </VStack>
+
+                {/* Register */}
+                <HStack mt={5}>
+                  <Text fontSize='md' color='coolGray.700'>
+                    New here?{" "}
+                  </Text>
+                  <Text
+                    variant='label'
+                    color='brand.orange'
+                    fontWeight='700'
+                    onPress={handleRegister}>
                     Register
                   </Text>
-                </Text>
+                </HStack>
               </VStack>
-            </VStack>
-          </Box>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  flex: {
-    flex: 1,
+  safeArea: { flex: 1 },
+  flex: { flex: 1 },
+  content: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 24,
   },
   inputWrapper: {
-    borderRadius: 25,
-    borderWidth: 1.5,
-    backgroundColor: "#fff",
-    overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 16,
+    paddingHorizontal: 12,
   },
+  icon: { marginRight: 8 },
   input: {
-    paddingVertical: 14,
-    paddingHorizontal: 18,
+    flex: 1,
+    height: 50,
     fontSize: 16,
-    fontFamily: "OpenSans",
-    color: "#000",
   },
 });
