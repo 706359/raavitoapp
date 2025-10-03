@@ -7,7 +7,7 @@ const theme = extendTheme({
       green: "#068125ff",
       dark: "#1A1A1A",
       light: "#F5F5F5",
-      gray: "#E5E7EB",
+      gray: "#a1a1a1ff",
     },
   },
   fontConfig: {

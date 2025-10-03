@@ -238,10 +238,10 @@ export default function HomeScreen() {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}>
                     <View style={styles.searchContainer}>
-                      <Ionicons name='search' size={22} color='#FF6B35' style={styles.icon} />
+                      <Ionicons name='search' size={22} style={styles.icon} />
                       <TextInput
                         style={styles.input}
-                        placeholder='Search for delicious kitchens...'
+                        placeholder='Search for delicious food...'
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         placeholderTextColor='#9ca3af'
@@ -253,14 +253,14 @@ export default function HomeScreen() {
                 </Box>
 
                 {/* Banners - Carousel */}
-                <Box style={{ paddingHorizontal: 16, marginTop: 8 }}>
+                <Box style={{ paddingHorizontal: 12, marginTop: 2 }}>
                   <Carousel
                     width={width - 32}
                     height={180}
                     data={pendulumBanners}
                     loop
                     autoPlay
-                    autoPlayInterval={3000} // Slightly faster for better pendulum effect
+                    autoPlayInterval={3000}
                     onSnapToItem={(index) => setActiveIndex(getOriginalIndex(index))}
                     scrollAnimationDuration={800}
                     renderItem={({ item }) => (
@@ -443,25 +443,21 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  // (All your styles, unchanged)
   safeArea: { flex: 1, backgroundColor: "#ffffff" },
   container: { flex: 1, backgroundColor: "#fafafa" },
   columnWrapper: { justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 16 },
   listContent: { paddingBottom: 140 },
-  searchWrapper: { paddingHorizontal: 16, marginTop: 12 },
-  searchGradient: {
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
+  searchWrapper: { paddingHorizontal: 10, marginTop: 10 },
+
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    margin: 5,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    paddingVertical: 5,
+    borderColor: "theme.gray",
+    borderWidth: 0.2,
   },
   icon: { marginRight: 12 },
   input: {
@@ -471,24 +467,14 @@ const styles = StyleSheet.create({
     color: "#1f2937",
     paddingVertical: 2,
   },
-  bannerWrapper: { paddingTop: 8 },
-  bannerBox: {
-    marginHorizontal: 16,
-    padding: 24,
-    borderRadius: 20,
-    height: 180,
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+  banner: {
+    borderColor: "red",
+    borderWidth: 2,
   },
   bannerTitle: {
     fontWeight: "700",
-    fontSize: 24,
+    fontSize: 16,
     color: "white",
-    fontFamily: "Poppins",
     letterSpacing: 0.3,
   },
   bannerSubtitle: {
@@ -515,8 +501,8 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans",
   },
   bannerImageBox: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     borderRadius: 20,
     overflow: "hidden",
     borderWidth: 3,
@@ -524,7 +510,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: { width: "100%", height: "100%" },
   dot: { height: 8, borderRadius: 4 },
-  activeDot: { width: 24, backgroundColor: "#FF6B35" },
+  activeDot: { width: 16, backgroundColor: "#FF6B35" },
   inactiveDot: { width: 8, backgroundColor: "#d1d5db" },
   categoriesWrapper: { paddingHorizontal: 16 },
   categoriesRow: { justifyContent: "space-between" },

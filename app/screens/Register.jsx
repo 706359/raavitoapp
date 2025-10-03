@@ -40,7 +40,7 @@ export default function RegisterScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ImageBackground
-        source={require("../assets/loginbg1.png")}
+        source={require("../assets/loginbg2.png")}
         resizeMode='cover'
         style={{ flex: 1 }}>
         <KeyboardAvoidingView

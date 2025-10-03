@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
     }
     if (mobile === "9999999999" && password === "12345") {
       login({ id: Date.now(), mobile });
-      navigation.replace("Main");
+      navigation.replace("MainTabs");
     } else {
       Alert.alert("Invalid Credentials", "Mobile number or password is incorrect.");
     }
@@ -41,7 +41,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ImageBackground
-        source={require("../assets/loginbg.png")}
+        source={require("../assets/loginbg2.png")}
         resizeMode='cover'
         style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
@@ -66,11 +66,11 @@ export default function LoginScreen({ navigation }) {
                 {/* Title */}
                 <VStack space={1} alignItems='center'>
                   <Text
-                    fontSize='3xl'
+                    fontSize='2xl'
                     fontFamily='Poppins'
                     fontWeight='700'
                     color='brand.dark'
-                    shadow={2}>
+                    shadow={1}>
                     Welcome Back
                   </Text>
                   <Text fontSize='md' color='coolGray.700' textAlign='center'>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.9)",
+    borderWidth: 0.5,
     borderRadius: 16,
     paddingHorizontal: 12,
   },
