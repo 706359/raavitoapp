@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
     }
     if (mobile === "9999999999" && password === "12345") {
       login({ id: Date.now(), mobile });
-      navigation.replace("MainTabs");
+      // navigation.replace("MainTabs");
     } else {
       Alert.alert("Invalid Credentials", "Mobile number or password is incorrect.");
     }

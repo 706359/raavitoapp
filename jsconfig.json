@@ -4,6 +4,7 @@
     "paths": {
       "@/*": ["app/*"]
     },
+    "lib": ["ES2015"],
     "types": [],
     "allowJs": true,
     "jsx": "react-native",

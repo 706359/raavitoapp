@@ -11,10 +11,10 @@ const theme = extendTheme({
     },
   },
   fontConfig: {
-    Poppins: {
-      400: { normal: "Poppins-Regular" },
-      600: { normal: "Poppins-SemiBold" },
-      700: { normal: "Poppins-Bold" },
+    Roboto: {
+      400: { normal: "Roboto-Regular" },
+      600: { normal: "Roboto-SemiBold" },
+      700: { normal: "Roboto-Bold" },
     },
     OpenSans: {
       400: { normal: "OpenSans-Regular" },

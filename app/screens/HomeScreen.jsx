@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
-import { Box, FlatList, HStack, Icon, Image, Text, VStack } from "native-base";
+import { Box, FlatList, HStack, Icon, Image, Text, VStack, useTheme } from "native-base";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Pressable, StyleSheet, TextInput, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
@@ -12,78 +12,66 @@ import { kitchens } from "../data/menu";
 
 const { width } = Dimensions.get("window");
 
-const banners = [
-  {
-    id: "1",
-    title: "Subscription Packages",
-    subtitle: "Up to 60% OFF | 6 months+",
-    gradient: ["#FF6B35", "#F7931E"],
-    image: require("../assets/Rajasthani.jpg"),
-    icon: "pricetag",
-  },
-  {
-    id: "2",
-    title: "Today's Special",
-    subtitle: "Get free dessert with every thali",
-    gradient: ["#11998e", "#38ef7d"],
-    image: require("../assets/Gujarati.jpeg"),
-    icon: "cafe",
-  },
-  {
-    id: "3",
-    title: "Weekend Offer",
-    subtitle: "Flat 20% OFF on family packs",
-    gradient: ["#F093FB", "#F5576C"],
-    image: require("../assets/Dosa.jpg"),
-    icon: "gift",
-  },
-];
-const createPendulumBanners = (banners) => {
-  // Clone banners and add a unique uid per position to avoid duplicate object references
-  // which can cause flicker when the carousel reuses items.
-  if (banners.length === 3) {
-    // Create sequence indices: 0,1,2,1,0,1,2,1
-    const sequence = [0, 1, 2, 1, 0, 1, 2, 1];
-    return sequence.map((idx, pos) => ({ ...banners[idx], uid: `${banners[idx].id}-${pos}` }));
-  }
-  return banners.map((b, pos) => ({ ...b, uid: `${b.id}-${pos}` }));
-};
-const categories = [
-  { id: "1", name: "Dosa Thali", image: require("../assets/Dosa.jpg") },
-  { id: "2", name: "Gujarati Thali", image: require("../assets/Gujarati.jpeg") },
-  { id: "3", name: "Rajasthani Thali", image: require("../assets/Rajasthani.jpg") },
-  { id: "4", name: "Punjabi Thali", image: require("../assets/Punjabi.webp") },
-];
-const getOriginalIndex = (pendulumIndex) => {
-  const sequence = [0, 1, 2, 1, 0, 1, 2, 1]; // Maps to banner indices
-  return sequence[pendulumIndex % sequence.length];
-};
-
 export default function HomeScreen() {
   const [location, setLocation] = useState("Fetching...");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const pendulumBanners = createPendulumBanners(banners);
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const carouselRef = useRef(null);
+  const theme = useTheme();
+
+  const banners = [
+    {
+      id: "1",
+      title: "Premium Subscription",
+      subtitle: "Save up to 60% for 6 months",
+      gradient: [theme.colors.brand.orange, "#f5c18d"],
+      image: require("../assets/Rajasthani.jpg"),
+      icon: "diamond-outline",
+    },
+    {
+      id: "2",
+      title: "Fresh & Healthy",
+      subtitle: "Farm to table daily specials",
+      gradient: [theme.colors.brand.green, "#baf7c9"],
+      image: require("../assets/Gujarati.jpeg"),
+      icon: "leaf-outline",
+    },
+    {
+      id: "3",
+      title: "Weekend Feast",
+      subtitle: "20% off on family combos",
+      gradient: ["#12c6d6", "#c3f7f4"],
+      image: require("../assets/Dosa.jpg"),
+      icon: "gift-outline",
+    },
+  ];
+
+  const categories = [
+    { id: "1", name: "Dosa Thali", image: require("../assets/Dosa.jpg") },
+    { id: "2", name: "Gujarati Thali", image: require("../assets/Gujarati.jpeg") },
+    { id: "3", name: "Rajasthani Thali", image: require("../assets/Rajasthani.jpg") },
+    { id: "4", name: "Punjabi Thali", image: require("../assets/Punjabi.webp") },
+  ];
 
   // Entrance animation
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 800,
+        duration: 1000,
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
+      Animated.spring(slideAnim, {
+        toValue: 0,
         friction: 8,
         tension: 40,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [fadeAnim, scaleAnim]);
+  }, [fadeAnim, slideAnim]);
 
   // Location fetch
   useEffect(() => {
@@ -114,10 +102,10 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  const CARD_WIDTH = width * 0.44;
-  const CARD_HEIGHT = 200;
+  const CARD_WIDTH = width * 0.45;
+  const CARD_HEIGHT = 210;
 
-  // Memoized filtered kitchens based on searchQuery
+  // Memoized filtered kitchens
   const filteredKitchens = useMemo(() => {
     if (!searchQuery.trim()) return kitchens;
     return kitchens.filter((kitchen) =>
@@ -137,23 +125,24 @@ export default function HomeScreen() {
     const handlePressOut = () => {
       Animated.spring(scaleValue, {
         toValue: 1,
-        friction: 6,
+        friction: 5,
         useNativeDriver: true,
       }).start();
     };
     return (
-      <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+      <Animated.View style={{ transform: [{ scale: scaleValue }], flex: 1, alignItems: "center" }}>
         <Pressable
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           accessible
-          accessibilityLabel={`${item.name} category`}>
-          <VStack style={styles.categoryItem}>
-            <Box style={styles.categoryImageContainer}>
-              <Image source={item.image} alt={item.name} style={styles.categoryImage} />
-            </Box>
-            <Text style={styles.categoryText}>{item.name}</Text>
-          </VStack>
+          accessibilityLabel={`${item.name} category`}
+          style={{ alignItems: "center", width: "100%" }}>
+          <Box style={[styles.categoryImageContainer, { shadowColor: theme.colors.brand.orange }]}>
+            <Image source={item.image} alt={item.name} style={styles.categoryImage} />
+          </Box>
+          <Text style={[styles.categoryText, { color: theme.colors.brand.dark }]} numberOfLines={2}>
+            {item.name}
+          </Text>
         </Pressable>
       </Animated.View>
     );
@@ -171,7 +160,7 @@ export default function HomeScreen() {
     const handlePressOut = () => {
       Animated.spring(scaleValue, {
         toValue: 1,
-        friction: 6,
+        friction: 5,
         useNativeDriver: true,
       }).start();
     };
@@ -183,7 +172,11 @@ export default function HomeScreen() {
           onPress={() => navigation.navigate("KitchenScreen", { kitchen: item })}
           accessible
           accessibilityLabel={`Open details for ${item.name}`}>
-          <Box style={[styles.kitchenCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}>
+          <Box
+            style={[
+              styles.kitchenCard,
+              { width: CARD_WIDTH, height: CARD_HEIGHT, shadowColor: theme.colors.brand.dark },
+            ]}>
             <Image
               source={item.image}
               alt={item.name}
@@ -191,23 +184,28 @@ export default function HomeScreen() {
               resizeMode='cover'
             />
             <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.8)"]}
+              colors={["transparent", "rgba(0,0,0,0.85)"]}
               style={styles.kitchenGradient}
             />
             {item.discount && (
-              <Box style={styles.discountBadge}>
+              <LinearGradient
+                colors={[theme.colors.brand.orange, "#d67412"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.discountBadge, { shadowColor: theme.colors.brand.orange }]}>
+                <Icon as={Ionicons} name='flash' size='xs' color='white' />
                 <Text style={styles.discountText}>{item.discount}</Text>
-              </Box>
+              </LinearGradient>
             )}
             <VStack style={styles.kitchenInfo}>
               <Text style={styles.kitchenName} numberOfLines={1}>
                 {item.name}
               </Text>
-              <HStack mt={1} alignItems='center' space={1}>
-                <Icon as={Ionicons} name='star' size='xs' color='#FFD700' />
-                <Text style={styles.kitchenMeta}>
-                  {item.rating} • {item.time}
-                </Text>
+              <HStack mt={1.5} alignItems='center' space={1}>
+                <Icon as={Ionicons} name='star' size='xs' color={theme.colors.brand.orange} />
+                <Text style={styles.kitchenMeta}>{item.rating}</Text>
+                <Text style={styles.kitchenDot}>•</Text>
+                <Text style={styles.kitchenMeta}>{item.time}</Text>
               </HStack>
             </VStack>
           </Box>
@@ -216,11 +214,72 @@ export default function HomeScreen() {
     );
   };
 
+  const offers = [
+    {
+      icon: "pricetag",
+      title: "₹50 OFF",
+      sub: "First Order",
+      colors: [theme.colors.brand.orange, "#d67412"],
+    },
+    {
+      icon: "nutrition",
+      title: "Combo Deal",
+      sub: "Thali + Drink",
+      colors: [theme.colors.brand.green, "#0a9e30"],
+    },
+    {
+      icon: "people",
+      title: "Family Pack",
+      sub: "20% Discount",
+      colors: ["#d67412", theme.colors.brand.orange],
+    },
+    {
+      icon: "flash",
+      title: "Flash Sale",
+      sub: "2 Hours Left",
+      colors: [theme.colors.brand.green, "#0a9e30"],
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <Box style={styles.container}>
+      <Box style={[styles.container, { backgroundColor: theme.colors.brand.light }]}>
         <HeaderBar title='Home' showCart location={location} />
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }], flex: 1 }}>
+
+        {/* Premium Search Bar - Outside FlatList */}
+        <Box style={styles.searchWrapper}>
+          <View style={[styles.searchGradient, { shadowColor: theme.colors.brand.orange }]}>
+            <View style={styles.searchContainer}>
+              <Icon as={Ionicons} name='search' size='sm' color={theme.colors.brand.gray} />
+              <TextInput
+                style={[styles.input, { color: theme.colors.brand.dark }]}
+                placeholder='Search restaurants, cuisines...'
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholderTextColor={theme.colors.brand.gray}
+                accessibilityLabel='Search kitchens'
+                autoCorrect={false}
+                autoCapitalize='none'
+              />
+              <Pressable>
+                <View style={[styles.filterButton, { shadowColor: theme.colors.brand.orange }]}>
+                  <LinearGradient
+                    colors={[theme.colors.brand.orange, "#d67412"]}
+                    style={styles.filterGradient}>
+                    <Icon as={Ionicons} name='options' size='xs' color='white' />
+                  </LinearGradient>
+                </View>
+              </Pressable>
+            </View>
+          </View>
+        </Box>
+
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+            flex: 1,
+          }}>
           <FlatList
             data={filteredKitchens.slice(0, 6)}
             keyExtractor={(item) => `kitchen-${item.id}`}
@@ -229,121 +288,138 @@ export default function HomeScreen() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
-              <VStack space={6} mb={4}>
-                {/* Search Bar */}
-                <Box style={styles.searchWrapper}>
-                  <LinearGradient
-                    colors={["#f8f9fa", "#ffffff"]}
-                    style={styles.searchGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}>
-                    <View style={styles.searchContainer}>
-                      <Ionicons name='search' size={22} style={styles.icon} />
-                      <TextInput
-                        style={styles.input}
-                        placeholder='Search for delicious food...'
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        placeholderTextColor='#9ca3af'
-                        accessibilityLabel='Search kitchens'
-                      />
-                      <Ionicons name='options-outline' size={22} color='#6b7280' />
-                    </View>
-                  </LinearGradient>
-                </Box>
-
-                {/* Banners - Carousel */}
-                <Box style={{ paddingHorizontal: 12, marginTop: 2 }}>
+              <VStack space={6} mb={5}>
+                {/* Premium Banners */}
+                <Box style={styles.bannerSection}>
                   <Carousel
+                    ref={carouselRef}
                     width={width - 32}
                     height={180}
-                    data={pendulumBanners}
-                    loop
-                    autoPlay
-                    autoPlayInterval={3000}
-                    onSnapToItem={(index) => setActiveIndex(getOriginalIndex(index))}
+                    data={banners}
+                    loop={false}
+                    autoPlay={true}
+                    autoPlayInterval={5000}
+                    onSnapToItem={(index) => setActiveIndex(index)}
                     scrollAnimationDuration={800}
+                    style={{ paddingHorizontal: 16 }}
                     renderItem={({ item }) => (
-                      <LinearGradient
-                        key={item.uid || item.id}
-                        colors={item.gradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{
-                          borderRadius: 20,
-                          overflow: "hidden",
-                          width: width - 32,
-                          height: 180,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          padding: 24,
-                        }}>
-                        <VStack flex={1} pr={4}>
-                          <Text style={styles.bannerTitle}>{item.title}</Text>
-                          <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
-                          <Pressable style={[styles.bannerButton, { marginTop: 16 }]}>
-                            <Text style={styles.bannerButtonText}>Explore Now</Text>
-                            <Icon
-                              as={Ionicons}
-                              name='arrow-forward'
-                              size='sm'
-                              color='white'
-                              ml={2}
-                            />
-                          </Pressable>
-                        </VStack>
-                        <Box
-                          style={{
-                            width: 110,
-                            height: 110,
-                            borderRadius: 20,
-                            overflow: "hidden",
-                            borderWidth: 3,
-                            borderColor: "rgba(255,255,255,0.3)",
-                            backgroundColor: "white",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}>
-                          <Image
-                            source={item.image}
-                            alt='Banner'
-                            resizeMode='cover'
-                            style={{ width: "100%", height: "100%", borderRadius: 20 }}
-                          />
-                        </Box>
-                      </LinearGradient>
+                      <Pressable key={item.id} style={styles.bannerWrapper}>
+                        <LinearGradient
+                          colors={item.gradient}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={styles.bannerCard} // must define width/height inside this style
+                        >
+                          <HStack flex={1} alignItems='center' space={4}>
+                            <VStack flex={1} space={3}>
+                              <HStack alignItems='center' space={2}>
+                                <Box style={styles.iconCircle}>
+                                  <Icon as={Ionicons} name={item.icon} size='sm' color='white' />
+                                </Box>
+                                <Box style={styles.badge}>
+                                  <Text style={styles.badgeText}>EXCLUSIVE</Text>
+                                </Box>
+                              </HStack>
+                              <VStack space={1}>
+                                <Text style={styles.bannerTitle}>{item.title}</Text>
+                                <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+                              </VStack>
+                              <Pressable style={styles.ctaButton}>
+                                <Text style={styles.ctaText}>Claim Offer</Text>
+                                <Icon
+                                  as={Ionicons}
+                                  name='arrow-forward'
+                                  size='xs'
+                                  color='white'
+                                  ml={1}
+                                />
+                              </Pressable>
+                            </VStack>
+                            <Box style={styles.bannerImageWrapper}>
+                              <Image
+                                source={item.image}
+                                alt={item.title}
+                                style={styles.bannerImage}
+                                resizeMode='cover'
+                              />
+                            </Box>
+                          </HStack>
+                        </LinearGradient>
+                      </Pressable>
                     )}
                   />
-                  {/* Pagination dots for original banners */}
-                  <HStack mt={8} justifyContent='center' space={2}>
+
+                  {/* Pagination Dots */}
+                  <HStack mt={4} justifyContent='center' space={2}>
                     {banners.map((_, idx) => (
-                      <Box
-                        key={`dot-${idx}`}
-                        style={[
-                          styles.dot,
-                          activeIndex === idx ? styles.activeDot : styles.inactiveDot,
-                        ]}
-                      />
+                      <Pressable
+                        key={`banner-dot-${idx}`}
+                        onPress={() => carouselRef.current?.scrollTo({ index: idx })}>
+                        <Box
+                          style={[
+                            styles.paginationDot,
+                            { backgroundColor: theme.colors.brand.gray },
+                            activeIndex === idx && [
+                              styles.activePaginationDot,
+                              {
+                                backgroundColor: theme.colors.brand.orange, // fixed key
+                                shadowColor: theme.colors.brand.orange,
+                              },
+                            ],
+                          ]}
+                        />
+                      </Pressable>
                     ))}
                   </HStack>
                 </Box>
 
-                {/* Categories */}
-                <Box style={styles.categoriesWrapper}>
-                  <Text style={styles.sectionTitle}>What&#39;s on your mind?</Text>
-                  <HStack style={styles.categoriesRow}>
+                {/* Categories Section */}
+                <Box style={styles.section}>
+                  <HStack justifyContent='space-between' alignItems='center' mb={4}>
+                    <VStack>
+                      <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
+                        Explore Cuisines
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
+                        Discover authentic flavors
+                      </Text>
+                    </VStack>
+                    <Icon
+                      as={Ionicons}
+                      name='restaurant-outline'
+                      size='sm'
+                      color={theme.colors.brand.green}
+                    />
+                  </HStack>
+                  <HStack justifyContent='space-between' space={2}>
                     {categories.map((cat) => (
                       <CategoryCard key={cat.id} item={cat} />
                     ))}
                   </HStack>
                 </Box>
 
-                {/* Offers */}
-                <Box style={styles.offersWrapper}>
+                {/* Premium Offers */}
+                <Box style={styles.section}>
                   <HStack justifyContent='space-between' alignItems='center' mb={4}>
-                    <Text style={styles.sectionTitle}>Deals for You</Text>
-                    <Pressable>
-                      <Text style={styles.seeAllText}>See All →</Text>
+                    <VStack>
+                      <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
+                        Today&apos;s Offers
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
+                        Don&apos;t miss out
+                      </Text>
+                    </VStack>
+                    <Pressable style={[styles.viewAllButton, { backgroundColor: "white" }]}>
+                      <Text style={[styles.viewAllText, { color: theme.colors.brand.orange }]}>
+                        View All
+                      </Text>
+                      <Icon
+                        as={Ionicons}
+                        name='arrow-forward'
+                        size='xs'
+                        color={theme.colors.brand.orange}
+                        ml={1}
+                      />
                     </Pressable>
                   </HStack>
                   <Animated.ScrollView
@@ -351,69 +427,43 @@ export default function HomeScreen() {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ paddingRight: 16 }}>
                     <HStack space={3}>
-                      {/* Hardcoded offers for illustration */}
-                      <Pressable key='offer1'>
-                        <LinearGradient
-                          colors={["#fce7f3", "#fbcfe8"]}
-                          style={styles.offerBox}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}>
-                          <Box style={styles.offerIconCircle}>
-                            <Icon as={Ionicons} name='pricetag' size='md' color='#ec4899' />
-                          </Box>
-                          <Text style={styles.offerTitle}>₹50 OFF</Text>
-                          <Text style={styles.offerSubtitle}>on Mini Thali</Text>
-                        </LinearGradient>
-                      </Pressable>
-                      <Pressable key='offer2'>
-                        <LinearGradient
-                          colors={["#fef3c7", "#fef08a"]}
-                          style={styles.offerBox}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}>
-                          <Box style={styles.offerIconCircle}>
-                            <Icon as={Ionicons} name='restaurant' size='md' color='#f59e0b' />
-                          </Box>
-                          <Text style={styles.offerTitle}>Combo Saver</Text>
-                          <Text style={styles.offerSubtitle}>Thali + Drink</Text>
-                        </LinearGradient>
-                      </Pressable>
-                      <Pressable key='offer3'>
-                        <LinearGradient
-                          colors={["#d1fae5", "#bbf7d0"]}
-                          style={styles.offerBox}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}>
-                          <Box style={styles.offerIconCircle}>
-                            <Icon as={Ionicons} name='people' size='md' color='#10b981' />
-                          </Box>
-                          <Text style={styles.offerTitle}>Family Pack</Text>
-                          <Text style={styles.offerSubtitle}>Up to 20% OFF</Text>
-                        </LinearGradient>
-                      </Pressable>
-                      <Pressable key='offer4'>
-                        <LinearGradient
-                          colors={["#e0e7ff", "#c7d2fe"]}
-                          style={styles.offerBox}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}>
-                          <Box style={styles.offerIconCircle}>
-                            <Icon as={Ionicons} name='flash' size='md' color='#6366f1' />
-                          </Box>
-                          <Text style={styles.offerTitle}>Flash Sale</Text>
-                          <Text style={styles.offerSubtitle}>Limited Time</Text>
-                        </LinearGradient>
-                      </Pressable>
+                      {offers.map((offer) => (
+                        <Pressable key={`offer-${offer.title}`}>
+                          <LinearGradient colors={offer.colors} style={styles.offerCard}>
+                            <Box style={styles.offerIcon}>
+                              <Icon as={Ionicons} name={offer.icon} size='lg' color='white' />
+                            </Box>
+                            <Text style={styles.offerTitle}>{offer.title}</Text>
+                            <Text style={styles.offerSubtitle}>{offer.sub}</Text>
+                          </LinearGradient>
+                        </Pressable>
+                      ))}
                     </HStack>
                   </Animated.ScrollView>
                 </Box>
 
                 {/* Top Kitchens */}
-                <Box style={styles.topKitchensWrapper}>
+                <Box style={styles.section}>
                   <HStack justifyContent='space-between' alignItems='center' mb={4}>
-                    <Text style={styles.sectionTitle}>Top kitchens near you</Text>
-                    <Pressable>
-                      <Text style={styles.seeAllText}>See All →</Text>
+                    <VStack>
+                      <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
+                        Top Rated
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
+                        Most loved by customers
+                      </Text>
+                    </VStack>
+                    <Pressable style={[styles.viewAllButton, { backgroundColor: "white" }]}>
+                      <Text style={[styles.viewAllText, { color: theme.colors.brand.orange }]}>
+                        View All
+                      </Text>
+                      <Icon
+                        as={Ionicons}
+                        name='arrow-forward'
+                        size='xs'
+                        color={theme.colors.brand.orange}
+                        ml={1}
+                      />
                     </Pressable>
                   </HStack>
                   <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -425,12 +475,16 @@ export default function HomeScreen() {
                   </Animated.ScrollView>
                 </Box>
 
-                {/* All Restaurants Header */}
-                <Box style={styles.allRestaurantsHeader}>
-                  <Text style={styles.sectionTitle}>All Restaurants</Text>
-                  <Text style={styles.sectionSubtitle}>
-                    Discover amazing food experiences near you
-                  </Text>
+                {/* All Restaurants */}
+                <Box style={styles.section}>
+                  <VStack space={2} mb={4}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
+                      All Restaurants
+                    </Text>
+                    <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
+                      {filteredKitchens.length} restaurants available
+                    </Text>
+                  </VStack>
                 </Box>
               </VStack>
             }
@@ -443,169 +497,275 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Layout
   safeArea: { flex: 1, backgroundColor: "#ffffff" },
-  container: { flex: 1, backgroundColor: "#fafafa" },
-  columnWrapper: { justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 16 },
+  container: { flex: 1 },
+  columnWrapper: { justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 14 },
   listContent: { paddingBottom: 140 },
-  searchWrapper: { paddingHorizontal: 10, marginTop: 10 },
 
+  // Search
+  searchWrapper: { paddingHorizontal: 16, marginTop: 8, marginBottom: 12 },
+  searchGradient: {
+    borderRadius: 16,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    margin: 5,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+    backgroundColor: "white",
     borderRadius: 16,
-    paddingVertical: 5,
-    borderColor: "theme.gray",
-    borderWidth: 0.2,
   },
-  icon: { marginRight: 12 },
   input: {
     flex: 1,
     fontFamily: "OpenSans",
-    fontSize: 15,
-    color: "#1f2937",
-    paddingVertical: 2,
+    fontSize: 14,
+    paddingVertical: 8,
+    minHeight: 40,
   },
-  banner: {
-    borderColor: "red",
-    borderWidth: 2,
+  filterButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: "#FF6A00",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  filterGradient: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Banner
+  bannerSection: { marginTop: 2 },
+  bannerCard: {
+    borderRadius: 20,
+    marginLeft: 15,
+    padding: 20,
+    height: 180,
+    backgroundColor: "#2E7D32",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    overflow: "hidden",
+  },
+  badge: {
+    backgroundColor: "rgba(255,255,255,0.3)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.4)",
+  },
+  badgeText: {
+    fontSize: 9,
+    fontFamily: "Poppins-Bold",
+    color: "white",
+    letterSpacing: 1.2,
   },
   bannerTitle: {
-    fontWeight: "700",
-    fontSize: 16,
+    fontSize: 20,
+    fontFamily: "Poppins-Bold",
     color: "white",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   bannerSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: "OpenSans-SemiBold",
     color: "rgba(255,255,255,0.95)",
-    marginTop: 6,
-    fontFamily: "OpenSans",
-    lineHeight: 20,
+    lineHeight: 18,
   },
-  bannerButton: {
+  ctaButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.25)",
+    backgroundColor: "rgba(255,255,255,0.3)",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 16,
+    borderRadius: 12,
     alignSelf: "flex-start",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.5)",
+    minHeight: 44,
   },
-  bannerButtonText: {
+  ctaText: {
+    fontSize: 12,
+    fontFamily: "Poppins-Bold",
     color: "white",
-    fontWeight: "600",
-    fontSize: 13,
-    fontFamily: "OpenSans",
+    letterSpacing: 0.2,
   },
-  bannerImageBox: {
-    width: 100,
-    height: 100,
+  bannerImageWrapper: {
+    width: 120,
+    height: 120,
     borderRadius: 20,
     overflow: "hidden",
-    borderWidth: 3,
-    borderColor: "rgba(255,255,255,0.3)",
+    borderWidth: 4,
+    borderColor: "rgba(255,255,255,0.4)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  bannerImage: { width: "100%", height: "100%" },
-  dot: { height: 8, borderRadius: 4 },
-  activeDot: { width: 16, backgroundColor: "#FF6B35" },
-  inactiveDot: { width: 8, backgroundColor: "#d1d5db" },
-  categoriesWrapper: { paddingHorizontal: 16 },
-  categoriesRow: { justifyContent: "space-between" },
-  categoryItem: { alignItems: "center", flex: 1 },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  // Pagination
+  paginationDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#FF6A00",
+    opacity: 0.4,
+  },
+  activePaginationDot: {
+    width: 24,
+    backgroundColor: "#FF6A00",
+    opacity: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+
+  // Sections
+  section: { paddingHorizontal: 16 },
+  sectionTitle: {
+    fontSize: 20,
+    fontFamily: "Poppins-Bold",
+    letterSpacing: 0.2,
+    color: "#1A1A1A",
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    fontFamily: "OpenSans-SemiBold",
+    marginTop: 2,
+    color: "#666666",
+  },
+  viewAllButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: "#FF6A00",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    minHeight: 44,
+  },
+  viewAllText: {
+    fontSize: 12,
+    fontFamily: "Poppins-Bold",
+    color: "white",
+  },
+
+  // Categories
   categoryImageContainer: {
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
     borderRadius: 40,
-    marginBottom: 10,
+    marginBottom: 8,
+    backgroundColor: "white",
   },
   categoryImage: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    borderWidth: 3,
+    borderWidth: 4,
     borderColor: "#ffffff",
   },
   categoryText: {
-    fontSize: 13,
-    fontFamily: "OpenSans",
+    fontSize: 11,
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
-    color: "#374151",
-    fontWeight: "600",
-  },
-  offersWrapper: { paddingHorizontal: 16 },
-  sectionTitle: {
-    fontWeight: "700",
-    fontSize: 20,
-    color: "#111827",
-    fontFamily: "Poppins",
     letterSpacing: 0.2,
+    lineHeight: 14,
+    paddingHorizontal: 2,
+    color: "#1A1A1A",
   },
-  sectionSubtitle: {
-    fontSize: 13,
-    color: "#6b7280",
-    fontFamily: "OpenSans",
-    marginTop: 4,
-  },
-  seeAllText: {
-    fontSize: 14,
-    color: "#FF6B35",
-    fontWeight: "600",
-    fontFamily: "OpenSans",
-  },
-  offerBox: {
-    width: 140,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderRadius: 16,
+  categoryItem: {
+    flex: 1,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
-    minHeight: 140,
-    justifyContent: "center",
   },
-  offerIconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "rgba(255,255,255,0.5)",
+  categoriesRow: {
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
+    minHeight: 110,
   },
-  offerTitle: {
-    fontWeight: "700",
-    fontSize: 16,
-    color: "#1f2937",
-    fontFamily: "Poppins",
-    textAlign: "center",
-  },
-  offerSubtitle: {
-    fontSize: 12,
-    color: "#4b5563",
-    marginTop: 4,
-    fontFamily: "OpenSans",
-    textAlign: "center",
-  },
-  topKitchensWrapper: { paddingHorizontal: 16 },
-  allRestaurantsHeader: { paddingHorizontal: 16, marginTop: 8 },
-  kitchenCard: {
-    borderRadius: 18,
-    overflow: "hidden",
-    backgroundColor: "white",
+
+  // Offers
+  offerCard: {
+    width: 150,
+    paddingVertical: 24,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#2E7D32",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 6,
+  },
+  offerIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.4)",
+  },
+  offerTitle: {
+    fontSize: 17,
+    fontFamily: "Poppins-Bold",
+    color: "white",
+    textAlign: "center",
+    letterSpacing: 0.2,
+  },
+  offerSubtitle: {
+    fontSize: 11,
+    fontFamily: "OpenSans-SemiBold",
+    color: "rgba(255,255,255,0.95)",
+    marginTop: 4,
+    textAlign: "center",
+  },
+
+  // Kitchen Cards
+  kitchenCard: {
+    borderRadius: 20,
+    backgroundColor: "white",
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
   },
   kitchenImage: {
     width: "100%",
@@ -616,48 +776,75 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: "50%",
+    height: "55%",
+    backgroundColor: "rgba(0,0,0,0.3)", // subtle overlay
   },
   discountBadge: {
     position: "absolute",
     top: 12,
     right: 12,
-    backgroundColor: "#ef4444",
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 10,
+    backgroundColor: "#FF6A00",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+    gap: 3,
   },
   discountText: {
-    fontSize: 12,
+    fontSize: 11,
+    fontFamily: "Poppins-Bold",
     color: "white",
-    fontWeight: "700",
-    fontFamily: "Poppins",
+    letterSpacing: 0.2,
   },
   kitchenInfo: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 12,
+    padding: 14,
   },
   kitchenName: {
-    fontWeight: "700",
     fontSize: 15,
+    fontFamily: "Poppins-Bold",
     color: "white",
-    fontFamily: "Poppins",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    letterSpacing: 0.2,
+    textShadowColor: "rgba(0, 0, 0, 0.7)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   kitchenMeta: {
     fontSize: 12,
+    fontFamily: "OpenSans-SemiBold",
     color: "rgba(255,255,255,0.95)",
-    fontFamily: "OpenSans",
-    fontWeight: "500",
+  },
+  kitchenDot: {
+    fontSize: 12,
+    fontFamily: "OpenSans-SemiBold",
+    color: "rgba(255,255,255,0.7)",
+  },
+
+  // Logo Wrapper (optional)
+  logoWrapper: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginVertical: 20,
+    resizeMode: "contain",
+  },
+
+  // Gradient Accent (optional)
+  gradientAccent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "100%",
+    backgroundColor: "rgba(255,106,0,0.1)", // motion-orange tint
   },
 });
