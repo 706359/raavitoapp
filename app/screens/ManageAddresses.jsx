@@ -164,6 +164,7 @@
 //   );
 // }
 
+<<<<<<< HEAD
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -174,6 +175,17 @@ import { Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
 import { useAddress } from "../context/AddressContext";
+=======
+import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
+import { Box, Button, HStack, Icon, Pressable, Text, VStack } from 'native-base';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAddress } from '../context/AddressContext';
+>>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
 
 export default function ManageAddresses() {
   const navigation = useNavigation();
@@ -326,7 +338,7 @@ export default function ManageAddresses() {
             as={MaterialIcons}
             name={item.type === "Office" ? "business" : item.type === "Home" ? "home" : "place"}
             size='6'
-            color='rgba(255, 122, 0, 1)'
+            color='#b95a01ff'
           />
           <Text fontSize='md' fontFamily='Poppins' fontWeight='600'>
             {item.type}
@@ -335,6 +347,7 @@ export default function ManageAddresses() {
         <Text fontSize='sm' fontFamily='OpenSans' mb={2} color='gray.700'>
           {item.address}
         </Text>
+<<<<<<< HEAD
         <HStack space={4}>
           <Button
             variant='ghost'
@@ -348,6 +361,13 @@ export default function ManageAddresses() {
             size='sm'
             onPress={() => handleDelete(item.id)}
             _text={{ color: "rgba(255, 122, 0, 1)", fontFamily: "Poppins", fontWeight: "600" }}>
+=======
+        <HStack space={3} marginTop={7}>
+          <Button onPress={() => handleEdit(item.id)} style={{ width: '45%' }}>
+            EDIT
+          </Button>
+          <Button onPress={() => handleDelete(item.id)} style={{ width: '45%' }}>
+>>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
             DELETE
           </Button>
         </HStack>
@@ -373,7 +393,7 @@ export default function ManageAddresses() {
       <Pressable onPress={handleSelectCurrentLocation} mb={4}>
         <Box borderWidth={1} borderColor='gray.300' borderRadius='md' p={4} bg='white'>
           <HStack alignItems='center' space={3}>
-            <Icon as={MaterialIcons} name='my-location' size='6' color='rgba(255, 122, 0, 1)' />
+            <Icon as={MaterialIcons} name='my-location' size='6' color='#b95a01ff' />
             <VStack>
               <Text fontSize='md' fontWeight='600'>
                 Use Current Location
@@ -398,6 +418,7 @@ export default function ManageAddresses() {
       />
 
       {/* Add New Address */}
+<<<<<<< HEAD
       <CustomButton
         title={"ADD NEW ADDRESS"}
         color='rgba(255, 122, 0, 1)'
@@ -405,6 +426,9 @@ export default function ManageAddresses() {
         mt={4}
         onPress={handleAdd}
       />
+=======
+      <Button onPress={handleAdd}>Add New Location</Button>
+>>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
     </SafeAreaView>
   );
 }
