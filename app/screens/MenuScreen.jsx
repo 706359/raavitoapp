@@ -1,25 +1,25 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { Box, FlatList, HStack, Icon, Image, Pressable, Text, VStack } from 'native-base';
-import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native'; // ✅ use TextInput from react-native
-import { SafeAreaView } from 'react-native-safe-area-context';
-import HeaderBar from '../components/HeaderBar';
-import { kitchens } from '../data/menu';
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { Box, FlatList, HStack, Icon, Image, Pressable, Text, VStack } from "native-base";
+import { useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native"; // ✅ use TextInput from react-native
+import { SafeAreaView } from "react-native-safe-area-context";
+import HeaderBar from "../components/HeaderBar";
+import { kitchens } from "../data/menu";
 
 export default function MenuScreen() {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Filter kitchens by name or description
   const filteredKitchens = kitchens.filter(
     (k) =>
       k.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (k.desc && k.desc.toLowerCase().includes(searchQuery.toLowerCase())),
+      (k.desc && k.desc.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }} edges={["top"]}>
       <Box flex={1}>
         {/* Header */}
         <HeaderBar title='Menu' showCart />
@@ -50,7 +50,7 @@ export default function MenuScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
           renderItem={({ item }) => (
-            <Pressable onPress={() => navigation.navigate('KitchenScreen', { kitchen: item })}>
+            <Pressable onPress={() => navigation.navigate("KitchenScreen", { kitchen: item })}>
               <HStack
                 key={item.id}
                 space={3}
@@ -90,7 +90,7 @@ export default function MenuScreen() {
                     </Text>
                   </HStack>
                   <Text fontSize='xs' color='coolGray.500' numberOfLines={2}>
-                    {item.desc || 'Multi-cuisine | Fresh & Hygienic Meals'}
+                    {item.desc || "Multi-cuisine | Fresh & Hygienic Meals"}
                   </Text>
                 </VStack>
               </HStack>
@@ -109,9 +109,9 @@ export default function MenuScreen() {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f3f3f3', // ✅ Background color
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f3f3f3", // ✅ Background color
     borderRadius: 10,
     paddingHorizontal: 10,
   },
@@ -120,9 +120,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontFamily: 'OpenSans',
+    fontFamily: "OpenSans",
     fontSize: 16,
-    color: '#000',
+    color: "#000",
     paddingVertical: 8,
   },
 });

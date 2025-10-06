@@ -1,6 +1,6 @@
-import { useCart } from "@/context/CartContext";
-import { useOrder } from "@/context/OrderContext";
 import { Box, Button, HStack, Text, VStack } from "native-base";
+import { useCart } from "../context/CartContext";
+import { useOrder } from "../context/OrderContext";
 
 export default function CheckoutScreen({ navigation }) {
   const { cart, clearCart, getTotal } = useCart();

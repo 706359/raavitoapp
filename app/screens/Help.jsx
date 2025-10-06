@@ -1,23 +1,23 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const HELP_DATA = [
   {
-    id: '1',
-    question: 'Privacy Policy',
-    answer: 'Our privacy policy explains how we handle your data and protect your privacy.',
+    id: "1",
+    question: "Privacy Policy",
+    answer: "Our privacy policy explains how we handle your data and protect your privacy.",
   },
   {
-    id: '2',
-    question: 'Terms & Conditions',
-    answer: 'Our terms and conditions describe the rules for using our service.',
+    id: "2",
+    question: "Terms & Conditions",
+    answer: "Our terms and conditions describe the rules for using our service.",
   },
   {
-    id: '3',
-    question: 'Contact Us',
-    answer: 'You can contact us via email at support@example.com or call us at 123-456-7890.',
+    id: "3",
+    question: "Contact Us",
+    answer: "You can contact us via email at support@example.com or call us at 123-456-7890.",
   },
 ];
 
@@ -35,7 +35,7 @@ export default function Help({ navigation }) {
         <TouchableOpacity style={styles.questionContainer} onPress={() => toggleAnswer(item.id)}>
           <Text style={styles.questionText}>{item.question}</Text>
           <Ionicons
-            name={isOpen ? 'chevron-up-outline' : 'chevron-down-outline'}
+            name={isOpen ? "chevron-up-outline" : "chevron-down-outline"}
             size={20}
             color='#333'
           />
@@ -70,27 +70,27 @@ export default function Help({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: "#fff" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
-  headerTitle: { fontSize: 20, fontWeight: 'bold' },
+  headerTitle: { fontSize: 20, fontWeight: "bold" },
   itemContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     paddingVertical: 20,
     marginBottom: 15,
   },
   questionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  questionText: { fontSize: 16, fontWeight: '500', color: '#333', flex: 1, paddingRight: 10 },
-  answerText: { marginTop: 8, fontSize: 14, color: '#555', lineHeight: 20 },
+  questionText: { fontSize: 16, fontWeight: "500", color: "#333", flex: 1, paddingRight: 10 },
+  answerText: { marginTop: 8, fontSize: 14, color: "#555", lineHeight: 20 },
 });

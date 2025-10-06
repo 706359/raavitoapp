@@ -57,7 +57,7 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Full Screen Slider */}
+      {/* Slider */}
       <FlatList
         data={slides}
         ref={flatListRef}

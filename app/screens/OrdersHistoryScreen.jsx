@@ -74,51 +74,51 @@
 // }
 
 // screens/OrdersHistoryScreen.js
-import CustomButton from '@/components/CustomButton';
-import { allItems, kitchens } from '@/data/menu';
-import { Box, HStack, Image, Pressable, ScrollView, Text, VStack } from 'native-base';
-import { useState } from 'react';
-import theme from '../../theme';
+import { Box, HStack, Image, Pressable, ScrollView, Text, VStack } from "native-base";
+import { useState } from "react";
+import theme from "../../theme";
+import CustomButton from "../components/CustomButton";
+import { allItems, kitchens } from "../data/menu";
 
 // Dummy orders
 const DUMMY_ORDERS = [
   {
     id: 1,
-    kitchenId: 'k1',
-    itemId: 'i1',
-    status: 'New',
-    location: 'Sector 22, Delhi',
+    kitchenId: "k1",
+    itemId: "i1",
+    status: "New",
+    location: "Sector 22, Delhi",
   },
   {
     id: 2,
-    kitchenId: 'k2',
-    itemId: 'i4',
-    status: 'Ongoing',
-    location: 'Sector 12, Delhi',
+    kitchenId: "k2",
+    itemId: "i4",
+    status: "Ongoing",
+    location: "Sector 12, Delhi",
   },
   {
     id: 3,
-    kitchenId: 'k3',
-    itemId: 'i5',
-    status: 'Complete',
-    location: 'Sector 9, Delhi',
+    kitchenId: "k3",
+    itemId: "i5",
+    status: "Complete",
+    location: "Sector 9, Delhi",
   },
   {
     id: 4,
-    kitchenId: 'k1',
-    itemId: 'i2',
-    status: 'New',
-    location: 'Sector 22, Delhi',
+    kitchenId: "k1",
+    itemId: "i2",
+    status: "New",
+    location: "Sector 22, Delhi",
   },
 ];
 
-const STATUS_TABS = ['New', 'Ongoing', 'Complete', 'All'];
+const STATUS_TABS = ["New", "Ongoing", "Complete", "All"];
 
 export default function OrdersHistoryScreen() {
-  const [selectedTab, setSelectedTab] = useState('New');
+  const [selectedTab, setSelectedTab] = useState("New");
 
   const filteredOrders =
-    selectedTab === 'All' ? DUMMY_ORDERS : DUMMY_ORDERS.filter((o) => o.status === selectedTab);
+    selectedTab === "All" ? DUMMY_ORDERS : DUMMY_ORDERS.filter((o) => o.status === selectedTab);
 
   const getKitchen = (id) => kitchens.find((k) => k.id === id);
   const getItem = (id) => allItems.find((i) => i.id === id);
@@ -142,7 +142,7 @@ export default function OrdersHistoryScreen() {
               <Text
                 style={[
                   styles.tabText,
-                  selectedTab === tab && { fontWeight: 'bold', color: theme.colors.brand.orange },
+                  selectedTab === tab && { fontWeight: "bold", color: theme.colors.brand.orange },
                 ]}>
                 {tab}
               </Text>
@@ -197,12 +197,12 @@ export default function OrdersHistoryScreen() {
 
 // Separate CSS
 const styles = {
-  headerText: { fontSize: 22, fontWeight: 'bold' },
-  tabText: { fontSize: 16, color: '#555' },
-  noOrderText: { fontSize: 16, color: '#999' },
-  kitchenName: { fontSize: 16, fontWeight: 'bold' },
-  locationText: { fontSize: 14, color: '#666' },
-  itemText: { fontSize: 14, color: '#333' },
-  priceText: { fontSize: 14, fontWeight: 'bold', color: theme.colors.brand.orange },
-  orderIdText: { fontSize: 12, color: '#999' },
+  headerText: { fontSize: 22, fontWeight: "bold" },
+  tabText: { fontSize: 16, color: "#555" },
+  noOrderText: { fontSize: 16, color: "#999" },
+  kitchenName: { fontSize: 16, fontWeight: "bold" },
+  locationText: { fontSize: 14, color: "#666" },
+  itemText: { fontSize: 14, color: "#333" },
+  priceText: { fontSize: 14, fontWeight: "bold", color: theme.colors.brand.orange },
+  orderIdText: { fontSize: 12, color: "#999" },
 };

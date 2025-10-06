@@ -226,9 +226,7 @@
 //   );
 // }
 
-import CustomButton from '@/components/CustomButton';
-import { allItems } from '@/data/menu';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import {
   Box,
   HStack,
@@ -240,17 +238,19 @@ import {
   Spacer,
   Text,
   VStack,
-} from 'native-base';
-import { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import theme from '../../theme';
+} from "native-base";
+import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import theme from "../../theme";
+import CustomButton from "../components/CustomButton";
+import { allItems } from "../data/menu";
 
 export default function CartScreen() {
   const [cart, setCart] = useState(
-    allItems.slice(0, 3).map((item) => ({ ...item, qty: 1, note: '' })),
+    allItems.slice(0, 3).map((item) => ({ ...item, qty: 1, note: "" }))
   );
 
-  const couponCode = 'SAVE10';
+  const couponCode = "SAVE10";
   const couponDiscount = 10;
   const walletBalance = 750;
   const storeCharge = 10;
@@ -258,15 +258,15 @@ export default function CartScreen() {
 
   const increaseQty = (id) => {
     setCart((prevCart) =>
-      prevCart.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item)),
+      prevCart.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item))
     );
   };
 
   const decreaseQty = (id) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === id && item.qty > 1 ? { ...item, qty: item.qty - 1 } : item,
-      ),
+        item.id === id && item.qty > 1 ? { ...item, qty: item.qty - 1 } : item
+      )
     );
   };
 
@@ -284,7 +284,7 @@ export default function CartScreen() {
   const amountToPay = Math.max(grandTotal - walletUsed, 0);
 
   const deliveryAddress =
-    '123, saiid 6&SR+7F6, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395006';
+    "123, saiid 6&SR+7F6, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395006";
 
   if (!cart || cart.length === 0) {
     return (
@@ -302,7 +302,7 @@ export default function CartScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Box flex={1} bg='gray.50'>
         {/* Top Heading */}
         <Box px={4} py={3} bg='white' borderBottomWidth={1} borderColor='muted.200'>
@@ -333,7 +333,7 @@ export default function CartScreen() {
                         size='sm'
                         variant='ghost'
                         onPress={() => decreaseQty(item.id)}
-                        _icon={{ color: 'orange.500' }}
+                        _icon={{ color: "orange.500" }}
                       />
                       <Box px={3} py={1} borderRadius='full' bg='muted.100' alignItems='center'>
                         <Text bold>{item.qty}</Text>
@@ -344,7 +344,7 @@ export default function CartScreen() {
                         size='sm'
                         variant='ghost'
                         onPress={() => increaseQty(item.id)}
-                        _icon={{ color: 'orange.500' }}
+                        _icon={{ color: "orange.500" }}
                       />
                       <Spacer />
                       <IconButton
@@ -352,7 +352,7 @@ export default function CartScreen() {
                         borderRadius='full'
                         size='sm'
                         variant='ghost'
-                        _icon={{ color: 'red.500' }}
+                        _icon={{ color: "red.500" }}
                         onPress={() => removeItem(item.id)}
                       />
                     </HStack>
@@ -465,9 +465,9 @@ export default function CartScreen() {
           <CustomButton
             title='PROCEED TO PAY'
             onPress={() => {
-              console.log('Payment initiated!', cart);
+              console.log("Payment initiated!", cart);
             }}
-            pressedColor={'green'}
+            pressedColor={"green"}
           />
         </Box>
       </Box>
@@ -477,10 +477,10 @@ export default function CartScreen() {
 
 const styles = {
   itemBox: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     padding: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,

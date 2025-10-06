@@ -1,48 +1,48 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const FAQ_DATA = [
   {
-    id: '1',
-    question: 'What is your return policy?',
-    answer: 'You can return any item within 30 days of purchase.',
+    id: "1",
+    question: "What is your return policy?",
+    answer: "You can return any item within 30 days of purchase.",
   },
   {
-    id: '2',
-    question: 'How long does shipping take?',
-    answer: 'Shipping usually takes 3-5 business days.',
+    id: "2",
+    question: "How long does shipping take?",
+    answer: "Shipping usually takes 3-5 business days.",
   },
   {
-    id: '3',
-    question: 'Do you ship internationally?',
-    answer: 'Yes, we ship to most countries worldwide.',
+    id: "3",
+    question: "Do you ship internationally?",
+    answer: "Yes, we ship to most countries worldwide.",
   },
   {
-    id: '4',
-    question: 'How can I track my order?',
-    answer: 'You will receive a tracking number once your order is shipped.',
+    id: "4",
+    question: "How can I track my order?",
+    answer: "You will receive a tracking number once your order is shipped.",
   },
   {
-    id: '5',
-    question: 'Can I cancel my order?',
-    answer: 'Orders can be cancelled within 24 hours of placing them.',
+    id: "5",
+    question: "Can I cancel my order?",
+    answer: "Orders can be cancelled within 24 hours of placing them.",
   },
   {
-    id: '6',
-    question: 'How do I change my address?',
-    answer: 'You can update your address in the account settings.',
+    id: "6",
+    question: "How do I change my address?",
+    answer: "You can update your address in the account settings.",
   },
   {
-    id: '7',
-    question: 'Do you offer discounts?',
-    answer: 'Yes, subscribe to our newsletter for exclusive discounts.',
+    id: "7",
+    question: "Do you offer discounts?",
+    answer: "Yes, subscribe to our newsletter for exclusive discounts.",
   },
   {
-    id: '8',
-    question: 'Is my payment secure?',
-    answer: 'We use secure payment gateways to protect your information.',
+    id: "8",
+    question: "Is my payment secure?",
+    answer: "We use secure payment gateways to protect your information.",
   },
 ];
 
@@ -60,7 +60,7 @@ export default function FAQ({ navigation }) {
         <TouchableOpacity style={styles.questionContainer} onPress={() => toggleAnswer(item.id)}>
           <Text style={styles.questionText}>{item.question}</Text>
           <Ionicons
-            name={isOpen ? 'chevron-up-outline' : 'chevron-down-outline'}
+            name={isOpen ? "chevron-up-outline" : "chevron-down-outline"}
             size={20}
             color='#333'
           />
@@ -95,27 +95,27 @@ export default function FAQ({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: "#fff" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
-  headerTitle: { fontSize: 20, fontWeight: 'bold' },
+  headerTitle: { fontSize: 20, fontWeight: "bold" },
   itemContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     paddingVertical: 20, // thoda zyada space inside each item
     marginBottom: 5, // thoda gap between items
   },
   questionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  questionText: { fontSize: 16, fontWeight: '500', color: '#333', flex: 1, paddingRight: 10 },
-  answerText: { marginTop: 8, fontSize: 14, color: '#555', lineHeight: 20 },
+  questionText: { fontSize: 16, fontWeight: "500", color: "#333", flex: 1, paddingRight: 10 },
+  answerText: { marginTop: 8, fontSize: 14, color: "#555", lineHeight: 20 },
 });
