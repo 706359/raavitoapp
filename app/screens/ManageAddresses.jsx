@@ -1,170 +1,3 @@
-// import CustomButton from '@/components/CustomButton';
-// import { MaterialIcons } from '@expo/vector-icons';
-// import { useNavigation } from '@react-navigation/native';
-// import * as Location from 'expo-location';
-// import { Box, Button, HStack, Icon, Pressable, Text, VStack } from 'native-base';
-// import React, { useEffect, useState } from 'react';
-// import { FlatList } from 'react-native';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { useAddress } from '../context/AddressContext'; // 👈 Import AddressContext
-
-// const dummyData = [
-//   {
-//     id: '1',
-//     type: 'Office',
-//     address:
-//       '412, Apple square, 6VPM+P2M, Vrajbhumi Society, Mota Varachha, Surat, Gujarat 394101, India',
-//   },
-//   {
-//     id: '2',
-//     type: 'Home',
-//     address:
-//       '123, said, 6RSR+776, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395008, India',
-//   },
-// ];
-
-// export default function ManageAddresses() {
-//   const navigation = useNavigation();
-//   const { setSelectedAddress } = useAddress(); // 👈 use context
-//   const [currentLocation, setCurrentLocation] = useState('Fetching location...');
-
-//   // Get current location
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         let { status } = await Location.requestForegroundPermissionsAsync();
-//         if (status !== 'granted') {
-//           setCurrentLocation('Permission denied');
-//           return;
-//         }
-
-//         let loc = await Location.getCurrentPositionAsync({});
-//         let geo = await Location.reverseGeocodeAsync({
-//           latitude: loc.coords.latitude,
-//           longitude: loc.coords.longitude,
-//         });
-
-//         if (geo.length > 0) {
-//           const place = geo[0];
-//           setCurrentLocation(
-//             `${place.name || ''} ${place.street || ''}, ${place.city}, ${place.region}`,
-//           );
-//         }
-//       } catch (err) {
-//         console.log(err);
-//         setCurrentLocation('Error fetching location');
-//       }
-//     })();
-//   }, []);
-
-//   // Handle selection of current location
-//   const handleSelectCurrentLocation = () => {
-//     setSelectedAddress(currentLocation);
-//     navigation.goBack();
-//   };
-
-//   // Handle selection of saved address
-//   const handleSelectSavedAddress = (address) => {
-//     setSelectedAddress(address);
-//     navigation.goBack();
-//   };
-
-//   const renderItem = ({ item }) => (
-//     <Pressable onPress={() => handleSelectSavedAddress(item.address)}>
-//       <Box
-//         borderWidth={1}
-//         borderColor='gray.200'
-//         borderRadius='md'
-//         p={4}
-//         mb={3}
-//         bg='white'
-//         shadow={1}>
-//         <HStack alignItems='center' space={3} mb={2}>
-//           <Icon
-//             as={MaterialIcons}
-//             name={item.type === 'Office' ? 'business' : 'home'}
-//             size='6'
-//             color='rgba(255, 122, 0, 1)'
-//           />
-//           <Text fontSize='md' fontFamily='Poppins' fontWeight='600'>
-//             {item.type}
-//           </Text>
-//         </HStack>
-//         <Text fontSize='sm' fontFamily='OpenSans' mb={2} color='gray.700'>
-//           {item.address}
-//         </Text>
-//         <HStack space={4}>
-//           <Button
-//             variant='ghost'
-//             size='sm'
-//             _text={{ color: 'rgba(255, 122, 0, 1)', fontFamily: 'Poppins', fontWeight: '600' }}>
-//             EDIT
-//           </Button>
-//           <Button
-//             variant='ghost'
-//             size='sm'
-//             _text={{ color: 'rgba(255, 122, 0, 1)', fontFamily: 'Poppins', fontWeight: '600' }}>
-//             DELETE
-//           </Button>
-//         </HStack>
-//       </Box>
-//     </Pressable>
-//   );
-
-//   return (
-//     <SafeAreaView
-//       style={{ flex: 1, padding: 16, backgroundColor: '#F5F5F5' }}
-//       edges={['left', 'right', 'top']}>
-//       {/* Header with back icon */}
-//       <HStack alignItems='center' mb={4}>
-//         <Pressable onPress={() => navigation.goBack()}>
-//           <Icon as={MaterialIcons} name='arrow-back' size='6' color='black' />
-//         </Pressable>
-//         <Text fontSize='xl' fontFamily='Poppins' fontWeight='600' ml={4}>
-//           Manage Addresses
-//         </Text>
-//       </HStack>
-
-//       {/* Current Location */}
-//       <Pressable onPress={handleSelectCurrentLocation} mb={4}>
-//         <Box borderWidth={1} borderColor='gray.300' borderRadius='md' p={4} bg='white'>
-//           <HStack alignItems='center' space={3}>
-//             <Icon as={MaterialIcons} name='my-location' size='6' color='rgba(255, 122, 0, 1)' />
-//             <VStack>
-//               <Text fontSize='md' fontWeight='600'>
-//                 Use Current Location
-//               </Text>
-//               <Text fontSize='sm' color='gray.600'>
-//                 {currentLocation}
-//               </Text>
-//             </VStack>
-//           </HStack>
-//         </Box>
-//       </Pressable>
-
-//       {/* Saved Addresses Section */}
-//       <Text fontSize='md' fontWeight='600' mb={2}>
-//         Saved Addresses
-//       </Text>
-//       <FlatList
-//         data={dummyData}
-//         renderItem={renderItem}
-//         keyExtractor={(item) => item.id}
-//         showsVerticalScrollIndicator={false}
-//       />
-
-//       {/* Add New Address Button */}
-//       <CustomButton
-//         title={'ADD NEW ADDRESS'}
-//         color='rgba(255, 122, 0, 1)'
-//         pressedColor={'rgba(7, 192, 53, 1)'}
-//         mt={4}
-//       />
-//     </SafeAreaView>
-//   );
-// }
-
-<<<<<<< HEAD
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -175,17 +8,6 @@ import { Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
 import { useAddress } from "../context/AddressContext";
-=======
-import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import * as Location from 'expo-location';
-import { Box, Button, HStack, Icon, Pressable, Text, VStack } from 'native-base';
-import React, { useEffect, useState } from 'react';
-import { Alert, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAddress } from '../context/AddressContext';
->>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
 
 export default function ManageAddresses() {
   const navigation = useNavigation();
@@ -252,7 +74,7 @@ export default function ManageAddresses() {
         if (geo.length > 0) {
           const place = geo[0];
           setCurrentLocation(
-            `${place.name || ""} ${place.street || ""}, ${place.city}, ${place.region}`
+            `${place.name || ""} ${place.street || ""}, ${place.city || ""}, ${place.region || ""}`
           );
         }
       } catch (err) {
@@ -273,35 +95,51 @@ export default function ManageAddresses() {
     navigation.goBack();
   };
 
-  // Edit address
+  // Edit address (Alert.prompt is iOS-only; if needed replace with a custom prompt component)
   const handleEdit = (id) => {
     const found = addresses.find((a) => a.id === id);
     if (!found) return;
 
-    Alert.prompt(
-      "Edit Address",
-      "Update your address below:",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Save",
-          onPress: (newAddress) => {
-            if (newAddress) {
-              const updated = addresses.map((a) =>
-                a.id === id ? { ...a, address: newAddress } : a
-              );
-              setAddresses(updated);
-              saveAddresses(updated);
-            }
+    if (Alert.prompt) {
+      Alert.prompt(
+        "Edit Address",
+        "Update your address below:",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Save",
+            onPress: (newAddress) => {
+              if (newAddress) {
+                const updated = addresses.map((a) =>
+                  a.id === id ? { ...a, address: newAddress } : a
+                );
+                setAddresses(updated);
+                saveAddresses(updated);
+              }
+            },
           },
-        },
-      ],
-      "plain-text",
-      found.address
-    );
+        ],
+        "plain-text",
+        found.address
+      );
+    } else {
+      // Fallback for platforms without Alert.prompt
+      // Very small inline fallback using prompt if available (web) or skip
+      try {
+        const promptFunc =
+          (typeof global !== "undefined" && global.prompt) ||
+          (typeof window !== "undefined" && window.prompt) ||
+          null;
+        const newAddress = promptFunc ? promptFunc("Edit Address", found.address) : null;
+        if (newAddress) {
+          const updated = addresses.map((a) => (a.id === id ? { ...a, address: newAddress } : a));
+          setAddresses(updated);
+          saveAddresses(updated);
+        }
+      } catch (e) {
+        console.warn("Prompt not available on this platform");
+      }
+    }
   };
 
   // Delete address
@@ -344,10 +182,11 @@ export default function ManageAddresses() {
             {item.type}
           </Text>
         </HStack>
+
         <Text fontSize='sm' fontFamily='OpenSans' mb={2} color='gray.700'>
           {item.address}
         </Text>
-<<<<<<< HEAD
+
         <HStack space={4}>
           <Button
             variant='ghost'
@@ -356,18 +195,12 @@ export default function ManageAddresses() {
             _text={{ color: "rgba(255, 122, 0, 1)", fontFamily: "Poppins", fontWeight: "600" }}>
             EDIT
           </Button>
+
           <Button
             variant='ghost'
             size='sm'
             onPress={() => handleDelete(item.id)}
             _text={{ color: "rgba(255, 122, 0, 1)", fontFamily: "Poppins", fontWeight: "600" }}>
-=======
-        <HStack space={3} marginTop={7}>
-          <Button onPress={() => handleEdit(item.id)} style={{ width: '45%' }}>
-            EDIT
-          </Button>
-          <Button onPress={() => handleDelete(item.id)} style={{ width: '45%' }}>
->>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
             DELETE
           </Button>
         </HStack>
@@ -410,6 +243,7 @@ export default function ManageAddresses() {
       <Text fontSize='md' fontWeight='600' mb={2}>
         Saved Addresses
       </Text>
+
       <FlatList
         data={addresses}
         renderItem={renderItem}
@@ -418,7 +252,6 @@ export default function ManageAddresses() {
       />
 
       {/* Add New Address */}
-<<<<<<< HEAD
       <CustomButton
         title={"ADD NEW ADDRESS"}
         color='rgba(255, 122, 0, 1)'
@@ -426,9 +259,10 @@ export default function ManageAddresses() {
         mt={4}
         onPress={handleAdd}
       />
-=======
-      <Button onPress={handleAdd}>Add New Location</Button>
->>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
+
+      <Button mt={3} onPress={handleAdd}>
+        Add New Location
+      </Button>
     </SafeAreaView>
   );
 }
