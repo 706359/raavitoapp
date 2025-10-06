@@ -164,7 +164,6 @@
 //   );
 // }
 
-import CustomButton from '@/components/CustomButton';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -326,7 +325,7 @@ export default function ManageAddresses() {
             as={MaterialIcons}
             name={item.type === 'Office' ? 'business' : item.type === 'Home' ? 'home' : 'place'}
             size='6'
-            color='rgba(255, 122, 0, 1)'
+            color='#b95a01ff'
           />
           <Text fontSize='md' fontFamily='Poppins' fontWeight='600'>
             {item.type}
@@ -335,19 +334,11 @@ export default function ManageAddresses() {
         <Text fontSize='sm' fontFamily='OpenSans' mb={2} color='gray.700'>
           {item.address}
         </Text>
-        <HStack space={4}>
-          <Button
-            variant='ghost'
-            size='sm'
-            onPress={() => handleEdit(item.id)}
-            _text={{ color: 'rgba(255, 122, 0, 1)', fontFamily: 'Poppins', fontWeight: '600' }}>
+        <HStack space={3} marginTop={7}>
+          <Button onPress={() => handleEdit(item.id)} style={{ width: '45%' }}>
             EDIT
           </Button>
-          <Button
-            variant='ghost'
-            size='sm'
-            onPress={() => handleDelete(item.id)}
-            _text={{ color: 'rgba(255, 122, 0, 1)', fontFamily: 'Poppins', fontWeight: '600' }}>
+          <Button onPress={() => handleDelete(item.id)} style={{ width: '45%' }}>
             DELETE
           </Button>
         </HStack>
@@ -373,7 +364,7 @@ export default function ManageAddresses() {
       <Pressable onPress={handleSelectCurrentLocation} mb={4}>
         <Box borderWidth={1} borderColor='gray.300' borderRadius='md' p={4} bg='white'>
           <HStack alignItems='center' space={3}>
-            <Icon as={MaterialIcons} name='my-location' size='6' color='rgba(255, 122, 0, 1)' />
+            <Icon as={MaterialIcons} name='my-location' size='6' color='#b95a01ff' />
             <VStack>
               <Text fontSize='md' fontWeight='600'>
                 Use Current Location
@@ -398,13 +389,7 @@ export default function ManageAddresses() {
       />
 
       {/* Add New Address */}
-      <CustomButton
-        title={'ADD NEW ADDRESS'}
-        color='rgba(255, 122, 0, 1)'
-        pressedColor={'rgba(7, 192, 53, 1)'}
-        mt={4}
-        onPress={handleAdd}
-      />
+      <Button onPress={handleAdd}>Add New Location</Button>
     </SafeAreaView>
   );
 }

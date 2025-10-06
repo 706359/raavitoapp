@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import {
   Box,
   HStack,
@@ -9,36 +9,36 @@ import {
   ScrollView,
   Text,
   VStack,
-} from "native-base";
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useCart } from "../context/CartContext";
+} from 'native-base';
+import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCart } from '../context/CartContext';
 
 export default function KitchenScreen({ route, navigation }) {
   const { kitchen } = route.params;
 
   const { addToCart, removeFromCart, cart } = useCart();
 
-  const menuTabs = ["Lunch", "Dinner", "Breakfast", "Snacks"];
-  const [activeTab, setActiveTab] = useState("Lunch");
+  const menuTabs = ['Lunch', 'Dinner', 'Breakfast', 'Snacks'];
+  const [activeTab, setActiveTab] = useState('Lunch');
 
   // Example menu items
   const menuItems = [
     {
-      id: "1",
-      name: "Small Lunch",
+      id: '1',
+      name: 'Small Lunch',
       price: 50,
-      desc: "Max veg 3, Chapati",
+      desc: 'Max veg 3, Chapati',
       // img: 'https://via.placeholder.com/120',
-      img: require("../assets/Dosa.jpg"),
+      img: require('../assets/Dosa.jpg'),
     },
     {
-      id: "2",
-      name: "Medium Lunch",
+      id: '2',
+      name: 'Medium Lunch',
       price: 90,
-      desc: "Veg thali with rice, chapati",
+      desc: 'Veg thali with rice, chapati',
       // img: 'https://via.placeholder.com/120',
-      img: require("../assets/Gujarati.jpeg"),
+      img: require('../assets/Gujarati.jpeg'),
     },
   ];
 
@@ -53,40 +53,45 @@ export default function KitchenScreen({ route, navigation }) {
       <Box flex={1} bg='white'>
         <ScrollView>
           {/* Header */}
-          <HStack alignItems='center' justifyContent='space-between' px={4} py={3} bg='orange.500'>
+          <HStack
+            alignItems='center'
+            justifyContent='space-between'
+            px={4}
+            py={3}
+            backgroundColor={'#b95a01ff'}>
             <HStack alignItems='center' space={3}>
               <IconButton
                 icon={<Icon as={Ionicons} name='arrow-back' color='white' />}
                 onPress={() => navigation.goBack()}
               />
               <Text color='white' bold fontSize='md'>
-                {kitchen?.name || "Kitchen"}
+                {kitchen?.name || 'Kitchen'}
               </Text>
             </HStack>
             <HStack space={4} alignItems='center'>
               <Icon as={Ionicons} name='search' size={6} color='white' />
-              <Icon as={Ionicons} name='heart-outline' size={6} color='white' />
+              {/* <Icon as={Ionicons} name='heart-outline' size={6} color='white' /> */}
             </HStack>
           </HStack>
 
           {/* Restaurant Info */}
           <Box px={4} py={3}>
             <Text bold fontSize='lg'>
-              {kitchen?.name || "Taste of India Tiffin Services"}
+              {kitchen?.name || 'Taste of India Tiffin Services'}
             </Text>
             <Text color='muted.500' fontSize='sm'>
-              {kitchen?.location || "Gotala Nagar"}
+              {kitchen?.location || 'Gotala Nagar'}
             </Text>
             <HStack space={4} mt={2} alignItems='center'>
               <HStack space={1} alignItems='center'>
                 <Icon as={Ionicons} name='star' color='green.500' size={4} />
-                <Text fontSize='sm'>{kitchen?.rating || "4.00"}</Text>
+                <Text fontSize='sm'>{kitchen?.rating || '4.00'}</Text>
               </HStack>
-              <Text fontSize='sm'>{kitchen?.time || "30 min"}</Text>
-              <Text fontSize='sm'>{kitchen?.distance || "14.39 kms"}</Text>
+              <Text fontSize='sm'>{kitchen?.time || '30 min'}</Text>
+              <Text fontSize='sm'>{kitchen?.distance || '14.39 kms'}</Text>
             </HStack>
             <Text mt={1} color='muted.500' fontSize='xs'>
-              {kitchen?.desc || "American, Fast Food Inner Circle, Connaught Place | Change Outlet"}
+              {kitchen?.desc || 'American, Fast Food Inner Circle, Connaught Place | Change Outlet'}
             </Text>
           </Box>
 
@@ -95,7 +100,7 @@ export default function KitchenScreen({ route, navigation }) {
             {[1].map((i) => (
               <Image
                 key={i}
-                source={require("../assets/food.jpeg")}
+                source={require('../assets/food.jpeg')}
                 // source={{ uri: 'https://via.placeholder.com/100' }}
                 alt='Food'
                 size='lg'
@@ -107,15 +112,15 @@ export default function KitchenScreen({ route, navigation }) {
 
           {/* Offer Box */}
           <Box
-            bg='orange.50'
+            backgroundColor={'#b95a0161'}
             borderWidth={1}
-            borderColor='orange.200'
+            borderColor='#b95a01ff'
             p={4}
             mx={4}
             rounded='lg'
             my={3}>
             <HStack alignItems='center' space={3}>
-              <Icon as={Ionicons} name='pricetag-outline' color='orange.500' size={6} />
+              <Icon as={Ionicons} name='pricetag-outline' color='#b95a01ff' size={6} />
               <VStack>
                 <Text bold color='orange.700'>
                   30% off upto $75
@@ -133,9 +138,9 @@ export default function KitchenScreen({ route, navigation }) {
               <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 <Text
                   bold={activeTab === tab}
-                  color={activeTab === tab ? "orange.600" : "muted.500"}
+                  color={activeTab === tab ? '#b95a01ff' : 'muted.500'}
                   borderBottomWidth={activeTab === tab ? 2 : 0}
-                  borderColor='orange.600'
+                  borderColor='#b95a01ff'
                   pb={1}>
                   {tab}
                 </Text>
@@ -187,7 +192,7 @@ export default function KitchenScreen({ route, navigation }) {
                         onPress={() => addToCart(item)}
                         px={3}
                         py={1}
-                        bg='orange.500'
+                        bg='#b95a01ff'
                         rounded='md'>
                         <Text color='white' fontSize='xs'>
                           Add

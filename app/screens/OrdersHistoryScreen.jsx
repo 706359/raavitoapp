@@ -74,9 +74,20 @@
 // }
 
 // screens/OrdersHistoryScreen.js
-import CustomButton from '@/components/CustomButton';
 import { allItems, kitchens } from '@/data/menu';
-import { Box, HStack, Image, Pressable, ScrollView, Text, VStack } from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
+import {
+  Box,
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  VStack,
+} from 'native-base';
 import { useState } from 'react';
 import theme from '../../theme';
 
@@ -114,7 +125,7 @@ const DUMMY_ORDERS = [
 
 const STATUS_TABS = ['New', 'Ongoing', 'Complete', 'All'];
 
-export default function OrdersHistoryScreen() {
+export default function OrdersHistoryScreen({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('New');
 
   const filteredOrders =
@@ -127,7 +138,13 @@ export default function OrdersHistoryScreen() {
     <Box flex={1} safeArea bg='gray.50'>
       {/* Header */}
       <Box px={4} py={3} borderBottomWidth={1} borderColor='coolGray.200' bg='white'>
-        <Text style={styles.headerText}>Orders</Text>
+        <HStack alignItems='center' space={2}>
+          <IconButton
+            icon={<Icon as={Ionicons} name='arrow-back' color='black' />}
+            onPress={() => navigation.goBack()}
+          />
+          <Text style={styles.headerText}>Orders</Text>
+        </HStack>
       </Box>
 
       {/* Tabs */}
@@ -180,8 +197,10 @@ export default function OrdersHistoryScreen() {
                       <Text style={styles.priceText}>₹{item.price}</Text>
                       <Text style={styles.orderIdText}>ID#{order.id}</Text>
                       <HStack space={3} mt={2} justifyContent='flex-end'>
-                        <CustomButton title='Cancel' bg={theme.colors.brand.orange} flex={1} />
-                        <CustomButton title='Pending' color='green' flex={1} />
+                        {/* <CustomButton title='Cancel' bg={theme.colors.brand.orange} flex={1} />
+                        <CustomButton title='Pending' color='green' flex={1} /> */}
+                        <Button>Cancel</Button>
+                        <Button backgroundColor={'#068125ff'}>Pending</Button>
                       </HStack>
                     </VStack>
                   </HStack>

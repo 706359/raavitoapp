@@ -226,11 +226,11 @@
 //   );
 // }
 
-import CustomButton from '@/components/CustomButton';
 import { allItems } from '@/data/menu';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import {
   Box,
+  Button,
   HStack,
   Icon,
   IconButton,
@@ -245,7 +245,7 @@ import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import theme from '../../theme';
 
-export default function CartScreen() {
+export default function CartScreen({ navigation }) {
   const [cart, setCart] = useState(
     allItems.slice(0, 3).map((item) => ({ ...item, qty: 1, note: '' })),
   );
@@ -305,10 +305,26 @@ export default function CartScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <Box flex={1} bg='gray.50'>
         {/* Top Heading */}
-        <Box px={4} py={3} bg='white' borderBottomWidth={1} borderColor='muted.200'>
+        {/* <Box px={4} py={3} bg='white' borderBottomWidth={1} borderColor='muted.200'>
+          <IconButton
+            icon={<Icon as={Ionicons} name='arrow-back' color='black' />}
+            onPress={() => navigation.goBack()}
+          />
           <Text fontSize='xl' bold color='black'>
             My Cart
           </Text>
+        </Box> */}
+
+        <Box px={4} py={3} bg='white' borderBottomWidth={1} borderColor='muted.200'>
+          <HStack alignItems='center' space={3}>
+            <IconButton
+              icon={<Icon as={Ionicons} name='arrow-back' color='black' />}
+              onPress={() => navigation.goBack()}
+            />
+            <Text fontSize='xl' bold color='black'>
+              My Cart
+            </Text>
+          </HStack>
         </Box>
 
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 140 }}>
@@ -333,7 +349,7 @@ export default function CartScreen() {
                         size='sm'
                         variant='ghost'
                         onPress={() => decreaseQty(item.id)}
-                        _icon={{ color: 'orange.500' }}
+                        _icon={{ color: '#b95a01ff' }}
                       />
                       <Box px={3} py={1} borderRadius='full' bg='muted.100' alignItems='center'>
                         <Text bold>{item.qty}</Text>
@@ -344,7 +360,7 @@ export default function CartScreen() {
                         size='sm'
                         variant='ghost'
                         onPress={() => increaseQty(item.id)}
-                        _icon={{ color: 'orange.500' }}
+                        _icon={{ color: '#b95a01ff' }}
                       />
                       <Spacer />
                       <IconButton
@@ -395,7 +411,7 @@ export default function CartScreen() {
                     as={MaterialIcons}
                     name='account-balance-wallet'
                     size='sm'
-                    color='orange.600'
+                    color='#b95a01ff'
                   />
                   <Text bold fontSize='md'>
                     Wallet
@@ -462,13 +478,12 @@ export default function CartScreen() {
           p={4}
           borderTopWidth={1}
           borderColor='muted.200'>
-          <CustomButton
-            title='PROCEED TO PAY'
+          <Button
             onPress={() => {
-              console.log('Payment initiated!', cart);
-            }}
-            pressedColor={'green'}
-          />
+              console.log('Payment initiated', cart);
+            }}>
+            PROCEED TO PAY
+          </Button>
         </Box>
       </Box>
     </SafeAreaView>
