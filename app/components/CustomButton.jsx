@@ -65,15 +65,15 @@
 //   },
 // });
 
-import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import theme from '../../theme';
+import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from "react-native";
+import theme from "../../theme";
 
 export default function CustomButton({
   title,
   onPress,
-  variant = 'solid', // solid | outline | ghost
-  color = 'orange', // orange | green | dark | light
+  variant = "solid", // solid | outline | ghost
+  color = "orange", // orange | green | dark | light
   pressedColor, // ✅ new prop to set color when pressed
   isDisabled = false,
   loading = false,
@@ -93,27 +93,27 @@ export default function CustomButton({
       disabled={isDisabled || loading}
       style={[
         styles.base,
-        variant === 'solid' && {
+        variant === "solid" && {
           backgroundColor: isPressed ? pressedColor || brandColor : brandColor,
         },
-        variant === 'outline' && {
+        variant === "outline" && {
           borderColor: brandColor,
           borderWidth: 2,
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
         },
-        variant === 'ghost' && { backgroundColor: 'transparent' },
-        (isDisabled || loading) && { backgroundColor: '#ccc', borderColor: '#ccc' },
+        variant === "ghost" && { backgroundColor: "transparent" },
+        (isDisabled || loading) && { backgroundColor: "#ccc", borderColor: "#ccc" },
         style,
       ]}
       {...props}>
       {loading ? (
-        <ActivityIndicator color={variant === 'solid' ? '#fff' : brandColor} />
+        <ActivityIndicator color={variant === "solid" ? "#fff" : brandColor} />
       ) : (
         <Text
           style={[
             styles.text,
-            variant === 'solid' && { color: '#fff' },
-            variant !== 'solid' && { color: brandColor },
+            variant === "solid" && { color: "#fff" },
+            variant !== "solid" && { color: brandColor },
             textStyle,
           ]}>
           {title}
@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

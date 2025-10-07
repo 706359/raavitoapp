@@ -226,12 +226,10 @@
 //   );
 // }
 
-<<<<<<< HEAD
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-=======
-import { allItems } from '@/data/menu';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
->>>>>>> c59b4c954890c1acb9426060704803f7d6e82dbd
+
+import { allItems } from "@/data/menu";
+
 import {
   Box,
   Button,
@@ -244,10 +242,10 @@ import {
   Spacer,
   Text,
   VStack,
-} from 'native-base';
-import { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import theme from '../../theme';
+} from "native-base";
+import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import theme from "../../theme";
 
 export default function CartScreen({ navigation }) {
   const [cart, setCart] = useState(
@@ -342,7 +340,7 @@ export default function CartScreen({ navigation }) {
                         size='sm'
                         variant='ghost'
                         onPress={() => decreaseQty(item.id)}
-                        _icon={{ color: '#b95a01ff' }}
+                        _icon={{ color: "#b95a01ff" }}
                       />
                       <Box px={3} py={1} borderRadius='full' bg='muted.100' alignItems='center'>
                         <Text bold>{item.qty}</Text>
@@ -353,7 +351,7 @@ export default function CartScreen({ navigation }) {
                         size='sm'
                         variant='ghost'
                         onPress={() => increaseQty(item.id)}
-                        _icon={{ color: '#b95a01ff' }}
+                        _icon={{ color: "#b95a01ff" }}
                       />
                       <Spacer />
                       <IconButton
@@ -472,7 +470,7 @@ export default function CartScreen({ navigation }) {
           borderColor='muted.200'>
           <Button
             onPress={() => {
-              console.log('Payment initiated', cart);
+              console.log("Payment initiated", cart);
             }}>
             PROCEED TO PAY
           </Button>
