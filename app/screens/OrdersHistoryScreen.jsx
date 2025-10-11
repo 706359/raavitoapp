@@ -1,5 +1,5 @@
-import { allItems, kitchens } from "@/data/menu";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
 } from "native-base";
 import { useState } from "react";
 import theme from "../../theme";
+import { allItems, kitchens } from "../data/menu";
 
 // Dummy orders
 const DUMMY_ORDERS = [
@@ -129,10 +130,30 @@ export default function OrdersHistoryScreen({ navigation }) {
                       <Text style={styles.priceText}>₹{item.price}</Text>
                       <Text style={styles.orderIdText}>ID#{order.id}</Text>
                       <HStack space={3} mt={2} justifyContent='flex-end'>
-                        <Button variant='outline' colorScheme='orange'>
+                        <Button
+                          variant='outline'
+                          borderColor='brand.light'
+                          _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
+                          _linearGradient={{
+                            as: LinearGradient,
+                            colors: [theme.colors.brand.orange, theme.colors.brand.green],
+                            start: [0, 0],
+                            end: [1, 1],
+                          }}>
                           Cancel
                         </Button>
-                        <Button backgroundColor={"#068125ff"}>Pending</Button>
+                        <Button
+                          variant='outline'
+                          borderColor='brand.light'
+                          _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
+                          _linearGradient={{
+                            as: LinearGradient,
+                            colors: [theme.colors.brand.orange, theme.colors.brand.green],
+                            start: [0, 0],
+                            end: [1, 1],
+                          }}>
+                          Pending
+                        </Button>
                       </HStack>
                     </VStack>
                   </HStack>

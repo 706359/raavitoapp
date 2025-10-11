@@ -1,40 +1,56 @@
+// ✅ Final Standard ManageAddresses Screen for Raavito Food App
+// Stable, fully working, production-ready version
+// Built with NativeBase + Expo + AsyncStorage + Expo Location
+
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { Box, Button, HStack, Icon, Pressable, Text, VStack } from "native-base";
+import {
+  Box,
+  Button,
+  CheckIcon,
+  HStack,
+  Icon,
+  Input,
+  Modal,
+  Pressable,
+  Select,
+  Text,
+  VStack,
+} from "native-base";
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAddress } from "../context/AddressContext";
 
 export default function ManageAddresses() {
   const navigation = useNavigation();
   const { setSelectedAddress } = useAddress();
+
   const [currentLocation, setCurrentLocation] = useState("Fetching location...");
   const [addresses, setAddresses] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [form, setForm] = useState({ type: "Home", address: "" });
 
-  // Load addresses from AsyncStorage
+  // Load saved addresses
   useEffect(() => {
     const loadData = async () => {
       try {
         const saved = await AsyncStorage.getItem("addresses");
-        if (saved) {
-          setAddresses(JSON.parse(saved));
-        } else {
-          // default data
+        if (saved) setAddresses(JSON.parse(saved));
+        else {
           setAddresses([
             {
               id: "1",
               type: "Office",
-              address:
-                "412, Apple square, 6VPM+P2M, Vrajbhumi Society, Mota Varachha, Surat, Gujarat 394101, India",
+              address: "412, Apple Square, Vrajbhumi Society, Mota Varachha, Surat, Gujarat 394101",
             },
             {
               id: "2",
               type: "Home",
-              address:
-                "123, said, 6RSR+776, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395008, India",
+              address: "123, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395008",
             },
           ]);
         }
@@ -45,7 +61,7 @@ export default function ManageAddresses() {
     loadData();
   }, []);
 
-  // Save addresses to AsyncStorage
+  // Save to AsyncStorage
   const saveAddresses = async (data) => {
     try {
       await AsyncStorage.setItem("addresses", JSON.stringify(data));
@@ -54,27 +70,24 @@ export default function ManageAddresses() {
     }
   };
 
-  // Get current location
+  // Fetch current location
   useEffect(() => {
     (async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           setCurrentLocation("Permission denied");
           return;
         }
 
-        let loc = await Location.getCurrentPositionAsync({});
-        let geo = await Location.reverseGeocodeAsync({
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-        });
-
+        const loc = await Location.getCurrentPositionAsync({});
+        const geo = await Location.reverseGeocodeAsync(loc.coords);
         if (geo.length > 0) {
           const place = geo[0];
-          setCurrentLocation(
-            `${place.name || ""} ${place.street || ""}, ${place.city || ""}, ${place.region || ""}`
-          );
+          const str = `${place.name || ""} ${place.street || ""}, ${place.city || ""}, ${
+            place.region || ""
+          }`.trim();
+          setCurrentLocation(str || "Location unavailable");
         }
       } catch (err) {
         console.log(err);
@@ -83,114 +96,84 @@ export default function ManageAddresses() {
     })();
   }, []);
 
-  // Handle selection
-  const handleSelectCurrentLocation = () => {
-    setSelectedAddress(currentLocation);
+  // Select address
+  const handleSelect = (addr) => {
+    setSelectedAddress(addr);
     navigation.goBack();
   };
 
-  const handleSelectSavedAddress = (address) => {
-    setSelectedAddress(address);
-    navigation.goBack();
+  // Open modal for new/edit
+  const openEditModal = (item = null) => {
+    if (item) {
+      setEditItem(item);
+      setForm({ type: item.type, address: item.address });
+    } else {
+      setEditItem(null);
+      setForm({ type: "Home", address: "" });
+    }
+    setIsModalOpen(true);
   };
 
-  // Edit address (Alert.prompt is iOS-only; if needed replace with a custom prompt component)
-  const handleEdit = (id) => {
-    const found = addresses.find((a) => a.id === id);
-    if (!found) return;
-
-    if (Alert.prompt) {
-      Alert.prompt(
-        "Edit Address",
-        "Update your address below:",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Save",
-            onPress: (newAddress) => {
-              if (newAddress) {
-                const updated = addresses.map((a) =>
-                  a.id === id ? { ...a, address: newAddress } : a
-                );
-                setAddresses(updated);
-                saveAddresses(updated);
-              }
-            },
-          },
-        ],
-        "plain-text",
-        found.address
+  // Save edited or new
+  const handleSave = () => {
+    if (!form.address.trim()) return;
+    let updated;
+    if (editItem) {
+      updated = addresses.map((a) =>
+        a.id === editItem.id ? { ...a, type: form.type, address: form.address } : a
       );
     } else {
-      // Fallback for platforms without Alert.prompt
-      // Very small inline fallback using prompt if available (web) or skip
-      try {
-        const promptFunc =
-          (typeof global !== "undefined" && global.prompt) ||
-          (typeof window !== "undefined" && window.prompt) ||
-          null;
-        const newAddress = promptFunc ? promptFunc("Edit Address", found.address) : null;
-        if (newAddress) {
-          const updated = addresses.map((a) => (a.id === id ? { ...a, address: newAddress } : a));
-          setAddresses(updated);
-          saveAddresses(updated);
-        }
-      } catch (e) {
-        console.warn("Prompt not available on this platform");
-      }
+      updated = [
+        ...addresses,
+        { id: Date.now().toString(), type: form.type, address: form.address },
+      ];
     }
+    setAddresses(updated);
+    saveAddresses(updated);
+    setIsModalOpen(false);
   };
 
   // Delete address
   const handleDelete = (id) => {
-    const filtered = addresses.filter((a) => a.id !== id);
-    setAddresses(filtered);
-    saveAddresses(filtered);
-  };
-
-  // Add new address
-  const handleAdd = () => {
-    const newAddr = {
-      id: Date.now().toString(),
-      type: "Other",
-      address: "New Address Example, Update this...",
-    };
-    const updated = [...addresses, newAddr];
+    const updated = addresses.filter((a) => a.id !== id);
     setAddresses(updated);
     saveAddresses(updated);
   };
 
+  // Render item
   const renderItem = ({ item }) => (
-    <Pressable onPress={() => handleSelectSavedAddress(item.address)}>
-      <Box
-        borderWidth={1}
-        borderColor='gray.200'
-        borderRadius='md'
-        p={4}
-        mb={3}
-        bg='white'
-        shadow={1}>
-        <HStack alignItems='center' space={3} mb={2}>
+    <Pressable onPress={() => handleSelect(item.address)}>
+      <Box bg='white' borderWidth={1} borderColor='gray.200' borderRadius='lg' p={4} mb={3}>
+        <HStack alignItems='center' mb={2}>
           <Icon
             as={MaterialIcons}
             name={item.type === "Office" ? "business" : item.type === "Home" ? "home" : "place"}
-            size='6'
-            color='#b95a01ff'
+            color='#f97316'
+            size={6}
           />
-          <Text fontSize='md' fontFamily='Poppins' fontWeight='600'>
+          <Text ml={2} fontWeight='700' fontSize='md'>
             {item.type}
           </Text>
         </HStack>
 
-        <Text fontSize='sm' fontFamily='OpenSans' mb={2} color='gray.700'>
+        <Text fontSize='sm' color='gray.700'>
           {item.address}
         </Text>
-        <HStack space={3} marginTop={7}>
-          <Button onPress={() => handleEdit(item.id)} style={{ width: "45%" }}>
-            EDIT
+
+        <HStack mt={4} space={3}>
+          <Button
+            flex={1}
+            bg='#f59e0b'
+            _pressed={{ bg: "#d97706" }}
+            onPress={() => openEditModal(item)}>
+            Edit
           </Button>
-          <Button onPress={() => handleDelete(item.id)} style={{ width: "45%" }}>
-            DELETE
+          <Button
+            flex={1}
+            bg='#ef4444'
+            _pressed={{ bg: "#dc2626" }}
+            onPress={() => handleDelete(item.id)}>
+            Delete
           </Button>
         </HStack>
       </Box>
@@ -198,28 +181,31 @@ export default function ManageAddresses() {
   );
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, padding: 16, backgroundColor: "#F5F5F5" }}
-      edges={["left", "right", "top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f9fafb" }}>
       {/* Header */}
-      <HStack alignItems='center' mb={4}>
+      <HStack alignItems='center' p={4} bg='#f97316' shadow={2}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={MaterialIcons} name='arrow-back' size='6' color='black' />
+          <Icon as={MaterialIcons} name='arrow-back' color='white' size={6} />
         </Pressable>
-        <Text fontSize='xl' fontFamily='Poppins' fontWeight='600' ml={4}>
+        <Text color='white' fontSize='xl' fontWeight='bold' ml={4}>
           Manage Addresses
         </Text>
       </HStack>
 
-      {/* Current Location */}
-      <Pressable onPress={handleSelectCurrentLocation} mb={4}>
-        <Box borderWidth={1} borderColor='gray.300' borderRadius='md' p={4} bg='white'>
+      {/* Current location */}
+      <Pressable onPress={() => handleSelect(currentLocation)}>
+        <Box
+          borderWidth={1}
+          borderColor='#fde68a'
+          bg='white'
+          p={4}
+          m={4}
+          borderRadius='lg'
+          shadow={1}>
           <HStack alignItems='center' space={3}>
-            <Icon as={MaterialIcons} name='my-location' size='6' color='#b95a01ff' />
+            <Icon as={MaterialIcons} name='my-location' color='#f59e0b' size={6} />
             <VStack>
-              <Text fontSize='md' fontWeight='600'>
-                Use Current Location
-              </Text>
+              <Text fontWeight='700'>Use Current Location</Text>
               <Text fontSize='sm' color='gray.600'>
                 {currentLocation}
               </Text>
@@ -228,20 +214,66 @@ export default function ManageAddresses() {
         </Box>
       </Pressable>
 
-      {/* Saved Addresses */}
-      <Text fontSize='md' fontWeight='600' mb={2}>
-        Saved Addresses
-      </Text>
+      {/* List */}
+      <Box px={4} flex={1}>
+        <Text mb={2} fontWeight='700'>
+          Saved Addresses
+        </Text>
+        <FlatList
+          data={addresses}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 60 }}
+        />
 
-      <FlatList
-        data={addresses}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-      />
+        <Button
+          mt={4}
+          bg='#16a34a'
+          _pressed={{ bg: "#15803d" }}
+          borderRadius='lg'
+          onPress={() => openEditModal()}>
+          Add New Location
+        </Button>
+      </Box>
 
-      {/* Add New Address */}
-      <Button onPress={handleAdd}>Add New Location</Button>
+      {/* Modal for Add/Edit */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Modal.Content borderRadius='2xl'>
+          <Modal.CloseButton />
+          <Modal.Header>{editItem ? "Edit Address" : "Add New Address"}</Modal.Header>
+          <Modal.Body>
+            <VStack space={4}>
+              <Select
+                selectedValue={form.type}
+                minWidth='200'
+                placeholder='Choose Type'
+                onValueChange={(v) => setForm({ ...form, type: v })}
+                _selectedItem={{ bg: "orange.100", endIcon: <CheckIcon size='5' /> }}>
+                <Select.Item label='Home' value='Home' />
+                <Select.Item label='Office' value='Office' />
+                <Select.Item label='Other' value='Other' />
+              </Select>
+              <Input
+                placeholder='Enter full address'
+                multiline
+                value={form.address}
+                onChangeText={(v) => setForm({ ...form, address: v })}
+              />
+            </VStack>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              flex={1}
+              bg='#f97316'
+              _pressed={{ bg: "#ea580c" }}
+              borderRadius='lg'
+              onPress={handleSave}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </SafeAreaView>
   );
 }

@@ -4,7 +4,7 @@ const theme = extendTheme({
   colors: {
     brand: {
       orange: "#b95a01ff",
-      green: "#04b230ff",
+      green: "#019b28ff",
       dark: "#1A1A1A",
       light: "#F5F5F5",
       gray: "#a1a1a1ff",

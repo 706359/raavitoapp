@@ -6,43 +6,43 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const FAQ_DATA = [
   {
     id: "1",
-    question: "What is your return policy?",
-    answer: "You can return any item within 30 days of purchase.",
+    question: "What are your delivery hours?",
+    answer: "We deliver daily from 8 AM to 9 PM, including weekends.",
   },
   {
     id: "2",
-    question: "How long does shipping take?",
-    answer: "Shipping usually takes 3-5 business days.",
+    question: "Can I customize my meal?",
+    answer: "Yes, you can add preferences or remove ingredients during checkout.",
   },
   {
     id: "3",
-    question: "Do you ship internationally?",
-    answer: "Yes, we ship to most countries worldwide.",
+    question: "Do you offer vegetarian or vegan options?",
+    answer: "Absolutely! We have a wide range of plant-based meals.",
   },
   {
     id: "4",
-    question: "How can I track my order?",
-    answer: "You will receive a tracking number once your order is shipped.",
+    question: "How do I report a missing item?",
+    answer: "Use the 'Help' section in the app to report issues within 24 hours.",
   },
   {
     id: "5",
-    question: "Can I cancel my order?",
-    answer: "Orders can be cancelled within 24 hours of placing them.",
+    question: "Is contactless delivery available?",
+    answer: "Yes, just select 'Leave at door' during checkout.",
   },
   {
     id: "6",
-    question: "How do I change my address?",
-    answer: "You can update your address in the account settings.",
+    question: "Are your meals hygienically prepared?",
+    answer: "All meals are prepared in FSSAI-certified kitchens with strict hygiene protocols.",
   },
   {
     id: "7",
-    question: "Do you offer discounts?",
-    answer: "Yes, subscribe to our newsletter for exclusive discounts.",
+    question: "Can I schedule orders in advance?",
+    answer: "Yes, you can pre-book meals up to 3 days ahead.",
   },
   {
     id: "8",
-    question: "Is my payment secure?",
-    answer: "We use secure payment gateways to protect your information.",
+    question: "What payment methods do you accept?",
+    answer: "We accept UPI, credit/debit cards, and cash on delivery.",
   },
 ];
 

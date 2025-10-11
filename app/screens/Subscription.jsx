@@ -1,225 +1,84 @@
-// import CustomButton from '@/components/CustomButton'; // your button component
-// import { Ionicons } from '@expo/vector-icons';
-// import { useState } from 'react';
-// import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// import theme from '../../theme';
-
-// export default function Subscription({ navigation }) {
-//   const [selectedPlan, setSelectedPlan] = useState(null);
-
-//   // Dummy data
-//   const data = [
-//     {
-//       id: '1',
-//       icon: 'card-outline',
-//       title: 'Basic Plan',
-//       description: 'Access to 1 kitchen per day',
-//       price: '₹199',
-//     },
-//     {
-//       id: '2',
-//       icon: 'restaurant-outline',
-//       title: 'Standard Plan',
-//       description: 'Access to 3 kitchens per day',
-//       price: '₹399',
-//     },
-//     {
-//       id: '3',
-//       icon: 'rocket-outline',
-//       title: 'Premium Plan',
-//       description: 'Unlimited kitchen access',
-//       price: '₹699',
-//     },
-//     {
-//       id: '4',
-//       icon: 'star-outline',
-//       title: 'VIP Plan',
-//       description: 'All perks + special discounts',
-//       price: '₹999',
-//     },
-//   ];
-
-//   const renderItem = ({ item }) => {
-//     const isSelected = selectedPlan?.id === item.id;
-
-//     return (
-//       <TouchableOpacity
-//         style={[
-//           styles.card,
-//           {
-//             borderColor: isSelected ? theme.colors.brand.green : '#fff',
-//             borderWidth: isSelected ? 2 : 0,
-//           },
-//         ]}
-//         onPress={() => setSelectedPlan(item)}>
-//         <View style={styles.cardContent}>
-//           <Ionicons
-//             name={item.icon}
-//             size={30}
-//             color={theme.colors.brand.green}
-//             style={styles.icon}
-//           />
-//           <View style={styles.textContainer}>
-//             <Text style={[styles.title, { color: theme.colors.brand.dark }]}>{item.title}</Text>
-//             <Text style={styles.description}>{item.description}</Text>
-//             <Text style={[styles.price, { color: theme.colors.brand.green }]}>{item.price}</Text>
-//           </View>
-//         </View>
-//       </TouchableOpacity>
-//     );
-//   };
-
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       {/* Header */}
-//       <View style={styles.header}>
-//         <Ionicons
-//           name='arrow-back'
-//           size={24}
-//           color='black'
-//           onPress={() => navigation.goBack()}
-//           style={{ marginRight: 10 }}
-//         />
-//         <Text style={styles.headerTitle}>Subscription</Text>
-//       </View>
-
-//       {/* Plans List */}
-//       <FlatList
-//         data={data}
-//         keyExtractor={(item) => item.id}
-//         contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 15 }}
-//         renderItem={renderItem}
-//       />
-
-//       {/* Bottom Selected Plan */}
-//       {selectedPlan && (
-//         <View style={styles.bottomContainer}>
-//           <View style={styles.planInfo}>
-//             <Text style={styles.selectedTitle}>{selectedPlan.title}</Text>
-//             <Text style={styles.selectedPrice}>{selectedPlan.price}</Text>
-//           </View>
-//           <CustomButton title='Subscribe Now' onPress={() => console.log('Subscribe clicked')} />
-//         </View>
-//       )}
-//     </SafeAreaView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f5f5f5',
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     paddingVertical: 10,
-//     paddingHorizontal: 15,
-//   },
-//   headerTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//   },
-//   card: {
-//     backgroundColor: '#fff',
-//     justifyContent: 'center',
-//     height: 140,
-//     padding: 15,
-//     marginBottom: 15,
-//     borderRadius: 12,
-//     shadowColor: '#000',
-//     shadowOpacity: 0.1,
-//     shadowRadius: 6,
-//     shadowOffset: { width: 0, height: 2 },
-//     elevation: 3,
-//   },
-//   cardContent: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   icon: {
-//     marginRight: 15,
-//   },
-//   textContainer: {
-//     flex: 1,
-//   },
-//   title: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     marginBottom: 4,
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: '#555',
-//     marginBottom: 6,
-//   },
-//   price: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-//   bottomContainer: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     padding: 15,
-//     borderTopWidth: 1,
-//     borderColor: '#ddd',
-//     backgroundColor: '#fff',
-//   },
-//   planInfo: {
-//     flexDirection: 'column',
-//   },
-//   selectedTitle: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: theme.colors.brand.dark,
-//   },
-//   selectedPrice: {
-//     fontSize: 16,
-//     color: theme.colors.brand.green,
-//     marginTop: 4,
-//   },
-// });
-
-import CustomButton from '@/components/CustomButton';
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import theme from '../../theme';
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRef, useState } from "react";
+import { Animated, Easing, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import theme from "../../theme";
 
 export default function Subscription({ navigation }) {
   const insets = useSafeAreaInsets();
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const data = [
+  const handleSelect = (plan) => {
+    setSelectedPlan(plan);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const plans = [
     {
-      id: '1',
-      icon: 'card-outline',
-      title: 'Basic Plan',
-      description: 'Access to 1 kitchen per day',
-      price: '₹199',
+      id: "1",
+      icon: "fast-food-outline",
+      title: "Trial Plan",
+      description: "1 meal per day • 5 days",
+      price: "₹499",
+      period: "/5 days",
+      features: ["Home-style meal", "Choice of Veg menu", "Delivered at lunchtime"],
+      gradient: ["#00c6ff", "#0072ff"],
     },
     {
-      id: '2',
-      icon: 'restaurant-outline',
-      title: 'Standard Plan',
-      description: 'Access to 3 kitchens per day',
-      price: '₹399',
+      id: "2",
+      icon: "restaurant-outline",
+      title: "Weekly Saver",
+      description: "2 meals per day • 6 days/week",
+      price: "₹1,799",
+      period: "/week",
+      features: [
+        "Lunch & Dinner included",
+        "Chef-curated balanced menu",
+        "Free delivery in city limits",
+        "Hygienic reusable packaging",
+      ],
+      gradient: ["#ff9966", "#ff5e62"],
+      savings: "Save ₹200",
     },
     {
-      id: '3',
-      icon: 'rocket-outline',
-      title: 'Premium Plan',
-      description: 'Unlimited kitchen access',
-      price: '₹699',
+      id: "3",
+      icon: "nutrition-outline",
+      title: "Monthly Standard",
+      description: "2 meals per day • 26 days",
+      price: "₹6,999",
+      period: "/month",
+      features: [
+        "Lunch & Dinner",
+        "Daily changing menu",
+        "Free weekend special",
+        "Priority delivery slot",
+      ],
+      gradient: ["#4776E6", "#8E54E9"],
+      savings: "Save ₹500",
     },
     {
-      id: '4',
-      icon: 'star-outline',
-      title: 'VIP Plan',
-      description: 'All perks + special discounts',
-      price: '₹999',
+      id: "4",
+      icon: "star-outline",
+      title: "Premium Unlimited",
+      description: "All meals • All days",
+      price: "₹10,499",
+      period: "/month",
+      features: [
+        "Breakfast, Lunch, Dinner",
+        "Personalized menu",
+        "Chef’s special every Sunday",
+        "Dessert included",
+        "Priority customer support",
+      ],
+      gradient: ["#12c2e9", "#c471ed", "#f64f59"],
+      savings: "Save ₹1200",
     },
   ];
 
@@ -227,110 +86,202 @@ export default function Subscription({ navigation }) {
     const isSelected = selectedPlan?.id === item.id;
     return (
       <TouchableOpacity
-        style={[
-          styles.card,
-          {
-            borderColor: isSelected ? theme.colors.brand.orange : '#fff',
-            borderWidth: isSelected ? 1 : 0,
-          },
-        ]}
-        onPress={() => setSelectedPlan(item)}>
-        <View style={styles.cardContent}>
-          <Ionicons
-            name={item.icon}
-            size={30}
-            color={theme.colors.brand.orange}
-            style={styles.icon}
-          />
-          <View style={styles.textContainer}>
-            <Text style={[styles.title, { color: theme.colors.brand.dark }]}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-            <Text style={[styles.price, { color: theme.colors.brand.orange }]}>{item.price}</Text>
+        key={item.id}
+        style={[styles.card, isSelected && styles.cardSelected]}
+        activeOpacity={0.9}
+        onPress={() => handleSelect(item)}>
+        <LinearGradient
+          colors={isSelected ? item.gradient : ["#ffffff", "#f8fafc"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.cardGradient}>
+          {item.savings && (
+            <View style={styles.savingsTag}>
+              <Text style={styles.savingsText}>{item.savings}</Text>
+            </View>
+          )}
+          <View style={styles.cardContent}>
+            <View style={[styles.iconContainer, { backgroundColor: item.gradient[0] + "22" }]}>
+              <Ionicons name={item.icon} size={32} color={isSelected ? "#fff" : item.gradient[0]} />
+            </View>
+            <View style={styles.planDetails}>
+              <Text style={[styles.title, isSelected && styles.titleSelected]}>{item.title}</Text>
+              <Text style={[styles.description, isSelected && styles.descriptionSelected]}>
+                {item.description}
+              </Text>
+              <View style={styles.priceContainer}>
+                <Text style={[styles.price, isSelected && styles.priceSelected]}>{item.price}</Text>
+                <Text style={[styles.period, isSelected && styles.periodSelected]}>
+                  {item.period}
+                </Text>
+              </View>
+              <View style={styles.featuresContainer}>
+                {item.features.map((f, i) => (
+                  <View key={i} style={styles.featureRow}>
+                    <Ionicons
+                      name='checkmark-circle'
+                      size={16}
+                      color={isSelected ? "#fff" : theme.colors.brand.orange}
+                    />
+                    <Text style={[styles.featureText, isSelected && styles.featureTextSelected]}>
+                      {f}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
           </View>
-        </View>
+        </LinearGradient>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Ionicons
-          name='arrow-back'
-          size={24}
-          color='black'
-          onPress={() => navigation.goBack()}
-          style={{ marginRight: 10 }}
-        />
-        <Text style={styles.headerTitle}>Subscription</Text>
-      </View>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <LinearGradient
+        colors={["#f97316", "#ef4444"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name='arrow-back' size={24} color='white' />
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>Raavito Subscriptions</Text>
+          <Text style={styles.headerSubtitle}>
+            Healthy, home-style tiffin plans delivered fresh
+          </Text>
+        </View>
+      </LinearGradient>
 
-      {/* Plans List */}
       <FlatList
-        data={data}
+        data={plans}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 15 }}
         renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
 
-      {/* Bottom Selected Plan */}
       {selectedPlan && (
-        // <View style={styles.bottomContainer}>
-        <View
-          style={[
-            styles.bottomContainer,
-            { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: insets.bottom },
-          ]}>
-          <View style={styles.planInfo}>
-            <Text style={styles.selectedTitle}>{selectedPlan.title}</Text>
-            <Text style={styles.selectedPrice}>{selectedPlan.price}</Text>
-          </View>
-          <CustomButton title='Subscribe Now' onPress={() => console.log('Subscribe clicked')} />
-        </View>
+        <Animated.View style={[styles.bottomContainer, { opacity: fadeAnim }]}>
+          <LinearGradient
+            colors={["rgb(254, 224, 179)", "rgb(255, 212, 85)"]}
+            style={styles.bottomGradient}>
+            <View style={styles.bottomContent}>
+              <View style={styles.planInfo}>
+                <Text style={styles.selectedLabel}>Selected Plan</Text>
+                <Text style={styles.selectedTitle}>{selectedPlan.title}</Text>
+                <View style={styles.selectedPriceRow}>
+                  <Text style={styles.selectedPrice}>{selectedPlan.price}</Text>
+                  <Text style={styles.selectedPeriod}>{selectedPlan.period}</Text>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.subscribeButton}>
+                <LinearGradient
+                  colors={selectedPlan.gradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.subscribeGradient}>
+                  <Text style={styles.subscribeText}>Subscribe Now</Text>
+                  <Ionicons name='arrow-forward' size={18} color='white' />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.termsText}>No hidden charges • Cancel anytime • Easy upgrades</Text>
+          </LinearGradient>
+        </Animated.View>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 22,
+    borderBottomLeftRadius: 26,
+    borderBottomRightRadius: 26,
+    elevation: 10,
+    shadowColor: "#f97316",
   },
-  headerTitle: { fontSize: 20, fontWeight: 'bold' },
+  backButton: { padding: 8, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.15)" },
+  headerContent: { flex: 1, marginLeft: 12 },
+  headerTitle: { fontSize: 24, fontWeight: "bold", color: "white" },
+  headerSubtitle: { fontSize: 13, color: "rgba(255,255,255,0.9)", marginTop: 2 },
+  listContent: { paddingVertical: 20, paddingHorizontal: 16, paddingBottom: 140 },
   card: {
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    height: 140,
-    padding: 15,
-    marginBottom: 15,
+    borderRadius: 22,
+    overflow: "hidden",
+    marginBottom: 18,
+    elevation: 4,
+    backgroundColor: "white",
+  },
+  cardSelected: { transform: [{ scale: 1.02 }], elevation: 8 },
+  cardGradient: { padding: 20, minHeight: 180 },
+  savingsTag: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "#22c55e",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
   },
-  cardContent: { flexDirection: 'row', alignItems: 'center' },
-  icon: { marginRight: 15 },
-  textContainer: { flex: 1 },
-  title: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
-  description: { fontSize: 14, color: '#555', marginBottom: 6 },
-  price: { fontSize: 16, fontWeight: 'bold' },
-  bottomContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    borderTopWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#fff',
+  savingsText: { color: "white", fontSize: 11, fontWeight: "700" },
+  cardContent: { flexDirection: "row", alignItems: "center" },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
   },
-  planInfo: { flexDirection: 'column' },
-  selectedTitle: { fontSize: 18, fontWeight: 'bold', color: theme.colors.brand.dark },
-  selectedPrice: { fontSize: 16, color: theme.colors.brand.orange, marginTop: 4 },
+  planDetails: { flex: 1 },
+  title: { fontSize: 18, fontWeight: "bold", color: theme.colors.brand.dark, marginBottom: 4 },
+  titleSelected: { color: "#fff" },
+  description: { fontSize: 13, color: "#64748b" },
+  descriptionSelected: { color: "#f8fafc" },
+  priceContainer: { flexDirection: "row", alignItems: "baseline", marginTop: 8 },
+  price: { fontSize: 22, fontWeight: "bold", color: theme.colors.brand.orange },
+  priceSelected: { color: "white" },
+  period: { fontSize: 13, color: "#9ca3af", marginLeft: 4 },
+  periodSelected: { color: "rgba(255,255,255,0.8)" },
+  featuresContainer: { marginTop: 8 },
+  featureRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
+  featureText: { fontSize: 13, color: "#4b5563", flex: 1 },
+  featureTextSelected: { color: "#f9fafb" },
+  bottomContainer: { position: "absolute", bottom: 0, left: 0, right: 0, elevation: 10 },
+  bottomGradient: {
+    paddingHorizontal: 18,
+    paddingTop: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  bottomContent: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  planInfo: { flex: 1 },
+  selectedLabel: { fontSize: 11, color: "#1b1b1c", fontWeight: "600" },
+  selectedTitle: { fontSize: 18, fontWeight: "bold", color: theme.colors.brand.dark, marginTop: 2 },
+  selectedPriceRow: { flexDirection: "row", alignItems: "baseline", marginTop: 4 },
+  selectedPrice: { fontSize: 20, fontWeight: "bold", color: theme.colors.brand.orange },
+  selectedPeriod: { fontSize: 13, color: "#141414", marginLeft: 4 },
+  subscribeButton: { marginLeft: 12, borderRadius: 18, overflow: "hidden", elevation: 6 },
+  subscribeGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+    gap: 6,
+  },
+  subscribeText: { color: "white", fontSize: 15, fontWeight: "700" },
+  termsText: {
+    fontSize: 11,
+    color: "#151515",
+    textAlign: "center",
+    marginTop: 12,
+    marginBottom: 6,
+  },
 });

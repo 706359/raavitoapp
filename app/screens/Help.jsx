@@ -17,7 +17,8 @@ const HELP_DATA = [
   {
     id: "3",
     question: "Contact Us",
-    answer: "You can contact us via email at support@example.com or call us at 123-456-7890.",
+    answer:
+      "You can contact us via email at support@example.com or call/whatsapp us at +91-6395559255.",
   },
 ];
 
