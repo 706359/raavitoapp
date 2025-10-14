@@ -1,13 +1,16 @@
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Button } from 'native-base';
-import React from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAuth } from "@/context/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Button } from "native-base";
+import React from "react";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
+  const { user, logout } = useAuth();
+
   const {
-    name = 'Guest User',
-    email = 'guest@example.com',
+    name = user?.name || "Guest User",
+    mobile = user?.mobile || "xxxxxxxxxx",
     profileImage,
     orderHistory = [],
     favorites = [],
@@ -19,7 +22,7 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Gradient Header */}
       <LinearGradient
-        colors={['#FF6B35', '#F7931E']}
+        colors={["#FF6B35", "#F7931E"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.headerBackground}>
@@ -30,15 +33,15 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
 
         {/* Avatar */}
         <View style={styles.avatarWrapper}>
-          <LinearGradient colors={['#FF6B35', '#F7931E']} style={styles.avatarBorder}>
+          <LinearGradient colors={["#FF6B35", "#F7931E"]} style={styles.avatarBorder}>
             <Image
-              source={profileImage ? { uri: profileImage } : require('../assets/logo.png')}
+              source={profileImage ? { uri: profileImage } : require("../assets/logo.png")}
               style={styles.avatar}
             />
           </LinearGradient>
         </View>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.email}>{email}</Text>
+        <Text style={styles.email}>{mobile}</Text>
 
         <Pressable style={styles.editBtn} onPress={onEdit || (() => {})}>
           <Ionicons name='create-outline' size={16} color='#fff' />
@@ -73,10 +76,10 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
             favorites.map((item, idx) => (
               <View key={idx} style={styles.favoriteItem}>
                 <Image
-                  source={{ uri: item.img || 'https://via.placeholder.com/60' }}
+                  source={{ uri: item.img || "https://via.placeholder.com/60" }}
                   style={styles.foodImg}
                 />
-                <Text style={styles.foodName}>{item.name || 'Unknown'}</Text>
+                <Text style={styles.foodName}>{item.name || "Unknown"}</Text>
               </View>
             ))
           ) : (
@@ -92,11 +95,11 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
           orderHistory.map((order, idx) => (
             <View key={idx} style={styles.orderItem}>
               <Text style={styles.orderTitle}>
-                #{order.id || idx} {order.dish || 'Dish'}
+                #{order.id || idx} {order.dish || "Dish"}
               </Text>
               <Text style={styles.orderSub}>
-                {order.restaurant || 'Restaurant'} • {order.status || 'Status'} •{' '}
-                {order.date || 'Date'}
+                {order.restaurant || "Restaurant"} • {order.status || "Status"} •{" "}
+                {order.date || "Date"}
               </Text>
             </View>
           ))
@@ -111,33 +114,22 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
         <Pressable style={styles.settingsBtn}>
           <Ionicons name='card-outline' size={18} color='#0b8457' />
           <Text style={styles.settingsText}>Payment Methods</Text>
-          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: 'auto' }} />
+          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: "auto" }} />
         </Pressable>
         <Pressable style={styles.settingsBtn}>
           <Ionicons name='home-outline' size={18} color='#0b8457' />
           <Text style={styles.settingsText}>Addresses</Text>
-          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: 'auto' }} />
+          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: "auto" }} />
         </Pressable>
         <Pressable style={styles.settingsBtn}>
           <Ionicons name='notifications-outline' size={18} color='#0b8457' />
           <Text style={styles.settingsText}>Notifications</Text>
-          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: 'auto' }} />
+          <Ionicons name='chevron-forward' size={18} color='#999' style={{ marginLeft: "auto" }} />
         </Pressable>
       </View>
 
-      {/* Logout */}
-      {/* <Pressable style={styles.logoutBtn} onPress={onLogout || (() => {})}>
-        <LinearGradient
-          colors={['#ee5253', '#d63031']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.logoutGradient}>
-          <Ionicons name='log-out-outline' size={18} color='#fff' />
-          <Text style={styles.logoutText}>Logout</Text>
-        </LinearGradient>
-      </Pressable> */}
-      <Button style={styles.logoutBtn} onPress={onLogout || (() => {})}>
-        <View style={{ flexDirection: 'row' }}>
+      <Button style={styles.logoutBtn} onPress={logout || (() => {})}>
+        <View style={{ flexDirection: "row" }}>
           <Ionicons name='log-out-outline' size={18} color='#fff' />
           <Text style={styles.logoutText}>Logout</Text>
         </View>
@@ -147,20 +139,20 @@ const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9fafb' },
+  container: { flex: 1, backgroundColor: "#f9fafb" },
 
   headerBackground: {
     paddingTop: 60,
     paddingBottom: 30,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   closeBtn: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 20,
     padding: 8,
     zIndex: 99,
@@ -171,37 +163,37 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   name: {
     marginTop: 8,
     fontSize: 20,
-    fontWeight: '600',
-    color: '#111',
+    fontWeight: "600",
+    color: "#111",
   },
   email: {
     fontSize: 13,
-    color: '#374151',
+    color: "#374151",
     marginBottom: 8,
   },
   editBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.12)',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.12)",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
     marginTop: 8,
   },
   editText: {
-    color: '#fff',
+    color: "#fff",
     marginLeft: 8,
     fontSize: 13,
   },
   rewardsCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff7ed',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff7ed",
     padding: 12,
     marginHorizontal: 16,
     marginTop: 16,
@@ -209,24 +201,24 @@ const styles = StyleSheet.create({
   },
   rewardsText: {
     marginLeft: 8,
-    color: '#92400e',
-    fontWeight: '600',
+    color: "#92400e",
+    fontWeight: "600",
   },
   tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     paddingHorizontal: 16,
     marginTop: 12,
   },
   tagChip: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 16,
     marginRight: 8,
     marginBottom: 8,
     fontSize: 12,
-    color: '#374151',
+    color: "#374151",
   },
   section: {
     marginTop: 18,
@@ -234,17 +226,17 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#111',
+    fontWeight: "700",
+    color: "#111",
     marginBottom: 8,
   },
   favoritesList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   favoriteItem: {
     width: 80,
-    alignItems: 'center',
+    alignItems: "center",
     marginRight: 12,
     marginBottom: 12,
   },
@@ -252,45 +244,45 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   foodName: {
     marginTop: 6,
     fontSize: 12,
-    color: '#374151',
-    textAlign: 'center',
+    color: "#374151",
+    textAlign: "center",
   },
   emptyText: {
-    color: '#9ca3af',
+    color: "#9ca3af",
     fontSize: 13,
     paddingVertical: 8,
   },
   orderItem: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 10,
     marginBottom: 8,
   },
   orderTitle: {
-    fontWeight: '600',
-    color: '#111',
+    fontWeight: "600",
+    color: "#111",
   },
   orderSub: {
-    color: '#6b7280',
+    color: "#6b7280",
     fontSize: 12,
     marginTop: 4,
   },
   settingsBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     marginBottom: 8,
   },
   settingsText: {
     marginLeft: 12,
-    color: '#111',
+    color: "#111",
     fontSize: 14,
   },
   logoutBtn: {
@@ -299,16 +291,16 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   logoutGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     borderRadius: 10,
   },
   logoutText: {
-    color: '#fff',
+    color: "#fff",
     marginLeft: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 export default UserProfile;

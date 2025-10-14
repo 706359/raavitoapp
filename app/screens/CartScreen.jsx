@@ -137,7 +137,7 @@ export default function PremiumCartScreen({ navigation, route }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='dark-content' />
 
-      <Text style={styles.headerTitle}>{kitchenName} - Cart</Text>
+      {/* <Text style={styles.headerTitle}>{kitchenName} - Cart</Text> */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation?.goBack()}>

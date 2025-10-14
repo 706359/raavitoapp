@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Button, Checkbox, HStack, Icon, Image, Link, Text, VStack, useTheme } from "native-base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   ImageBackground,
@@ -15,24 +15,61 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../context/AuthContext";
+import { axios_ } from "./../../utils/utils";
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
-  const [mobile, setMobile] = useState("");
-  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [formData, setFormData] = useState({});
   const theme = useTheme();
 
-  const handleLogin = () => {
-    if (!mobile || !password) {
-      Alert.alert("Missing Fields", "Please enter both mobile number and password.");
-      return;
+  useEffect(() => {
+    getRemembered();
+  }, []);
+
+  async function getRemembered() {
+    let remember = await AsyncStorage.getItem("remember");
+    console.log("remember", remember);
+    if (remember) {
+      remember = JSON.parse(remember);
+      setFormData(remember);
     }
-    if (mobile === "9999999999" && password === "12345") {
-      login({ id: Date.now(), mobile });
-      // navigation.replace("MainTabs");
-    } else {
-      Alert.alert("Invalid Credentials", "Mobile number or password is incorrect.");
+  }
+  function handleFormData(name, value) {
+    setFormData((prev) => {
+      let obj = { ...prev };
+      obj[name] = value;
+      return obj;
+    });
+  }
+  const handleLogin = async () => {
+    try {
+      let { mobile, password } = formData;
+      if (!mobile || !password) {
+        return Alert.alert("Invalid Credentials", "Please enter valid credentials");
+      }
+      if (remember) {
+        AsyncStorage.setItem("remember", JSON.stringify({ mobile, password }));
+      } else {
+        AsyncStorage.removeItem("remember");
+      }
+      let response = await axios_.post("/users/login", formData);
+
+      response = response.data;
+      if (response.token) {
+        // success: save user & token
+        login({ id: response._id, name: response.name, mobile, token: response.token });
+        Alert.alert("Success", "Login successful!");
+        // navigation.replace("MainTabs");
+      } else {
+        Alert.alert("Login Failed", response.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      Alert.alert("Error", "Something went wrong while logging in.");
     }
   };
 
@@ -90,8 +127,10 @@ export default function LoginScreen({ navigation }) {
                     />
                     <TextInput
                       style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={mobile}
-                      onChangeText={setMobile}
+                      value={formData?.mobile}
+                      onChangeText={(value) => {
+                        handleFormData("mobile", value);
+                      }}
                       placeholder='Mobile Number'
                       keyboardType='phone-pad'
                       maxLength={10}
@@ -110,8 +149,10 @@ export default function LoginScreen({ navigation }) {
                     />
                     <TextInput
                       style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={password}
-                      onChangeText={setPassword}
+                      value={formData?.password}
+                      onChangeText={(value) => {
+                        handleFormData("password", value);
+                      }}
                       placeholder='Password'
                       secureTextEntry
                       blurOnSubmit={true}
@@ -121,7 +162,13 @@ export default function LoginScreen({ navigation }) {
 
                   {/* Remember + Forgot */}
                   <HStack justifyContent='space-between' alignItems='center' mt={1}>
-                    <Checkbox value='remember'>Remember me</Checkbox>
+                    <Checkbox
+                      onChange={() => {
+                        setRemember((prev) => !prev);
+                      }}
+                      defaultIsChecked={remember}>
+                      Remember me
+                    </Checkbox>
                     <Link _text={{ color: "brand.orange", fontWeight: "600" }}>
                       Forgot Password?
                     </Link>

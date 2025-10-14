@@ -11,7 +11,7 @@ export default function ProfileScreen({ navigation }) {
 
   const profile = {
     name: user?.name || "Your Name",
-    email: user?.email || "your@email.com",
+    email: user?.email || "",
     mobile: user?.mobile || "+91 0000000000",
   };
 
@@ -69,9 +69,9 @@ export default function ProfileScreen({ navigation }) {
                   </Box>
                 )}
               </HStack>
-              <Text fontSize='sm' color='gray.500' numberOfLines={1}>
+              {/* <Text fontSize='sm' color='gray.500' numberOfLines={1}>
                 {profile.email}
-              </Text>
+              </Text> */}
               <Text fontSize='sm' color='gray.500'>
                 {profile.mobile}
               </Text>

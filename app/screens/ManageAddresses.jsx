@@ -6,19 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
-import {
-  Box,
-  Button,
-  CheckIcon,
-  HStack,
-  Icon,
-  Input,
-  Modal,
-  Pressable,
-  Select,
-  Text,
-  VStack,
-} from "native-base";
+import { Box, Button, HStack, Icon, Input, Modal, Pressable, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -244,7 +232,7 @@ export default function ManageAddresses() {
           <Modal.Header>{editItem ? "Edit Address" : "Add New Address"}</Modal.Header>
           <Modal.Body>
             <VStack space={4}>
-              <Select
+              {/* <Select
                 selectedValue={form.type}
                 minWidth='200'
                 placeholder='Choose Type'
@@ -253,7 +241,7 @@ export default function ManageAddresses() {
                 <Select.Item label='Home' value='Home' />
                 <Select.Item label='Office' value='Office' />
                 <Select.Item label='Other' value='Other' />
-              </Select>
+              </Select> */}
               <Input
                 placeholder='Enter full address'
                 multiline

@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
 import {
@@ -40,7 +41,7 @@ export default function WelcomeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
   const navigation = useNavigation();
-
+  const { user } = useAuth();
   const handleScroll = (event) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentIndex(index);
@@ -54,7 +55,7 @@ export default function WelcomeScreen() {
   const handleContinue = () => {
     navigation.replace("AuthStack"); // or "MainTabs"
   };
-
+  if (user) return null;
   return (
     <SafeAreaView style={styles.container}>
       {/* Slider */}

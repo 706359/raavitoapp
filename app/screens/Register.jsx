@@ -14,28 +14,39 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { axios_ } from "./../../utils/utils";
 
 export default function RegisterScreen({ navigation }) {
-  const { register } = useAuth();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [referral, setReferral] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-
   const theme = useTheme();
-
-  const handleSignUp = () => {
-    if (!firstName || !lastName || !email || !phone || !password) {
-      Alert.alert("Missing Fields", "Please fill all required fields.");
+  const [formData, setFormData] = useState({});
+  const handleSignUp = async () => {
+    let { firstName, lastName, mobile, password } = formData;
+    if (firstName === "" || lastName === "" || mobile === "" || password === "") {
       return;
     }
-    register({ id: Date.now(), firstName, lastName, email, phone });
-    Alert.alert("Success", "Registered successfully!");
-    navigation.replace("Login");
+
+    try {
+      let res = await axios_.post("/users/register", formData);
+      if (res.status === 201) {
+        Alert.alert("Success", "Registration successful");
+        login({ id: res._id, token: res.token });
+        navigation.replace("Login");
+      }
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Error", "Something went wrong while registering.");
+    }
   };
+
+  function handleInputChange(name, value) {
+    setFormData((prev) => {
+      let obj = { ...prev };
+      obj[name] = value;
+      return obj;
+    });
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -67,43 +78,38 @@ export default function RegisterScreen({ navigation }) {
                 {/* First & Last Name */}
                 <HStack space={2}>
                   <TextInput
-                    value={firstName}
-                    onChangeText={setFirstName}
+                    value={formData?.firstName || ""}
+                    onChangeText={(val) => handleInputChange("firstName", val)}
                     placeholder='First Name'
                     style={[styles.input, { flex: 1, borderColor: theme.colors.brand.dark }]}
                     placeholderTextColor={theme.colors.brand.gray}
                   />
                   <TextInput
-                    value={lastName}
-                    onChangeText={setLastName}
+                    value={formData?.lastName || ""}
+                    onChangeText={(val) => handleInputChange("lastName", val)}
                     placeholder='Last Name'
                     style={[styles.input, { flex: 1, borderColor: theme.colors.brand.dark }]}
                     placeholderTextColor={theme.colors.brand.gray}
                   />
                 </HStack>
 
-                {/* Other Inputs */}
+                {/* Mobile */}
                 <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder='Email'
-                  keyboardType='email-address'
-                  style={[styles.input, { borderColor: theme.colors.brand.dark }]}
-                  placeholderTextColor={theme.colors.brand.gray}
-                />
-                <TextInput
-                  value={phone}
-                  onChangeText={setPhone}
-                  placeholder='Phone Number'
+                  value={formData?.mobile || ""}
+                  onChangeText={(val) => handleInputChange("mobile", val)}
+                  placeholder='Mobile Number'
                   keyboardType='phone-pad'
                   maxLength={10}
                   style={[styles.input, { borderColor: theme.colors.brand.dark }]}
                   placeholderTextColor={theme.colors.brand.gray}
                 />
+                {/* Mobile */}
                 <TextInput
-                  value={referral}
-                  onChangeText={setReferral}
-                  placeholder='Referral Code (Optional)'
+                  value={formData?.referalCode || ""}
+                  onChangeText={(val) => handleInputChange("referalCode", val)}
+                  placeholder='Referal Code'
+                  keyboardType='phone-pad'
+                  maxLength={10}
                   style={[styles.input, { borderColor: theme.colors.brand.dark }]}
                   placeholderTextColor={theme.colors.brand.gray}
                 />
@@ -111,8 +117,8 @@ export default function RegisterScreen({ navigation }) {
                 {/* Password Input */}
                 <View style={{ position: "relative" }}>
                   <TextInput
-                    value={password}
-                    onChangeText={setPassword}
+                    value={formData?.password || ""}
+                    onChangeText={(val) => handleInputChange("password", val)}
                     placeholder='Password'
                     secureTextEntry={!showPassword}
                     style={[styles.input, { borderColor: theme.colors.brand.dark }]}

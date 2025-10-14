@@ -12,6 +12,8 @@ export function AuthProvider({ children }) {
     const loadUser = async () => {
       try {
         const saved = await AsyncStorage.getItem("user");
+        console.log(saved);
+
         if (saved) {
           setUser(JSON.parse(saved));
         }
