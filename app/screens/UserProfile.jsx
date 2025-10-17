@@ -1,9 +1,9 @@
-import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Button } from "native-base";
 import React from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useAuth } from "../context/AuthContext";
 
 const UserProfile = ({ profile = {}, onEdit, onLogout, navigation }) => {
   const { user, logout } = useAuth();

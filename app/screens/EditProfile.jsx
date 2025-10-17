@@ -8,7 +8,7 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
 export default function EditProfileScreen() {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const theme = useTheme();
   const [profileImage, setProfileImage] = useState(null);
   const [name, setName] = useState("Shiv Ram Rana");
   const [email, setEmail] = useState("shiv@example.com");
@@ -45,7 +45,7 @@ export default function EditProfileScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         {/* Profile Image */}
-        <VStack alignItems='center' mt={-60}>
+        <VStack alignItems='center'>
           <Pressable onPress={pickImage}>
             <Box style={styles.avatarContainer}>
               <Image
@@ -99,7 +99,7 @@ export default function EditProfileScreen() {
         </VStack>
 
         {/* Save Button */}
-        <Button
+        {/* <Button
           mt={8}
           borderRadius={12}
           py={4}
@@ -112,6 +112,21 @@ export default function EditProfileScreen() {
           }}
           _text={{ fontWeight: "bold", fontSize: 16 }}
           onPress={handleSave}>
+          Save Changes
+        </Button> */}
+        <Button
+          onPress={handleSave}
+          mt={10}
+          shadow={6}
+          variant='outline'
+          borderColor='brand.light'
+          _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
+          _linearGradient={{
+            as: LinearGradient,
+            colors: [theme.colors.brand.orange, theme.colors.brand.green],
+            start: [0, 0],
+            end: [1, 1],
+          }}>
           Save Changes
         </Button>
       </ScrollView>

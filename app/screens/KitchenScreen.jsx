@@ -81,7 +81,7 @@ export default function KitchenScreen({ route, navigation }) {
             </HStack>
           </Box>
 
-          {/* Premium Restaurant Info Card */}
+          {/* Premium Kitchen Info Card */}
           <Box style={styles.infoCard}>
             <HStack justifyContent='space-between' alignItems='flex-start' mb={2}>
               <VStack flex={1}>

@@ -1,8 +1,8 @@
-import EditProfileScreen from "@/screens/EditProfile";
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CartScreen from "../screens/CartScreen";
+import EditProfileScreen from "../screens/EditProfile";
 import FAQ from "../screens/FAQ";
 import Favourites from "../screens/Favourites";
 import Help from "../screens/Help";

@@ -3,54 +3,67 @@ import { extendTheme } from "native-base";
 const theme = extendTheme({
   colors: {
     brand: {
-      orange: "#b95a01ff",
-      green: "#019b28ff",
+      orange: "#FF7A00",
+      green: "#00A86B",
       dark: "#1A1A1A",
-      light: "#F5F5F5",
-      gray: "#a1a1a1ff",
+      light: "#F9F9F9",
+      gray: "#A1A1A1",
+      softGray: "#EAEAEA",
     },
   },
+
   fontConfig: {
-    Roboto: {
-      400: { normal: "Roboto-Regular" },
-      600: { normal: "Roboto-SemiBold" },
-      700: { normal: "Roboto-Bold" },
+    Poppins: {
+      400: { normal: "Poppins-Regular" },
+      500: { normal: "Poppins-Medium" },
+      600: { normal: "Poppins-SemiBold" },
+      700: { normal: "Poppins-Bold" },
     },
     OpenSans: {
       400: { normal: "OpenSans-Regular" },
       600: { normal: "OpenSans-SemiBold" },
+      700: { normal: "OpenSans-Bold" },
+    },
+    Inter: {
+      400: { normal: "Inter-Regular" },
+      500: { normal: "Inter-Medium" },
+      600: { normal: "Inter-SemiBold" },
+      700: { normal: "Inter-Bold" },
     },
   },
+
   fonts: {
     heading: "Poppins",
     body: "OpenSans",
+    mono: "Inter",
   },
+
   components: {
     Button: {
       baseStyle: {
-        rounded: "full",
-        shadow: 6, // deeper shadow for 3D effect
+        borderRadius: "full",
+        shadow: 4,
         _text: {
           fontFamily: "Poppins",
           fontWeight: "600",
           fontSize: "md",
           color: "white",
+          letterSpacing: 0.4,
         },
         _pressed: {
-          transform: [{ scale: 0.97 }], // press-in effect
-          shadow: 2, // reduced shadow when pressed
+          opacity: 0.9,
+          bg: "brand.green",
+          transform: [{ scale: 0.97 }],
         },
       },
       defaultProps: {
         size: "md",
-        alignSelf: "center", // keep it centered
-        w: "60%", // smaller width (60% of container)
+        alignSelf: "center",
+        width: "60%",
         bg: "brand.orange",
-        _pressed: {
-          bg: "brand.green",
-        },
       },
     },
+
     Input: {
       baseStyle: {
         borderRadius: "full",
@@ -69,6 +82,7 @@ const theme = extendTheme({
         backgroundColor: "white",
       },
     },
+
     Checkbox: {
       baseStyle: {
         borderColor: "brand.orange",
@@ -76,17 +90,27 @@ const theme = extendTheme({
           bg: "brand.orange",
           borderColor: "brand.orange",
         },
+        _pressed: {
+          bg: "brand.green",
+          borderColor: "brand.green",
+        },
       },
     },
+
     Link: {
       baseStyle: {
         _text: {
           color: "brand.orange",
           fontFamily: "OpenSans",
+          fontWeight: "600",
           fontSize: "sm",
+        },
+        _pressed: {
+          _text: { color: "brand.green" },
         },
       },
     },
+
     Text: {
       baseStyle: {
         color: "brand.dark",
@@ -96,6 +120,7 @@ const theme = extendTheme({
         caption: {
           fontSize: "xs",
           color: "coolGray.500",
+          letterSpacing: 0.2,
         },
         label: {
           fontSize: "sm",
@@ -104,17 +129,20 @@ const theme = extendTheme({
         },
       },
     },
+
     Heading: {
       baseStyle: {
         fontFamily: "Poppins",
         fontWeight: "700",
         color: "brand.dark",
+        letterSpacing: 0.3,
       },
     },
+
     Card: {
       baseStyle: {
-        borderRadius: "lg",
-        shadow: 2,
+        borderRadius: "xl",
+        shadow: 3,
         bg: "white",
         p: 4,
       },

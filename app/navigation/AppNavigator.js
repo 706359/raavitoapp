@@ -13,18 +13,17 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   const { user, loading } = useAuth();
   const [showBrandingSplash, setShowBrandingSplash] = useState(true);
-  const [isFirstLaunch, setIsFirstLaunch] = useState(null); // null = still checking
+  const [isFirstLaunch, setIsFirstLaunch] = useState(null);
 
   useEffect(() => {
     const checkFirstLaunch = async () => {
       try {
-        // const value = await AsyncStorage.getItem('alreadyLaunched');
-        const value = null; // ✅ preserved for controlled onboarding
+        const value = null;
         if (value === null) {
           await AsyncStorage.setItem("alreadyLaunched", "true");
-          setIsFirstLaunch(true); // ✅ First launch
+          setIsFirstLaunch(true);
         } else {
-          setIsFirstLaunch(false); // ✅ Returning user
+          setIsFirstLaunch(false);
         }
       } catch (err) {
         console.warn("AsyncStorage error:", err);
@@ -44,10 +43,8 @@ export default function AppNavigator() {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* First launch → show Welcome screen */}
       {isFirstLaunch && !user && <Stack.Screen name='Welcome' component={WelcomeScreen} />}
 
-      {/* Auth flow or Main app */}
       {!user ? (
         <Stack.Screen name='AuthStack' component={AuthStack} />
       ) : (

@@ -3,12 +3,13 @@ import { registerRootComponent } from "expo";
 import { NativeBaseProvider } from "native-base";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { AddressProvider } from "@/context/AddressContext"; // 👈 import AddressProvider
-import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "@/context/CartContext";
-import { OrderProvider } from "@/context/OrderContext";
-import AppNavigator from "@/navigation/AppNavigator";
-import theme from "./theme"; // 👈 brand kit theme.js
+import { AddressProvider } from "./app/context/AddressContext";
+import { AuthProvider } from "./app/context/AuthContext";
+import { CartProvider } from "./app/context/CartContext";
+import { OrderProvider } from "./app/context/OrderContext";
+import AppNavigator from "./app/navigation/AppNavigator";
+import "./patches/fixBackhandler";
+import theme from "./theme";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <CartProvider>
             <OrderProvider>
               <AddressProvider>
+                {/* Only one NavigationContainer */}
                 <NavigationContainer>
                   <AppNavigator />
                 </NavigationContainer>
@@ -30,4 +32,5 @@ function App() {
   );
 }
 
+export default App;
 registerRootComponent(App);
