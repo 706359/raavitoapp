@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import SplashScreen from "../screens/SplashScreen";
-import WelcomeScreen from "../screens/welcomeScreen"; // ✅ fixed casing
+import WelcomeScreen from "../screens/welcomeScreen";
 import AuthStack from "./AuthStack";
 import ExtraStack from "./ExtraStacks";
 import MainTabs from "./MainTabs";
+// add partner auth screens
+import { KitchenRegisterScreen, PartnerLoginScreen } from "../screens/PartnerAuth";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +20,7 @@ export default function AppNavigator() {
   useEffect(() => {
     const checkFirstLaunch = async () => {
       try {
-        const value = null;
+        const value = await AsyncStorage.getItem("alreadyLaunched");
         if (value === null) {
           await AsyncStorage.setItem("alreadyLaunched", "true");
           setIsFirstLaunch(true);
@@ -32,21 +34,23 @@ export default function AppNavigator() {
     };
 
     checkFirstLaunch();
-
     const timer = setTimeout(() => setShowBrandingSplash(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isFirstLaunch === null || showBrandingSplash || loading) {
-    return <SplashScreen />;
-  }
+  if (isFirstLaunch === null || showBrandingSplash || loading) return <SplashScreen />;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isFirstLaunch && !user && <Stack.Screen name='Welcome' component={WelcomeScreen} />}
 
       {!user ? (
-        <Stack.Screen name='AuthStack' component={AuthStack} />
+        <>
+          <Stack.Screen name='AuthStack' component={AuthStack} />
+          {/* Partner-specific auth routes */}
+          <Stack.Screen name='PartnerLogin' component={PartnerLoginScreen} />
+          <Stack.Screen name='KitchenRegister' component={KitchenRegisterScreen} />
+        </>
       ) : (
         <>
           <Stack.Screen name='MainTabs' component={MainTabs} />

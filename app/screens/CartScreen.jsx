@@ -70,7 +70,6 @@ export const raavitoMenu = [
 export default function PremiumCartScreen({ navigation, route }) {
   // accept kitchen details via route.params.kitchen = { name, menu }
   const kitchen = route?.params?.kitchen ?? { name: "Kitchen", menu: raavitoMenu };
-  const kitchenName = kitchen.name ?? "Kitchen";
   const kitchenMenu = Array.isArray(kitchen.menu) ? kitchen.menu : raavitoMenu;
 
   const [cart, setCart] = useState(kitchenMenu.map((item) => ({ ...item, qty: 1, note: "" })));

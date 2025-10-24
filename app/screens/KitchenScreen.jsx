@@ -12,7 +12,7 @@ import {
   Text,
   VStack,
 } from "native-base";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCart } from "../context/CartContext";
@@ -24,26 +24,137 @@ export default function KitchenScreen({ route, navigation }) {
   const menuTabs = ["Lunch", "Dinner", "Breakfast", "Snacks"];
   const [activeTab, setActiveTab] = useState("Lunch");
 
-  const menuItems = [
-    {
-      id: "1",
-      name: "Small Lunch",
-      price: 50,
-      desc: "Max veg 3, Chapati",
-      img: require("../assets/Dosa.jpg"),
-      isVeg: true,
-      isBestseller: true,
-    },
-    {
-      id: "2",
-      name: "Medium Lunch",
-      price: 90,
-      desc: "Veg thali with rice, chapati",
-      img: require("../assets/Gujarati.jpeg"),
-      isVeg: true,
-      isBestseller: false,
-    },
-  ];
+  // All menu items with category
+  const allMenuItems = useMemo(
+    () => [
+      {
+        id: "1",
+        name: "Small Lunch Thali",
+        price: 50,
+        desc: "Max veg 3, Chapati, Rice",
+        img: require("../assets/Dosa.jpg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Lunch",
+      },
+      {
+        id: "2",
+        name: "Medium Lunch Thali",
+        price: 90,
+        desc: "Full veg thali with rice, chapati, dal",
+        img: require("../assets/Gujarati.jpeg"),
+        isVeg: true,
+        isBestseller: false,
+        category: "Lunch",
+      },
+      {
+        id: "3",
+        name: "Family Lunch Special",
+        price: 150,
+        desc: "Complete thali for 2 with dessert",
+        img: require("../assets/Rajasthani.jpg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Lunch",
+      },
+      {
+        id: "4",
+        name: "Light Dinner",
+        price: 70,
+        desc: "Roti, sabzi, dal with salad",
+        img: require("../assets/Punjabi.webp"),
+        isVeg: true,
+        isBestseller: false,
+        category: "Dinner",
+      },
+      {
+        id: "5",
+        name: "Royal Dinner Thali",
+        price: 120,
+        desc: "Premium thali with paneer, dal makhani",
+        img: require("../assets/Gujarati.jpeg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Dinner",
+      },
+      {
+        id: "6",
+        name: "Family Dinner Pack",
+        price: 200,
+        desc: "Complete dinner for family of 3",
+        img: require("../assets/Rajasthani.jpg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Dinner",
+      },
+      {
+        id: "7",
+        name: "Breakfast Combo",
+        price: 40,
+        desc: "Poha, tea and fruits",
+        img: require("../assets/Dosa.jpg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Breakfast",
+      },
+      {
+        id: "8",
+        name: "South Indian Breakfast",
+        price: 60,
+        desc: "Dosa, idli, sambar and chutney",
+        img: require("../assets/Dosa.jpg"),
+        isVeg: true,
+        isBestseller: false,
+        category: "Breakfast",
+      },
+      {
+        id: "9",
+        name: "Paratha Breakfast",
+        price: 55,
+        desc: "2 Parathas with curd and pickle",
+        img: require("../assets/Punjabi.webp"),
+        isVeg: true,
+        isBestseller: false,
+        category: "Breakfast",
+      },
+      {
+        id: "10",
+        name: "Samosa (2 pcs)",
+        price: 30,
+        desc: "Crispy samosas with chutney",
+        img: require("../assets/Gujarati.jpeg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Snacks",
+      },
+      {
+        id: "11",
+        name: "Vada Pav (2 pcs)",
+        price: 25,
+        desc: "Mumbai special street food",
+        img: require("../assets/Dosa.jpg"),
+        isVeg: true,
+        isBestseller: true,
+        category: "Snacks",
+      },
+      {
+        id: "12",
+        name: "Pakora Plate",
+        price: 35,
+        desc: "Mixed vegetable pakoras",
+        img: require("../assets/Gujarati.jpeg"),
+        isVeg: true,
+        isBestseller: false,
+        category: "Snacks",
+      },
+    ],
+    []
+  );
+
+  // Filter menu items based on active tab
+  const filteredMenuItems = useMemo(() => {
+    return allMenuItems.filter((item) => item.category === activeTab);
+  }, [activeTab, allMenuItems]);
 
   const getQty = (id) => {
     const item = cart.find((c) => c.id === id);
@@ -57,25 +168,25 @@ export default function KitchenScreen({ route, navigation }) {
           {/* Premium Header with Gradient Effect */}
           <Box style={styles.headerContainer}>
             <HStack style={styles.headerRow}>
-              <HStack alignItems='center' space={3}>
+              <HStack style={styles.headerLeft}>
                 <IconButton
                   icon={<Icon as={Ionicons} name='arrow-back' color='white' size='md' />}
                   onPress={() => navigation.goBack()}
                   borderRadius='full'
-                  _pressed={{ bg: "rgba(255,255,255,0.2)" }}
+                  style={styles.iconButton}
                 />
                 <Text style={styles.headerTitle}>{kitchen?.name || "Kitchen"}</Text>
               </HStack>
-              <HStack space={2} alignItems='center'>
+              <HStack style={styles.headerRight}>
                 <IconButton
                   icon={<Icon as={Ionicons} name='search' color='white' size='md' />}
                   borderRadius='full'
-                  _pressed={{ bg: "rgba(255,255,255,0.2)" }}
+                  style={styles.iconButton}
                 />
                 <IconButton
                   icon={<Icon as={Ionicons} name='heart-outline' color='white' size='md' />}
                   borderRadius='full'
-                  _pressed={{ bg: "rgba(255,255,255,0.2)" }}
+                  style={styles.iconButton}
                 />
               </HStack>
             </HStack>
@@ -83,27 +194,20 @@ export default function KitchenScreen({ route, navigation }) {
 
           {/* Premium Kitchen Info Card */}
           <Box style={styles.infoCard}>
-            <HStack justifyContent='space-between' alignItems='flex-start' mb={2}>
-              <VStack flex={1}>
+            <HStack style={styles.infoHeader}>
+              <VStack style={styles.infoHeaderLeft}>
                 <Text style={styles.infoName}>
                   {kitchen?.name || "Taste of India Tiffin Services"}
                 </Text>
-                <HStack alignItems='center' space={1} mt={1}>
+                <HStack style={styles.locationRow}>
                   <Icon as={MaterialIcons} name='place' size='xs' color='gray.500' />
                   <Text style={styles.infoSub}>{kitchen?.location || "Gotala Nagar"}</Text>
                 </HStack>
               </VStack>
-              <Badge
-                bg='green.500'
-                borderRadius='full'
-                px={3}
-                py={1}
-                _text={{ color: "white", fontSize: "xs", fontWeight: "700" }}>
-                OPEN
-              </Badge>
+              <Badge style={styles.openBadge}>OPEN</Badge>
             </HStack>
 
-            <HStack style={styles.infoMetaRow} space={4}>
+            <HStack style={styles.infoMetaRow}>
               <HStack style={styles.metaItem}>
                 <Box style={styles.ratingBadge}>
                   <Icon as={Ionicons} name='star' color='white' size='xs' />
@@ -120,7 +224,7 @@ export default function KitchenScreen({ route, navigation }) {
               </HStack>
             </HStack>
 
-            <Divider my={3} />
+            <Divider style={styles.divider} />
 
             <Text style={styles.infoDesc}>
               {kitchen?.desc || "American, Fast Food • Inner Circle, Connaught Place"}
@@ -132,7 +236,7 @@ export default function KitchenScreen({ route, navigation }) {
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.galleryScroll}
-            contentContainerStyle={{ paddingRight: 16 }}>
+            contentContainerStyle={styles.galleryContent}>
             <Pressable>
               {({ isPressed }) => (
                 <View
@@ -176,11 +280,11 @@ export default function KitchenScreen({ route, navigation }) {
 
           {/* Premium Offer Card with Icon */}
           <Box style={styles.offerCard}>
-            <HStack alignItems='center' space={3}>
+            <HStack style={styles.offerContent}>
               <Box style={styles.offerIconBox}>
                 <Icon as={MaterialIcons} name='local-offer' color='white' size='lg' />
               </Box>
-              <VStack flex={1}>
+              <VStack style={styles.offerTextContainer}>
                 <Text style={styles.offerTitle}>30% off up to ₹75</Text>
                 <Text style={styles.offerSub}>USE KITCHENWALA | ABOVE ₹100</Text>
               </VStack>
@@ -193,7 +297,7 @@ export default function KitchenScreen({ route, navigation }) {
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.tabsScroll}
-            contentContainerStyle={{ paddingHorizontal: 16 }}>
+            contentContainerStyle={styles.tabsContent}>
             {menuTabs.map((tab) => (
               <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 {({ isPressed }) => (
@@ -213,103 +317,99 @@ export default function KitchenScreen({ route, navigation }) {
           </ScrollView>
 
           {/* Premium Menu Section */}
-          <Box px={4} mb={32}>
-            <HStack justifyContent='space-between' alignItems='center' mb={3} mt={2}>
-              <Text style={styles.sectionTitle}>Maharashtrian Specials</Text>
-              <Text style={styles.itemCount}>{menuItems.length} Items</Text>
+          <Box style={styles.menuSection}>
+            <HStack style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>{activeTab} Menu</Text>
+              <Text style={styles.itemCount}>{filteredMenuItems.length} Items</Text>
             </HStack>
 
-            {menuItems.map((item) => {
-              const qty = getQty(item.id);
+            {filteredMenuItems.length === 0 ? (
+              <Box style={styles.emptyState}>
+                <Icon as={Ionicons} name='restaurant-outline' size='4xl' color='gray.300' />
+                <Text style={styles.emptyText}>No items available in {activeTab}</Text>
+              </Box>
+            ) : (
+              filteredMenuItems.map((item) => {
+                const qty = getQty(item.id);
 
-              return (
-                <Box key={item.id} style={styles.menuItemCard}>
-                  <HStack alignItems='flex-start' space={3}>
-                    {/* Item Details */}
-                    <VStack flex={1}>
-                      {/* Veg/Non-veg indicator and Bestseller */}
-                      <HStack alignItems='center' space={2} mb={2}>
-                        <Box
-                          style={[
-                            styles.vegIndicator,
-                            { borderColor: item.isVeg ? "#22c55e" : "#ef4444" },
-                          ]}>
+                return (
+                  <Box key={item.id} style={styles.menuItemCard}>
+                    <HStack style={styles.menuItemRow}>
+                      {/* Item Details */}
+                      <VStack style={styles.menuItemDetails}>
+                        {/* Veg/Non-veg indicator and Bestseller */}
+                        <HStack style={styles.itemBadges}>
                           <Box
                             style={[
-                              styles.vegDot,
-                              { backgroundColor: item.isVeg ? "#22c55e" : "#ef4444" },
-                            ]}
-                          />
-                        </Box>
-                        {item.isBestseller && (
-                          <Badge
-                            bg='orange.100'
-                            borderRadius='sm'
-                            _text={{
-                              color: "orange.700",
-                              fontSize: "2xs",
-                              fontWeight: "700",
-                            }}
-                            px={2}
-                            py={0.5}>
-                            ⭐ BESTSELLER
-                          </Badge>
-                        )}
-                      </HStack>
+                              styles.vegIndicator,
+                              { borderColor: item.isVeg ? "#22c55e" : "#ef4444" },
+                            ]}>
+                            <Box
+                              style={[
+                                styles.vegDot,
+                                { backgroundColor: item.isVeg ? "#22c55e" : "#ef4444" },
+                              ]}
+                            />
+                          </Box>
+                          {item.isBestseller && (
+                            <Badge style={styles.bestsellerBadge}>⭐ BESTSELLER</Badge>
+                          )}
+                        </HStack>
 
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      <Text style={styles.itemPrice}>₹{item.price.toFixed(0)}</Text>
-                      <Text style={styles.itemDesc} numberOfLines={2}>
-                        {item.desc}
-                      </Text>
-                    </VStack>
+                        <Text style={styles.itemName}>{item.name}</Text>
+                        <Text style={styles.itemPrice}>₹{item.price.toFixed(0)}</Text>
+                        <Text style={styles.itemDesc} numberOfLines={2}>
+                          {item.desc}
+                        </Text>
+                      </VStack>
 
-                    {/* Image with Add Button Overlay */}
-                    <Box style={styles.imageContainer}>
-                      <Image source={item.img} alt={item.name} style={styles.itemImage} />
+                      {/* Image with Add Button Overlay */}
+                      <Box style={styles.imageContainer}>
+                        <Image source={item.img} alt={item.name} style={styles.itemImage} />
 
-                      {/* Add/Quantity Control Overlay */}
-                      <Box style={styles.controlOverlay}>
-                        {qty > 0 ? (
-                          <HStack style={styles.qtyControl} alignItems='center' space={2}>
-                            <Pressable
-                              onPress={() => removeFromCart(item.id)}
-                              hitSlop={8}
-                              style={styles.qtyButton}>
-                              <Icon as={Ionicons} name='remove' size='sm' color='orange.600' />
-                            </Pressable>
+                        {/* Add/Quantity Control Overlay */}
+                        <Box style={styles.controlOverlay}>
+                          {qty > 0 ? (
+                            <HStack style={styles.qtyControl}>
+                              <Pressable
+                                onPress={() => removeFromCart(item.id)}
+                                hitSlop={8}
+                                style={styles.qtyButton}>
+                                <Icon as={Ionicons} name='remove' size='sm' color='orange.600' />
+                              </Pressable>
 
-                            <Text style={styles.qtyNumber}>{qty}</Text>
+                              <Text style={styles.qtyNumber}>{qty}</Text>
 
+                              <Pressable
+                                onPress={() => addToCart(item)}
+                                hitSlop={8}
+                                style={[styles.qtyButton, styles.qtyButtonActive]}>
+                                <Icon as={Ionicons} name='add' size='sm' color='white' />
+                              </Pressable>
+                            </HStack>
+                          ) : (
                             <Pressable
                               onPress={() => addToCart(item)}
                               hitSlop={8}
-                              style={[styles.qtyButton, styles.qtyButtonActive]}>
-                              <Icon as={Ionicons} name='add' size='sm' color='white' />
+                              style={styles.addButton}>
+                              <Text style={styles.addButtonText}>ADD</Text>
+                              <Icon as={Ionicons} name='add' size='xs' color='white' />
                             </Pressable>
-                          </HStack>
-                        ) : (
-                          <Pressable
-                            onPress={() => addToCart(item)}
-                            hitSlop={8}
-                            style={styles.addButton}>
-                            <Text style={styles.addButtonText}>ADD</Text>
-                            <Icon as={Ionicons} name='add' size='xs' color='white' ml={1} />
-                          </Pressable>
-                        )}
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
-                  </HStack>
+                    </HStack>
 
-                  {/* Customization option */}
-                  <Pressable mt={2}>
-                    <Text style={styles.customizeText}>
-                      Customizable • Tap to add special instructions
-                    </Text>
-                  </Pressable>
-                </Box>
-              );
-            })}
+                    {/* Customization option */}
+                    <Pressable style={styles.customizeButton}>
+                      <Text style={styles.customizeText}>
+                        Customizable • Tap to add special instructions
+                      </Text>
+                    </Pressable>
+                  </Box>
+                );
+              })
+            )}
           </Box>
         </ScrollView>
       </Box>
@@ -317,11 +417,17 @@ export default function KitchenScreen({ route, navigation }) {
   );
 }
 
-const ORANGE = "#b95a01ff";
+const ORANGE = "#f97316";
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fafafa" },
-  container: { flex: 1, backgroundColor: "#fafafa" },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fafafa",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fafafa",
+  },
 
   /* Premium Header */
   headerContainer: {
@@ -340,10 +446,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  headerRight: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  iconButton: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
   headerTitle: {
     color: "#fff",
     fontWeight: "700",
     fontSize: 18,
+    fontFamily: "Poppins",
   },
 
   /* Premium Info Card */
@@ -360,18 +479,43 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
   },
+  infoHeader: {
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+  infoHeaderLeft: {
+    flex: 1,
+  },
   infoName: {
     fontWeight: "700",
     fontSize: 20,
     color: "#1f2937",
+    fontFamily: "Poppins",
+  },
+  locationRow: {
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
   },
   infoSub: {
     color: "#6b7280",
     fontSize: 13,
+    fontFamily: "OpenSans",
+  },
+  openBadge: {
+    backgroundColor: "#22c55e",
+    borderRadius: 9999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    color: "white",
+    fontSize: 10,
+    fontWeight: "700",
   },
   infoMetaRow: {
     marginTop: 12,
     flexDirection: "row",
+    gap: 16,
   },
   metaItem: {
     flexDirection: "row",
@@ -391,22 +535,31 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 13,
     fontWeight: "700",
+    fontFamily: "Poppins",
   },
   metaText: {
     fontSize: 13,
     color: "#4b5563",
     fontWeight: "600",
+    fontFamily: "OpenSans",
+  },
+  divider: {
+    marginVertical: 12,
   },
   infoDesc: {
     color: "#6b7280",
     fontSize: 13,
     lineHeight: 18,
+    fontFamily: "OpenSans",
   },
 
   /* Premium Gallery */
   galleryScroll: {
     paddingLeft: 16,
     paddingVertical: 16,
+  },
+  galleryContent: {
+    paddingRight: 16,
   },
   galleryItem: {
     width: 240,
@@ -439,6 +592,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
+    fontFamily: "Poppins",
   },
 
   /* Premium Offer Card */
@@ -456,6 +610,10 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginVertical: 12,
   },
+  offerContent: {
+    alignItems: "center",
+    gap: 12,
+  },
   offerIconBox: {
     width: 48,
     height: 48,
@@ -469,20 +627,28 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  offerTextContainer: {
+    flex: 1,
+  },
   offerTitle: {
     fontSize: 16,
     fontWeight: "700",
     color: ORANGE,
+    fontFamily: "Poppins",
   },
   offerSub: {
     fontSize: 12,
     color: "#9a6b3f",
     marginTop: 2,
+    fontFamily: "OpenSans",
   },
 
   /* Premium Tabs */
   tabsScroll: {
     marginVertical: 12,
+  },
+  tabsContent: {
+    paddingHorizontal: 16,
   },
   tabItem: {
     paddingHorizontal: 20,
@@ -503,6 +669,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#6b7280",
     fontWeight: "600",
+    fontFamily: "Poppins",
   },
   tabTextActive: {
     color: "#fff",
@@ -510,15 +677,38 @@ const styles = StyleSheet.create({
   },
 
   /* Premium Menu Items */
+  menuSection: {
+    paddingHorizontal: 16,
+    marginBottom: 100,
+  },
+  sectionHeaderRow: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: 8,
+  },
   sectionTitle: {
     fontWeight: "700",
     fontSize: 18,
     color: "#1f2937",
+    fontFamily: "Poppins",
   },
   itemCount: {
     fontSize: 13,
     color: "#9ca3af",
     fontWeight: "600",
+    fontFamily: "OpenSans",
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 15,
+    color: "#9ca3af",
+    marginTop: 16,
+    fontFamily: "OpenSans",
   },
   menuItemCard: {
     backgroundColor: "#ffffff",
@@ -530,6 +720,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+  },
+  menuItemRow: {
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  menuItemDetails: {
+    flex: 1,
+  },
+  itemBadges: {
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
   },
   vegIndicator: {
     width: 18,
@@ -544,27 +746,43 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
+  bestsellerBadge: {
+    backgroundColor: "#fff7ed",
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    color: "#ea580c",
+    fontSize: 10,
+    fontWeight: "700",
+  },
   itemName: {
     fontWeight: "700",
     fontSize: 16,
     color: "#1f2937",
     marginBottom: 4,
+    fontFamily: "Poppins",
   },
   itemPrice: {
     fontSize: 15,
     color: "#1f2937",
     fontWeight: "700",
     marginBottom: 6,
+    fontFamily: "Poppins",
   },
   itemDesc: {
     fontSize: 13,
     color: "#6b7280",
     lineHeight: 18,
+    fontFamily: "OpenSans",
+  },
+  customizeButton: {
+    marginTop: 8,
   },
   customizeText: {
     fontSize: 12,
     color: ORANGE,
     fontWeight: "600",
+    fontFamily: "OpenSans",
   },
 
   /* Image with Controls */
@@ -592,6 +810,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
+    gap: 4,
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
@@ -602,6 +821,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 13,
     fontWeight: "700",
+    fontFamily: "Poppins",
   },
   qtyControl: {
     backgroundColor: "#fff",
@@ -613,6 +833,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 4,
+    alignItems: "center",
+    gap: 8,
   },
   qtyButton: {
     padding: 4,
@@ -628,5 +850,6 @@ const styles = StyleSheet.create({
     minWidth: 20,
     textAlign: "center",
     color: "#1f2937",
+    fontFamily: "Poppins",
   },
 });

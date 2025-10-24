@@ -1,41 +1,37 @@
-// ManageAddresses.expanded.js
-// Fully expanded verbose version using your theme (brand.orange, brand.green, brand.dark, brand.light, brand.gray, brand.softGray)
-// Fonts from theme: Poppins (heading), OpenSans (body).
-// NativeBase v3 compatible. Minimal abstraction. Explicit styles and props for clarity.
-
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Platform, StyleSheet, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+
 import {
   Badge,
   Box,
-  Center,
-  Divider,
+  Button,
   HStack,
   Icon,
-  Input,
   Modal,
   Pressable,
   Radio,
   Text,
+  TextArea,
   useTheme,
   VStack,
 } from "native-base";
-import React, { useEffect, useState } from "react";
-import { FlatList, Platform, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import { useAddress } from "../context/AddressContext";
 
 export default function ManageAddresses() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { setSelectedAddress } = useAddress();
   const theme = useTheme();
-
-  // DO NOT abstract styles. Explicit per-element styles follow.
   const styles = makeStyles(theme);
 
   const [currentLocation, setCurrentLocation] = useState("Fetching location...");
   const [addresses, setAddresses] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState({ type: "Home", address: "" });
@@ -43,11 +39,16 @@ export default function ManageAddresses() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const saved = await AsyncStorage.getItem("addresses");
+        const [saved, savedSelectedId] = await Promise.all([
+          AsyncStorage.getItem("addresses"),
+          AsyncStorage.getItem("selectedAddressId"),
+        ]);
+
         if (saved) {
-          setAddresses(JSON.parse(saved));
+          const parsed = JSON.parse(saved);
+          setAddresses(parsed);
         } else {
-          setAddresses([
+          const seed = [
             {
               id: "1",
               type: "Office",
@@ -58,8 +59,12 @@ export default function ManageAddresses() {
               type: "Home",
               address: "123, Ashwini Kumar Rd, Khand Bazar, Varachha, Surat, Gujarat 395008",
             },
-          ]);
+          ];
+          setAddresses(seed);
+          await AsyncStorage.setItem("addresses", JSON.stringify(seed));
         }
+
+        if (savedSelectedId) setSelectedId(savedSelectedId);
       } catch (err) {
         console.log("Error loading addresses", err);
       }
@@ -81,14 +86,29 @@ export default function ManageAddresses() {
         setCurrentLocation("Detecting location...");
         setTimeout(() => setCurrentLocation("Surat, Gujarat, India"), 700);
       } catch (err) {
+        console.log(err);
         setCurrentLocation("Error fetching location");
       }
     })();
   }, []);
 
-  const handleSelect = (addr) => {
-    setSelectedAddress(addr);
-    navigation.goBack();
+  const persistSelectedId = async (id) => {
+    try {
+      setSelectedId(id);
+      await AsyncStorage.setItem("selectedAddressId", id);
+    } catch (e) {
+      console.log("Error saving selected address id", e);
+    }
+  };
+
+  const handleSelect = async (addrObj) => {
+    try {
+      setSelectedAddress(addrObj); // pass full object, not just string
+      await persistSelectedId(addrObj.id);
+      navigation.goBack();
+    } catch (e) {
+      console.log("Error on select", e);
+    }
   };
 
   const openEditModal = (item = null) => {
@@ -102,160 +122,128 @@ export default function ManageAddresses() {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (!form.address.trim()) return;
+  const handleSave = async () => {
+    const trimmed = form.address.trim();
+    if (trimmed.length < 8) return;
+
     let updated;
     if (editItem) {
       updated = addresses.map((a) =>
-        a.id === editItem.id ? { ...a, type: form.type, address: form.address } : a
+        a.id === editItem.id ? { ...a, type: form.type, address: trimmed } : a
       );
     } else {
-      updated = [
-        ...addresses,
-        { id: Date.now().toString(), type: form.type, address: form.address },
-      ];
+      const newItem = {
+        id: Date.now().toString(),
+        type: form.type,
+        address: trimmed,
+      };
+      updated = [newItem, ...addresses];
     }
     setAddresses(updated);
-    saveAddresses(updated);
+    await saveAddresses(updated);
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const updated = addresses.filter((a) => a.id !== id);
     setAddresses(updated);
-    saveAddresses(updated);
+    await saveAddresses(updated);
+    if (selectedId === id) {
+      try {
+        setSelectedAddress(null);
+        setSelectedId(null);
+        await AsyncStorage.removeItem("selectedAddressId");
+      } catch (e) {
+        console.log("Error clearing selection", e);
+      }
+    }
   };
 
-  // Icon and bg per type with theme
   const getAddressIcon = (type) => {
-    if (type === "Home") {
-      return { name: "home", color: theme.colors.brand.green, bg: "#e7f9f1" };
+    switch (type) {
+      case "Home":
+        return {
+          name: "home",
+          color: "#10b981",
+          bg: "#ecfdf5",
+          borderColor: "#a7f3d0",
+        };
+      case "Office":
+        return {
+          name: "business",
+          color: "#f59e0b",
+          bg: "#fffbeb",
+          borderColor: "#fde68a",
+        };
+      case "Other":
+        return {
+          name: "place",
+          color: "#8b5cf6",
+          bg: "#f5f3ff",
+          borderColor: "#ddd6fe",
+        };
+      default:
+        return {
+          name: "location-on",
+          color: "#6366f1",
+          bg: "#eef2ff",
+          borderColor: "#c7d2fe",
+        };
     }
-    if (type === "Office") {
-      return { name: "business", color: theme.colors.brand.orange, bg: "#fff2e5" };
-    }
-    return { name: "place", color: theme.colors.brand.gray, bg: "#eef2f7" };
   };
 
-  // Render a single saved address card
-  const renderAddressItem = ({ item }) => {
-    const icon = getAddressIcon(item.type);
+  const renderItem = ({ item }) => {
+    const iconData = getAddressIcon(item.type);
+    const isActive = selectedId && selectedId === item.id;
 
     return (
-      <Pressable onPress={() => handleSelect(item.address)} _pressed={{ opacity: 0.9 }}>
-        <Box style={styles.cardRoot}>
-          {/* Card header row with type and Active badge */}
-          <HStack style={styles.cardHeaderRow}>
-            <HStack alignItems='center' space={3}>
-              <Box style={{ padding: 10, borderRadius: 12, backgroundColor: icon.bg }}>
-                <Icon as={MaterialIcons} name={icon.name} color={icon.color} size={6} />
+      <Pressable onPress={() => handleSelect(item)} style={styles.cardPressable}>
+        <Box style={styles.card}>
+          <HStack style={styles.cardHeader}>
+            <HStack style={styles.cardHeaderLeft}>
+              <Box
+                style={[
+                  styles.iconBox,
+                  {
+                    backgroundColor: iconData.bg,
+                    borderColor: iconData.borderColor,
+                  },
+                ]}>
+                <Icon as={MaterialIcons} name={iconData.name} color={iconData.color} size={5} />
               </Box>
+
               <VStack>
-                <Text style={styles.cardTitleText}>{item.type}</Text>
-                <Text style={styles.cardSubText}>Saved Address</Text>
+                <Text style={styles.cardTitle}>{item.type}</Text>
+                <Text style={styles.cardSubtitle}>Saved Address</Text>
               </VStack>
             </HStack>
 
-            <Badge
-              alignSelf='center'
-              variant='subtle'
-              borderRadius='full'
-              _text={{ fontSize: 10, fontWeight: "700", fontFamily: "OpenSans" }}
-              style={styles.activeBadge}>
-              Active
-            </Badge>
+            {isActive ? (
+              <Badge style={styles.activeBadge}>
+                <HStack style={styles.badgeContent}>
+                  <Box style={styles.badgeDot} />
+                  <Text style={styles.badgeText}>Active</Text>
+                </HStack>
+              </Badge>
+            ) : null}
           </HStack>
 
-          {/* Address body with left accent */}
-          <Box
-            style={{
-              backgroundColor: theme.colors.brand.light,
-              padding: 12,
-              borderRadius: 14,
-              borderLeftWidth: 3,
-              borderLeftColor: icon.color,
-              marginBottom: 12,
-            }}>
-            <Text
-              style={{
-                fontFamily: "OpenSans",
-                color: theme.colors.brand.dark,
-                fontSize: 13,
-                lineHeight: 18,
-              }}>
-              {item.address}
-            </Text>
+          <Box style={[styles.addressBox, { borderLeftColor: iconData.color }]}>
+            <Text style={styles.addressText}>{item.address}</Text>
           </Box>
 
-          {/* Actions explicit: Edit and Delete as distinct buttons */}
-          <HStack space={3} style={styles.cardActionsRow}>
-            {/* Edit button explicit */}
-            <Pressable
-              onPress={() => openEditModal(item)}
-              _pressed={{ opacity: 0.92 }}
-              style={{ flex: 1 }}>
-              <Box
-                style={{
-                  backgroundColor: "#ffffff",
-                  borderRadius: 14,
-                  paddingVertical: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1.2,
-                  borderColor: theme.colors.brand.orange,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.06,
-                  shadowRadius: 6,
-                  elevation: 2,
-                }}>
-                <HStack alignItems='center' space={2}>
-                  <Icon as={MaterialIcons} name='edit' color={theme.colors.brand.orange} size={4} />
-                  <Text
-                    style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "600",
-                      fontSize: 14,
-                      color: theme.colors.brand.orange,
-                    }}>
-                    Edit
-                  </Text>
-                </HStack>
+          <HStack style={styles.actionsRow}>
+            <Pressable style={styles.actionPressable} onPress={() => openEditModal(item)}>
+              <Box style={[styles.actionButton, styles.editButton]}>
+                <Icon as={MaterialIcons} name='edit' color='#f59e0b' size='sm' />
+                <Text style={styles.editLabel}>Edit</Text>
               </Box>
             </Pressable>
 
-            {/* Delete button explicit */}
-            <Pressable
-              onPress={() => handleDelete(item.id)}
-              _pressed={{ opacity: 0.92 }}
-              style={{ flex: 1 }}>
-              <Box
-                style={{
-                  backgroundColor: "#ffffff",
-                  borderRadius: 14,
-                  paddingVertical: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1.2,
-                  borderColor: "#ef4444",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.06,
-                  shadowRadius: 6,
-                  elevation: 2,
-                }}>
-                <HStack alignItems='center' space={2}>
-                  <Icon as={MaterialIcons} name='delete-outline' color='#ef4444' size={4} />
-                  <Text
-                    style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "600",
-                      fontSize: 14,
-                      color: "#ef4444",
-                    }}>
-                    Delete
-                  </Text>
-                </HStack>
+            <Pressable style={styles.actionPressable} onPress={() => handleDelete(item.id)}>
+              <Box style={[styles.actionButton, styles.deleteButton]}>
+                <Icon as={MaterialIcons} name='delete-outline' color='#ef4444' size='sm' />
+                <Text style={styles.deleteLabel}>Delete</Text>
               </Box>
             </Pressable>
           </HStack>
@@ -264,417 +252,238 @@ export default function ManageAddresses() {
     );
   };
 
+  const currentObj = {
+    id: "current",
+    type: "Current",
+    address: currentLocation,
+  };
+
   return (
-    <SafeAreaView style={styles.safeAreaRoot}>
-      {/* Header explicit with solid brand.orange and white text/icons */}
+    <SafeAreaView style={styles.safeArea}>
       <Box
-        style={{
-          backgroundColor: theme.colors.brand.orange,
-          paddingBottom: 18,
-          paddingTop: Platform.OS === "ios" ? 20 : 18,
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20,
-          paddingHorizontal: 20,
+        style={styles.headerBox}
+        bg={{
+          linearGradient: {
+            colors: ["#f97316", "#ea580c", "#c2410c"],
+            start: [0, 0],
+            end: [1, 1],
+          },
         }}>
-        <HStack
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-          <HStack alignItems='center' space={3}>
-            <Pressable onPress={() => navigation.goBack()} _pressed={{ opacity: 0.85 }}>
-              <Box
-                style={{
-                  padding: 8,
-                  borderRadius: 999,
-                  borderColor: "rgba(255,255,255,0.6)",
-                  borderWidth: 1,
-                }}>
-                <Icon as={MaterialIcons} name='arrow-back' color='white' size={6} />
-              </Box>
+        <HStack style={styles.headerInner}>
+          <HStack style={styles.headerLeft}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.headerBack}
+              accessibilityRole='button'
+              accessibilityLabel='Go back'>
+              <Icon as={MaterialIcons} name='arrow-back' color='white' size={6} />
             </Pressable>
 
             <VStack>
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 22,
-                  fontWeight: "800",
-                  fontFamily: "Poppins",
-                }}>
-                My Addresses
-              </Text>
-              <Text
-                style={{
-                  color: "rgba(255,255,255,0.92)",
-                  fontSize: 12,
-                  fontFamily: "OpenSans",
-                }}>
-                Manage your delivery locations
-              </Text>
+              <Text style={styles.headerTitle}>My Addresses</Text>
+              <Text style={styles.headerSubtitle}>Manage delivery locations</Text>
             </VStack>
           </HStack>
 
-          <Center
-            style={{
-              backgroundColor: "rgba(255,255,255,0.2)",
-              padding: 8,
-              borderRadius: 999,
-            }}>
+          <Box style={styles.headerIconBox}>
             <Icon as={MaterialIcons} name='location-on' color='white' size={6} />
-          </Center>
+          </Box>
         </HStack>
       </Box>
 
-      {/* Current location card explicit */}
-      <View style={{ paddingHorizontal: 20, marginTop: 12 }}>
-        <Pressable onPress={() => handleSelect(currentLocation)} _pressed={{ opacity: 0.92 }}>
-          <Box
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: 20,
-              overflow: "hidden",
-              borderWidth: 1,
-              borderColor: theme.colors.brand.softGray,
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.12,
-              shadowRadius: 12,
-            }}>
-            <Box style={{ height: 4, backgroundColor: theme.colors.brand.orange, opacity: 0.95 }} />
-            <HStack
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-              }}>
-              <Box
-                style={{
-                  backgroundColor: "#fff7ed",
-                  padding: 12,
-                  borderRadius: 12,
-                }}>
-                <Icon as={MaterialIcons} name='my-location' color='#c2410c' size={7} />
-              </Box>
+      <View style={styles.currentLocationWrapper}>
+        <Pressable onPress={() => handleSelect(currentObj)} style={styles.currentPressable}>
+          <Box style={styles.currentCard}>
+            <Box style={styles.currentCardGradient}>
+              <HStack style={styles.currentCardInner}>
+                <Box style={styles.currentIconBg}>
+                  <Icon as={MaterialIcons} name='my-location' color='#ea580c' size={6} />
+                </Box>
 
-              <VStack flex={1} style={{ marginLeft: 12 }}>
-                <HStack alignItems='center' space={2} style={{ marginBottom: 4 }}>
-                  <Text
-                    style={{
-                      fontWeight: "700",
-                      fontSize: 15,
-                      fontFamily: "Poppins",
-                      color: theme.colors.brand.dark,
-                    }}>
-                    Current Location
+                <VStack style={styles.currentContentFlex}>
+                  <HStack style={styles.currentTitleRow}>
+                    <Text style={styles.currentTitle}>Current Location</Text>
+                    <Badge style={styles.liveBadge}>
+                      <HStack style={styles.liveBadgeContent}>
+                        <Box style={styles.livePulse} />
+                        <Text style={styles.liveText}>LIVE</Text>
+                      </HStack>
+                    </Badge>
+                  </HStack>
+
+                  <Text style={styles.currentSubtitle} numberOfLines={2}>
+                    {currentLocation}
                   </Text>
-                  <Badge
-                    colorScheme='warning'
-                    variant='subtle'
-                    borderRadius='full'
-                    _text={{ fontSize: 9, fontWeight: "700", fontFamily: "OpenSans" }}>
-                    LIVE
-                  </Badge>
-                </HStack>
+                </VStack>
 
-                <Text
-                  numberOfLines={2}
-                  style={{
-                    fontSize: 13,
-                    fontFamily: "OpenSans",
-                    color: "#6b7280",
-                  }}>
-                  {currentLocation}
-                </Text>
-              </VStack>
-
-              <Icon as={MaterialIcons} name='chevron-right' color='coolGray.400' size={6} />
-            </HStack>
+                <Icon as={MaterialIcons} name='chevron-right' color='#9ca3af' size={6} />
+              </HStack>
+            </Box>
           </Box>
         </Pressable>
       </View>
 
-      {/* Section heading explicit */}
-      <Box style={{ paddingHorizontal: 20, marginTop: 20 }}>
-        <HStack alignItems='center' justifyContent='space-between'>
+      <Box style={styles.contentBox}>
+        <HStack style={styles.sectionHeader}>
           <VStack>
-            <Text
-              style={{
-                fontFamily: "Poppins",
-                fontWeight: "700",
-                fontSize: 18,
-                color: theme.colors.brand.dark,
-              }}>
-              Saved Addresses
-            </Text>
-            <Text
-              style={{
-                fontFamily: "OpenSans",
-                fontSize: 12,
-                color: theme.colors.brand.gray,
-              }}>
-              {addresses.length} {addresses.length === 1 ? "location" : "locations"} saved
+            <Text style={styles.sectionTitle}>Saved Addresses</Text>
+            <Text style={styles.sectionSubtitle}>
+              {addresses.length} location{addresses.length !== 1 ? "s" : ""} saved
             </Text>
           </VStack>
         </HStack>
-      </Box>
 
-      {/* List explicit */}
-      <Box style={{ paddingHorizontal: 20, flex: 1, marginTop: 12 }}>
         <FlatList
           data={addresses}
-          renderItem={renderAddressItem}
+          renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 160 }}
+          contentContainerStyle={[
+            styles.flatListContent,
+            { paddingBottom: 120 + insets.bottom + 56 },
+          ]}
+          ListEmptyComponent={() => (
+            <Box style={{ paddingVertical: 40, alignItems: "center" }}>
+              <Text style={{ color: "#6b7280" }}>No saved addresses yet</Text>
+            </Box>
+          )}
         />
       </Box>
 
-      {/* Bottom gradient fade explicit */}
       <Box
         pointerEvents='none'
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 96,
-          backgroundColor: "transparent",
+        style={styles.bottomFade}
+        bg={{
+          linearGradient: {
+            colors: ["rgba(249, 250, 251, 0)", "rgba(249, 250, 251, 1)"],
+            start: [0, 0],
+            end: [0, 1],
+          },
         }}
       />
 
-      {/* Floating Add button explicit with gradient-like two-tone using brand colors */}
-      <View
-        style={{
-          position: "absolute",
-          left: 20,
-          right: 20,
-          bottom: 20,
-        }}>
-        <Pressable onPress={() => openEditModal()} _pressed={{ opacity: 0.9 }}>
+      <View style={[styles.fabWrapper, { bottom: 16 + insets.bottom, zIndex: 50 }]}>
+        <Pressable onPress={() => openEditModal()} style={styles.fabPressable}>
           <Box
-            style={{
-              borderRadius: 18,
-              paddingVertical: 16,
-              alignItems: "center",
-              justifyContent: "center",
-              elevation: 10,
-              shadowColor: theme.colors.brand.green,
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.28,
-              shadowRadius: 14,
-              backgroundColor: theme.colors.brand.green,
+            style={styles.fab}
+            bg={{
+              linearGradient: {
+                colors: ["#10b981", "#059669", "#047857"],
+                start: [0, 0],
+                end: [1, 0],
+              },
             }}>
-            <HStack alignItems='center' justifyContent='center' space={3}>
-              <Icon as={MaterialIcons} name='add-circle-outline' color='white' size={6} />
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontFamily: "Poppins",
-                  fontWeight: "700",
-                  fontSize: 16,
-                }}>
-                Add New Address
-              </Text>
-            </HStack>
+            <Icon as={MaterialIcons} name='add-circle-outline' color='white' size={5} />
+            <Text style={styles.fabLabel}>Add New Address</Text>
           </Box>
         </Pressable>
       </View>
 
-      {/* Modal explicit */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size='lg'>
-        <Modal.Content
-          style={{
-            borderRadius: 24,
-            backgroundColor: "#ffffff",
-            overflow: "hidden",
-          }}>
-          <Modal.CloseButton _icon={{ color: "coolGray.500" }} _pressed={{ bg: "coolGray.100" }} />
+        <Modal.Content style={styles.modalContent}>
+          <Modal.CloseButton />
 
-          <Modal.Header
-            style={{
-              backgroundColor: "#f8fafb",
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              borderBottomWidth: 1,
-              borderColor: theme.colors.brand.softGray,
-              paddingHorizontal: 18,
-              paddingVertical: 12,
-            }}>
-            <HStack alignItems='center' space={3}>
+          <Modal.Header style={styles.modalHeader}>
+            <HStack style={styles.modalHeaderContent}>
               <Box
-                style={{
-                  padding: 8,
-                  borderRadius: 8,
-                  backgroundColor: theme.colors.brand.orange,
+                style={styles.modalIconBg}
+                bg={{
+                  linearGradient: {
+                    colors: ["#f59e0b", "#ea580c"],
+                    start: [0, 0],
+                    end: [1, 1],
+                  },
                 }}>
                 <Icon
                   as={MaterialIcons}
                   name={editItem ? "edit-location" : "add-location"}
-                  color='white'
-                  size={5}
+                  color='#10b981'
+                  size={7}
                 />
               </Box>
-              <Text
-                style={{
-                  fontFamily: "Poppins",
-                  fontWeight: "700",
-                  fontSize: 16,
-                  color: theme.colors.brand.dark,
-                }}>
-                {editItem ? "Edit Address" : "Add New Address"}
-              </Text>
+              <VStack>
+                <Text style={styles.modalTitle}>
+                  {editItem ? "Edit Address" : "Add New Address"}
+                </Text>
+                <Text style={styles.modalSubtitle}>
+                  {editItem ? "Update your delivery location" : "Add a new delivery location"}
+                </Text>
+              </VStack>
             </HStack>
           </Modal.Header>
 
-          <Modal.Body
-            style={{
-              paddingVertical: 18,
-              paddingHorizontal: 12,
-            }}>
-            {/* Address Type explicit */}
-            <VStack space={3} style={{ marginBottom: 14 }}>
-              <Text
-                style={{
-                  fontFamily: "Poppins",
-                  fontWeight: "600",
-                  fontSize: 14,
-                  color: theme.colors.brand.dark,
-                  marginBottom: 6,
-                }}>
-                Address Type
-              </Text>
-              <Radio.Group
-                name='addressType'
-                value={form.type}
-                onChange={(val) => setForm({ ...form, type: val })}>
-                <HStack space={4}>
-                  <Radio
-                    value='Home'
-                    colorScheme='success'
-                    _text={{ fontFamily: "OpenSans", fontSize: "sm" }}>
-                    Home
-                  </Radio>
-                  <Radio
-                    value='Office'
-                    colorScheme='info'
-                    _text={{ fontFamily: "OpenSans", fontSize: "sm" }}>
-                    Office
-                  </Radio>
-                  <Radio
-                    value='Other'
-                    colorScheme='warning'
-                    _text={{ fontFamily: "OpenSans", fontSize: "sm" }}>
-                    Other
-                  </Radio>
-                </HStack>
-              </Radio.Group>
-            </VStack>
+          <Modal.Body style={styles.modalBody}>
+            <VStack style={styles.modalVStack}>
+              <VStack>
+                <Text style={styles.fieldLabel}>Address Type</Text>
+                <Radio.Group
+                  name='addressType'
+                  value={form.type}
+                  onChange={(val) => setForm({ ...form, type: val })}>
+                  <HStack style={styles.radioGroup}>
+                    <Pressable
+                      style={[styles.radioCard, form.type === "Home" && styles.radioCardActive]}
+                      onPress={() => setForm({ ...form, type: "Home" })}>
+                      <Radio value='Home' colorScheme='success' />
+                      <Text style={styles.radioLabel}>Home</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.radioCard, form.type === "Office" && styles.radioCardActive]}
+                      onPress={() => setForm({ ...form, type: "Office" })}>
+                      <Radio value='Office' colorScheme='warning' />
+                      <Text style={styles.radioLabel}>Office</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.radioCard, form.type === "Other" && styles.radioCardActive]}
+                      onPress={() => setForm({ ...form, type: "Other" })}>
+                      <Radio value='Other' colorScheme='purple' />
+                      <Text style={styles.radioLabel}>Other</Text>
+                    </Pressable>
+                  </HStack>
+                </Radio.Group>
+              </VStack>
 
-            <Divider bg={theme.colors.brand.softGray} />
-
-            {/* Address Field explicit */}
-            <VStack space={2} style={{ marginTop: 14 }}>
-              <Text
-                style={{
-                  fontFamily: "Poppins",
-                  fontWeight: "600",
-                  fontSize: 14,
-                  color: theme.colors.brand.dark,
-                }}>
-                Complete Address
-              </Text>
-              <Input
-                placeholder='Enter your full address with landmarks'
-                multiline
-                numberOfLines={4}
-                value={form.address}
-                onChangeText={(v) => setForm({ ...form, address: v })}
-                bg='white'
-                borderColor='coolGray.300'
-                borderWidth={1}
-                style={{
-                  borderRadius: 14,
-                  paddingVertical: 12,
-                  paddingHorizontal: 12,
-                  fontFamily: "OpenSans",
-                  fontSize: 14,
-                  color: theme.colors.brand.dark,
-                }}
-                _focus={{
-                  borderColor: theme.colors.brand.orange,
-                  backgroundColor: "white",
-                  borderWidth: 2,
-                }}
-              />
+              <VStack>
+                <Text style={styles.fieldLabel}>Complete Address</Text>
+                <TextArea
+                  placeholder='Enter your full address with landmarks'
+                  value={form.address}
+                  onChangeText={(v) => setForm({ ...form, address: v })}
+                  totalLines={4}
+                  style={styles.input}
+                  bg='#fafafa'
+                  borderColor='#e5e7eb'
+                  _focus={{
+                    borderColor: "#f59e0b",
+                    backgroundColor: "white",
+                    borderWidth: 2,
+                  }}
+                />
+              </VStack>
             </VStack>
           </Modal.Body>
 
-          <Modal.Footer
-            style={{
-              borderTopWidth: 1,
-              borderColor: theme.colors.brand.softGray,
-              paddingHorizontal: 12,
-              paddingVertical: 12,
-            }}>
-            <HStack space={3} style={{ width: "100%" }}>
-              {/* Cancel explicit */}
-              <Pressable
+          <Modal.Footer style={styles.modalFooter}>
+            <HStack style={styles.modalFooterButtons}>
+              <Button
                 onPress={() => setIsModalOpen(false)}
-                style={{ flex: 1 }}
-                _pressed={{ opacity: 0.9 }}>
-                <Box
-                  style={{
-                    borderRadius: 24,
-                    borderWidth: 1,
-                    borderColor: "#e5e7eb",
-                    backgroundColor: "#ffffff",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "600",
-                      fontSize: 14,
-                      color: theme.colors.brand.dark,
-                    }}>
-                    Cancel
-                  </Text>
-                </Box>
-              </Pressable>
+                style={styles.cancelButton}
+                variant='outline'>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Button>
 
-              {/* Save explicit */}
-              <Pressable onPress={handleSave} style={{ flex: 1 }} _pressed={{ opacity: 0.9 }}>
-                <Box
-                  style={{
-                    borderRadius: 24,
-                    backgroundColor: theme.colors.brand.orange,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.12,
-                    shadowRadius: 8,
-                    elevation: 3,
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "700",
-                      fontSize: 14,
-                      color: "#ffffff",
-                    }}>
-                    Save Address
-                  </Text>
-                </Box>
-              </Pressable>
+              <Button
+                onPress={handleSave}
+                style={styles.saveButton}
+                bg={{
+                  linearGradient: {
+                    colors: ["#f59e0b", "#ea580c"],
+                    start: [0, 0],
+                    end: [1, 0],
+                  },
+                }}>
+                <Text style={styles.saveButtonText}>Save Address</Text>
+              </Button>
             </HStack>
           </Modal.Footer>
         </Modal.Content>
@@ -684,63 +493,467 @@ export default function ManageAddresses() {
 }
 
 function makeStyles(theme) {
-  // Keep explicit even for root to increase readability and maintainability.
   return StyleSheet.create({
-    safeAreaRoot: {
+    safeArea: {
       flex: 1,
-      backgroundColor: theme.colors.brand.light,
+      backgroundColor: "#f9fafb",
     },
-
-    // Card root explicit
-    cardRoot: {
-      backgroundColor: "#ffffff",
-      borderRadius: 20,
-      padding: 20,
-      marginBottom: 16,
-      borderWidth: 1,
-      borderColor: theme.colors.brand.softGray,
-      elevation: 3,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
+    headerBox: {
+      marginBottom: 10,
+      paddingTop: Platform.OS === "ios" ? 12 : 16,
+      paddingBottom: 10,
+      paddingHorizontal: 20,
+      backgroundColor: "#FF7A00",
+      borderBottomRightRadius: 20,
+      borderBottomLeftRadius: 20,
     },
-
-    // Header row for card
-    cardHeaderRow: {
+    headerInner: {
+      color: "#fff",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 8,
     },
-
-    // Card title text explicit
-    cardTitleText: {
+    headerLeft: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 14,
+    },
+    headerBack: {
+      padding: 8,
+      borderRadius: 12,
+      backgroundColor: "rgba(255,255,255,0.2)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.3)",
+    },
+    headerTitle: {
+      color: "#fff",
+      fontSize: 20,
+      fontWeight: "700",
+      fontFamily: "Poppins",
+    },
+    headerSubtitle: {
+      color: "#fff",
+      fontSize: 12,
+      fontFamily: "OpenSans",
+      marginTop: 2,
+    },
+    headerIconBox: {
+      padding: 10,
+      borderRadius: 12,
+      borderColor: "#fff",
+      borderWidth: 1,
+    },
+    currentLocationWrapper: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+      zIndex: 10,
+    },
+    currentPressable: {
+      opacity: 1,
+    },
+    currentCard: {
+      backgroundColor: "#fff",
+      borderRadius: 18,
+      overflow: "hidden",
+      elevation: 8,
+      shadowColor: "#f59e0b",
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.15,
+      shadowRadius: 16,
+      borderWidth: 1,
+      borderColor: "#faeeee",
+    },
+    currentCardGradient: {
+      borderTopWidth: 3,
+      borderTopColor: "#f59e0b",
+    },
+    currentCardInner: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 18,
+      gap: 14,
+    },
+    currentIconBg: {
+      backgroundColor: "#fff7ed",
+      padding: 12,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: "#fed7aa",
+    },
+    currentContentFlex: {
+      flex: 1,
+    },
+    currentTitleRow: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 10,
+      marginBottom: 6,
+    },
+    currentTitle: {
+      fontWeight: "700",
+      fontSize: 15,
+      fontFamily: "Poppins",
+      color: "#111827",
+      letterSpacing: -0.2,
+    },
+    currentSubtitle: {
+      fontSize: 13,
+      fontFamily: "OpenSans",
+      color: "#6b7280",
+      lineHeight: 19,
+    },
+    liveBadge: {
+      backgroundColor: "transparent",
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+    },
+    liveBadgeContent: {
+      alignItems: "center",
+      gap: 5,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      backgroundColor: "#fef3c7",
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: "#fde68a",
+    },
+    livePulse: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: "#f59e0b",
+    },
+    liveText: {
+      fontSize: 9,
+      fontWeight: "800",
+      color: "#92400e",
+      fontFamily: "Poppins",
+      letterSpacing: 0.5,
+    },
+    contentBox: {
+      paddingHorizontal: 20,
+      flex: 1,
+    },
+    sectionHeader: {
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 18,
+    },
+    sectionTitle: {
+      fontFamily: "Poppins",
+      fontWeight: "700",
+      fontSize: 18,
+      color: "#111827",
+    },
+    sectionSubtitle: {
+      fontFamily: "OpenSans",
+      fontSize: 13,
+      color: "#9ca3af",
+      marginTop: 3,
+    },
+    flatListContent: {
+      paddingBottom: 140,
+    },
+    cardPressable: {
+      opacity: 1,
+    },
+    card: {
+      backgroundColor: "#fff",
+      borderRadius: 18,
+      padding: 18,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: "#f3f4f6",
+      elevation: 3,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+    },
+    cardHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 14,
+    },
+    cardHeaderLeft: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 12,
+      flex: 1,
+    },
+    iconBox: {
+      padding: 11,
+      borderRadius: 13,
+      borderWidth: 1,
+    },
+    cardTitle: {
       fontSize: 16,
       fontWeight: "700",
       fontFamily: "Poppins",
-      color: theme.colors.brand.dark,
+      color: "#111827",
+      letterSpacing: -0.2,
     },
-
-    // Card subtitle explicit
-    cardSubText: {
-      fontSize: 12,
+    cardSubtitle: {
+      fontSize: 11,
       fontFamily: "OpenSans",
-      color: theme.colors.brand.gray,
+      color: "#9ca3af",
+      marginTop: 2,
     },
-
-    // Action row explicit
-    cardActionsRow: {
-      flexDirection: "row",
-    },
-
-    // Active badge explicit extra outline via shadow for clarity
     activeBadge: {
+      backgroundColor: "transparent",
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+    },
+    badgeContent: {
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      backgroundColor: "#d1fae5",
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: "#a7f3d0",
+    },
+    badgeDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: "#10b981",
+    },
+    badgeText: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: "#065f46",
+      fontFamily: "Poppins",
+      letterSpacing: 0.3,
+    },
+    addressBox: {
+      backgroundColor: "#fafafa",
+      padding: 14,
+      borderRadius: 12,
+      borderLeftWidth: 3,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: "#f3f4f6",
+    },
+    addressText: {
+      fontFamily: "OpenSans",
+      color: "#4b5563",
+      fontSize: 13,
+      lineHeight: 20,
+    },
+    actionsRow: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    actionPressable: {
+      flex: 1,
+    },
+    actionButton: {
+      backgroundColor: "#fafafa",
+      borderRadius: 12,
+      paddingVertical: 11,
+      paddingHorizontal: 14,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 7,
+      borderWidth: 1.5,
+    },
+    editButton: {
+      borderColor: "#fed7aa",
+      backgroundColor: "#fffbeb",
+    },
+    deleteButton: {
+      borderColor: "#fecaca",
+      backgroundColor: "#fef2f2",
+    },
+    editLabel: {
+      fontFamily: "Poppins",
+      fontWeight: "600",
+      fontSize: 13,
+      color: "#f59e0b",
+      letterSpacing: -0.1,
+    },
+    deleteLabel: {
+      fontFamily: "Poppins",
+      fontWeight: "600",
+      fontSize: 13,
+      color: "#ef4444",
+      letterSpacing: -0.1,
+    },
+    bottomFade: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: 96,
+      zIndex: 0,
+    },
+    fabWrapper: {
+      position: "absolute",
+      left: 20,
+      right: 20,
+      bottom: 20,
+    },
+    fabPressable: {
+      opacity: 1,
+    },
+    fab: {
+      borderRadius: 16,
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+      elevation: 20,
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.08,
-      shadowRadius: 2,
-      backgroundColor: "#ecfdf5",
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.2,
+      shadowRadius: 20,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.3)",
+      backgroundColor: "#FF7A00",
+    },
+    fabLabel: {
+      color: "#fff",
+      fontFamily: "Poppins",
+      fontWeight: "700",
+      fontSize: 15,
+      letterSpacing: -0.2,
+    },
+    modalContent: {
+      borderRadius: 24,
+      backgroundColor: "#fff",
+      overflow: "hidden",
+    },
+    modalHeader: {
+      backgroundColor: "#fafafa",
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      borderBottomWidth: 1,
+      borderColor: "#f3f4f6",
+      paddingHorizontal: 20,
+      paddingVertical: 18,
+    },
+    modalHeaderContent: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 14,
+    },
+    modalIconBg: {
+      padding: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.3)",
+    },
+    modalTitle: {
+      fontFamily: "Poppins",
+      fontWeight: "700",
+      fontSize: 17,
+      color: "#111827",
+      letterSpacing: -0.3,
+    },
+    modalSubtitle: {
+      fontFamily: "OpenSans",
+      fontSize: 12,
+      color: "#6b7280",
+      marginTop: 2,
+    },
+    modalBody: {
+      paddingVertical: 24,
+      paddingHorizontal: 20,
+    },
+    modalVStack: {
+      gap: 24,
+    },
+    fieldLabel: {
+      fontFamily: "Poppins",
+      fontWeight: "600",
+      fontSize: 14,
+      marginBottom: 12,
+      color: "#374151",
+      letterSpacing: -0.1,
+    },
+    radioGroup: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    radioCard: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      margin: -7,
+      borderWidth: 1,
+      borderColor: "#e5e7eb",
+      backgroundColor: "#fafafa",
+    },
+    radioCardActive: {
+      borderColor: "#f59e0b",
+      backgroundColor: "#fffbeb",
+    },
+    radioLabel: {
+      fontFamily: "Poppins",
+      fontSize: 13,
+      fontWeight: "600",
+      color: "#374151",
+    },
+    input: {
+      borderRadius: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 12,
+      fontFamily: "OpenSans",
+      fontSize: 14,
+      textAlignVertical: "top",
+      lineHeight: 18,
+      borderColor: "#fff",
+      borderWidth: 1,
+    },
+    modalFooter: {
+      borderTopWidth: 1,
+      borderColor: "#f3f4f6",
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      backgroundColor: "#fafafa",
+    },
+    modalFooterButtons: {
+      flex: 1,
+      flexDirection: "row",
+      gap: 12,
+    },
+    cancelButton: {
+      flex: 1,
+      borderRadius: 14,
+      borderWidth: 1.5,
+      borderColor: "#d1d5db",
+      backgroundColor: "#fff",
+      paddingVertical: 14,
+    },
+    cancelButtonText: {
+      fontFamily: "Poppins",
+      fontWeight: "600",
+      fontSize: 14,
+      color: "#6b7280",
+    },
+    saveButton: {
+      flex: 1,
+      borderRadius: 14,
+      paddingVertical: 14,
+      borderWidth: 1,
+      backgroundColor: "#06b379",
+      borderColor: "rgba(255,255,255,0.3)",
+    },
+    saveButtonText: {
+      fontFamily: "Poppins",
+      fontWeight: "700",
+      fontSize: 14,
+      color: "#fff",
     },
   });
 }

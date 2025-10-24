@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
 import {
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton";
+import { useAuth } from "../context/AuthContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -19,7 +19,7 @@ const slides = [
   {
     id: "1",
     image: require("@/assets/download.jpeg"),
-    title: "Order Tiffin Meals",
+    title: "Order Homemade Food",
     description: "Get fresh and healthy tiffins delivered right at your doorstep.",
   },
   {

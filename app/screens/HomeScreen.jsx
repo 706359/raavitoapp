@@ -21,13 +21,12 @@ import { kitchens } from "../data/menu";
 
 const { width } = Dimensions.get("window");
 
-// CategoryCard component - Outside main component to prevent recreation
 const CategoryCard = React.memo(({ item, shadowColor, textColor }) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
-      toValue: 0.92,
+      toValue: 0.95,
       useNativeDriver: true,
     }).start();
   };
@@ -50,6 +49,7 @@ const CategoryCard = React.memo(({ item, shadowColor, textColor }) => {
         style={styles.categoryPressable}>
         <View style={[styles.categoryImageContainer, { shadowColor }]}>
           <Image source={item.image} style={styles.categoryImage} />
+          <View style={styles.categoryOverlay} />
         </View>
         <Text style={[styles.categoryText, { color: textColor }]} numberOfLines={2}>
           {item.name}
@@ -90,21 +90,21 @@ export default function HomeScreen() {
       id: "1",
       title: "Premium Subscription",
       subtitle: "Save up to 60% for 6 months",
-      gradient: [theme.colors.brand.orange, "#f5c18d"],
+      gradient: ["#f97316", "#fb923c"],
       image: require("../assets/Rajasthani.jpg"),
     },
     {
       id: "2",
       title: "Fresh & Healthy",
       subtitle: "Farm to table daily specials",
-      gradient: [theme.colors.brand.green, "#baf7c9"],
+      gradient: ["#10b981", "#34d399"],
       image: require("../assets/Gujarati.jpeg"),
     },
     {
       id: "3",
       title: "Weekend Feast",
       subtitle: "20% off on family combos",
-      gradient: ["#12c6d6", "#c3f7f4"],
+      gradient: ["#0ea5e9", "#38bdf8"],
       image: require("../assets/Dosa.jpg"),
     },
   ];
@@ -122,37 +122,36 @@ export default function HomeScreen() {
       icon: "pricetag",
       title: "₹50 OFF",
       sub: "First Order",
-      colors: [theme.colors.brand.orange, "#d67412"],
+      colors: ["#f97316", "#ea580c"],
     },
     {
       id: "offer-2",
       icon: "nutrition",
       title: "Combo Deal",
       sub: "Thali + Drink",
-      colors: [theme.colors.brand.green, "#0a9e30"],
+      colors: ["#10b981", "#059669"],
     },
     {
       id: "offer-3",
       icon: "people",
       title: "Family Pack",
       sub: "20% Discount",
-      colors: ["#d67412", theme.colors.brand.orange],
+      colors: ["#8b5cf6", "#7c3aed"],
     },
     {
       id: "offer-4",
       icon: "flash",
       title: "Flash Sale",
       sub: "2 Hours Left",
-      colors: [theme.colors.brand.green, "#0a9e30"],
+      colors: ["#ef4444", "#dc2626"],
     },
   ];
 
-  // Entrance animation
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
       Animated.spring(slideAnim, {
@@ -164,7 +163,6 @@ export default function HomeScreen() {
     ]).start();
   }, [fadeAnim, slideAnim]);
 
-  // Location fetch
   useEffect(() => {
     (async () => {
       try {
@@ -193,14 +191,13 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  // Banner autoplay with proper cleanup
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((prevIndex) => {
         const nextIndex = (prevIndex + 1) % banners.length;
         if (bannerScrollRef.current && typeof bannerScrollRef.current.scrollTo === "function") {
           bannerScrollRef.current.scrollTo({
-            x: nextIndex * width,
+            x: nextIndex * (width - 32),
             animated: true,
           });
         }
@@ -212,9 +209,8 @@ export default function HomeScreen() {
   }, [banners.length]);
 
   const CARD_WIDTH = width * 0.45;
-  const CARD_HEIGHT = 210;
+  const CARD_HEIGHT = 220;
 
-  // Handle scroll for Top Rated section
   const handleTopKitchensScroll = (event) => {
     const scrollX = event.nativeEvent.contentOffset.x;
     const contentWidth = event.nativeEvent.contentSize.width;
@@ -226,7 +222,7 @@ export default function HomeScreen() {
 
   const scrollTopKitchens = (direction) => {
     if (topKitchensScrollRef.current) {
-      const scrollAmount = CARD_WIDTH + 12; // card width + gap
+      const scrollAmount = CARD_WIDTH + 12;
       topKitchensScrollRef.current.scrollTo({
         x:
           direction === "left"
@@ -237,7 +233,6 @@ export default function HomeScreen() {
     }
   };
 
-  // Memoized filtered kitchens
   const filteredKitchens = useMemo(() => {
     if (!searchQuery.trim()) return kitchens;
     return kitchens.filter((kitchen) =>
@@ -245,12 +240,11 @@ export default function HomeScreen() {
     );
   }, [searchQuery]);
 
-  // KitchenCard component
   const KitchenCard = ({ item }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
     const handlePressIn = () => {
       Animated.spring(scaleValue, {
-        toValue: 0.96,
+        toValue: 0.97,
         useNativeDriver: true,
       }).start();
     };
@@ -272,30 +266,32 @@ export default function HomeScreen() {
           <View style={[styles.kitchenCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}>
             <Image source={item.image} style={styles.kitchenImage} resizeMode='cover' />
             <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.85)"]}
+              colors={["transparent", "rgba(0,0,0,0.9)"]}
               style={styles.kitchenGradient}
             />
             {item.discount && (
-              <LinearGradient
-                colors={[theme.colors.brand.orange, "#f5b144"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.discountBadge}>
-                <View style={styles.discountInner}>
-                  <Ionicons name='flash' size={14} color='white' />
+              <View style={styles.discountBadge}>
+                <LinearGradient
+                  colors={["#f97316", "#fb923c"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.discountGradient}>
+                  <Ionicons name='flash' size={12} color='white' />
                   <Text style={styles.discountText}>{item.discount}</Text>
-                </View>
-              </LinearGradient>
+                </LinearGradient>
+              </View>
             )}
             <View style={styles.kitchenInfo}>
               <Text style={styles.kitchenName} numberOfLines={1}>
                 {item.name}
               </Text>
               <View style={styles.kitchenMetaRow}>
-                <Ionicons name='star' size={12} color={theme.colors.brand.orange} />
-                <Text style={styles.kitchenMeta}> {item.rating}</Text>
-                <Text style={styles.kitchenDot}> •</Text>
-                <Text style={styles.kitchenMeta}> {item.time}</Text>
+                <View style={styles.ratingBadge}>
+                  <Ionicons name='star' size={11} color='#fff' />
+                  <Text style={styles.ratingText}>{item.rating}</Text>
+                </View>
+                <Text style={styles.kitchenDot}>•</Text>
+                <Text style={styles.kitchenMeta}>{item.time}</Text>
               </View>
             </View>
           </View>
@@ -309,22 +305,19 @@ export default function HomeScreen() {
       <View style={[styles.container, { backgroundColor: theme.colors.brand.light }]}>
         <HeaderBar title='Home' showCart location={location} />
 
-        {/* Premium Search Bar */}
         <View style={styles.searchWrapper}>
-          <View style={[styles.searchGradient, { shadowColor: theme.colors.brand.orange }]}>
-            <View style={styles.searchContainer}>
-              <Ionicons name='search' size={18} color={theme.colors.brand.gray} />
-              <TextInput
-                style={[styles.input, { color: theme.colors.brand.dark }]}
-                placeholder='Search Kitchen, Food Items...'
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor={theme.colors.brand.gray}
-                accessibilityLabel='Search kitchens'
-                autoCorrect={false}
-                autoCapitalize='none'
-              />
-            </View>
+          <View style={[styles.searchContainer, { shadowColor: theme.colors.brand.orange }]}>
+            <Ionicons name='search' size={20} color={theme.colors.brand.gray} />
+            <TextInput
+              style={[styles.input, { color: theme.colors.brand.dark }]}
+              placeholder='Search Kitchen, Food Items...'
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor={theme.colors.brand.gray}
+              accessibilityLabel='Search kitchens'
+              autoCorrect={false}
+              autoCapitalize='none'
+            />
           </View>
         </View>
 
@@ -333,7 +326,6 @@ export default function HomeScreen() {
             styles.animatedContainer,
             { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
           ]}>
-          {/* ================= Main FlatList With Banner ================= */}
           <FlatList
             data={filteredKitchens.slice(0, 6)}
             keyExtractor={(item) => `kitchen-${item.id}`}
@@ -343,12 +335,16 @@ export default function HomeScreen() {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
               <View style={styles.listHeader}>
-                {/* ================= Modern Horizontal Banner Section ================= */}
                 <View style={styles.bannerSectionWrapper}>
                   <View style={styles.sectionHeader}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
-                      Exclusive Deals
-                    </Text>
+                    <View>
+                      <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
+                        Exclusive Deals
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
+                        Limited time offers
+                      </Text>
+                    </View>
                     <Pressable>
                       <Text style={[styles.viewAllText, { color: theme.colors.brand.orange }]}>
                         View All
@@ -359,8 +355,11 @@ export default function HomeScreen() {
                   <ScrollView
                     ref={bannerScrollRef}
                     horizontal
+                    pagingEnabled
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.bannerScrollContent}>
+                    contentContainerStyle={styles.bannerScrollContent}
+                    snapToInterval={width - 32}
+                    decelerationRate='fast'>
                     {banners.map((item) => (
                       <Pressable
                         key={item.id}
@@ -372,21 +371,16 @@ export default function HomeScreen() {
                           start={{ x: 0, y: 0 }}
                           end={{ x: 1, y: 1 }}
                           style={styles.bannerGradient}>
-                          <View>
-                            <Text style={styles.bannerTitle}>{item.title}</Text>
-                            <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
-                          </View>
+                          <View style={styles.bannerContent}>
+                            <View style={styles.bannerTextSection}>
+                              <Text style={styles.bannerTitle}>{item.title}</Text>
+                              <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
 
-                          <View style={styles.bannerBottom}>
-                            <Pressable style={styles.claimButton}>
-                              <Text style={styles.claimText}>Claim</Text>
-                              <Ionicons
-                                name='arrow-forward'
-                                size={13}
-                                color='white'
-                                style={styles.claimArrow}
-                              />
-                            </Pressable>
+                              <Pressable style={styles.claimButton}>
+                                <Text style={styles.claimText}>Claim Now</Text>
+                                <Ionicons name='arrow-forward' size={14} color='white' />
+                              </Pressable>
+                            </View>
 
                             <Image
                               source={item.image}
@@ -398,11 +392,28 @@ export default function HomeScreen() {
                       </Pressable>
                     ))}
                   </ScrollView>
+
+                  <View style={styles.paginationDots}>
+                    {banners.map((_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.dot,
+                          {
+                            backgroundColor:
+                              index === activeIndex
+                                ? theme.colors.brand.orange
+                                : theme.colors.brand.gray,
+                            width: index === activeIndex ? 24 : 8,
+                          },
+                        ]}
+                      />
+                    ))}
+                  </View>
                 </View>
 
-                {/* ================= Categories Section ================= */}
                 <View style={styles.section}>
-                  <View style={styles.sectionHeaderWithSubtitle}>
+                  <View style={styles.sectionHeaderSimple}>
                     <View>
                       <Text style={styles.sectionTitle}>Explore Cuisines</Text>
                       <Text style={styles.sectionSubtitle}>Authentic regional flavors</Text>
@@ -420,15 +431,14 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                {/* ================= Premium Offers ================= */}
-                <View style={styles.bannerSection}>
-                  <View style={styles.sectionHeaderWithSubtitle}>
+                <View style={styles.section}>
+                  <View style={styles.sectionHeaderSimple}>
                     <View>
                       <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
                         Today&apos;s Offers
                       </Text>
                       <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
-                        Don&apos;t miss out
+                        Don&apos;t miss out on savings
                       </Text>
                     </View>
                   </View>
@@ -437,25 +447,22 @@ export default function HomeScreen() {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.offersScrollContent}
                     scrollEventThrottle={16}>
-                    <View style={styles.offersRow}>
-                      {offers.map((offer) => (
-                        <Pressable key={offer.id} accessible>
-                          <LinearGradient colors={offer.colors} style={styles.offerCard}>
-                            <View style={styles.offerIcon}>
-                              <Ionicons name={offer.icon} size={24} color='white' />
-                            </View>
-                            <Text style={styles.offerTitle}>{offer.title}</Text>
-                            <Text style={styles.offerSubtitle}>{offer.sub}</Text>
-                          </LinearGradient>
-                        </Pressable>
-                      ))}
-                    </View>
+                    {offers.map((offer) => (
+                      <Pressable key={offer.id} accessible>
+                        <LinearGradient colors={offer.colors} style={styles.offerCard}>
+                          <View style={styles.offerIcon}>
+                            <Ionicons name={offer.icon} size={26} color='white' />
+                          </View>
+                          <Text style={styles.offerTitle}>{offer.title}</Text>
+                          <Text style={styles.offerSubtitle}>{offer.sub}</Text>
+                        </LinearGradient>
+                      </Pressable>
+                    ))}
                   </ScrollView>
                 </View>
 
-                {/* ================= Top Kitchens ================= */}
                 <View style={styles.section}>
-                  <View style={styles.sectionHeaderWithSubtitle}>
+                  <View style={styles.sectionHeaderWithArrows}>
                     <View>
                       <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
                         Top Rated
@@ -476,7 +483,7 @@ export default function HomeScreen() {
                         <Ionicons
                           name='chevron-back'
                           size={18}
-                          color={canScrollLeft ? "white" : "rgba(255,255,255,0.4)"}
+                          color={canScrollLeft ? "white" : "rgba(255,255,255,0.5)"}
                         />
                       </Pressable>
                       <Pressable
@@ -490,7 +497,7 @@ export default function HomeScreen() {
                         <Ionicons
                           name='chevron-forward'
                           size={18}
-                          color={canScrollRight ? "white" : "rgba(255,255,255,0.4)"}
+                          color={canScrollRight ? "white" : "rgba(255,255,255,0.5)"}
                         />
                       </Pressable>
                     </View>
@@ -502,22 +509,20 @@ export default function HomeScreen() {
                     contentContainerStyle={styles.kitchensScrollContent}
                     scrollEventThrottle={16}
                     onScroll={handleTopKitchensScroll}>
-                    <View style={styles.kitchensRow}>
-                      {kitchens.slice(6, 11).map((kitchen) => (
-                        <KitchenCard key={`top-${kitchen.id}`} item={kitchen} />
-                      ))}
-                    </View>
+                    {kitchens.slice(6, 11).map((kitchen) => (
+                      <KitchenCard key={`top-${kitchen.id}`} item={kitchen} />
+                    ))}
                   </ScrollView>
                 </View>
 
-                {/* ================= All Kitchens ================= */}
                 <View style={styles.section}>
                   <View style={styles.allKitchensHeader}>
                     <Text style={[styles.sectionTitle, { color: theme.colors.brand.dark }]}>
                       All Kitchens
                     </Text>
                     <Text style={[styles.sectionSubtitle, { color: theme.colors.brand.gray }]}>
-                      {filteredKitchens.length} Kitchens available
+                      {filteredKitchens.length} kitchen{filteredKitchens.length !== 1 ? "s" : ""}{" "}
+                      available
                     </Text>
                   </View>
                 </View>
@@ -547,289 +552,293 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 140,
   },
-
-  // Search styles
   searchWrapper: {
     paddingHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  searchGradient: {
-    borderRadius: 16,
-    backgroundColor: "white",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
+    marginTop: 12,
+    marginBottom: 16,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 5,
-    gap: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    gap: 12,
     backgroundColor: "white",
     borderRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: "#f3f4f6",
   },
   input: {
     flex: 1,
     fontFamily: "OpenSans",
-    fontSize: 14,
-    paddingVertical: 8,
-    minHeight: 35,
+    fontSize: 15,
+    paddingVertical: 0,
   },
-
-  // Animated container
   animatedContainer: {
     flex: 1,
   },
-
-  // List header
   listHeader: {
-    gap: 20,
-    marginBottom: 20,
-  },
-
-  // Banner section
-  bannerSection: {
-    marginTop: 4,
+    gap: 28,
+    marginBottom: 24,
   },
   bannerSectionWrapper: {
-    marginBottom: 28,
+    marginBottom: 0,
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     paddingHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 14,
   },
-
+  sectionHeaderSimple: {
+    paddingHorizontal: 0,
+    marginBottom: 16,
+  },
+  sectionHeaderWithArrows: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 0,
+    marginBottom: 16,
+  },
   scrollArrows: {
     flexDirection: "row",
     gap: 8,
   },
   scrollArrow: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
   },
   scrollArrowDisabled: {
     opacity: 0.4,
   },
   viewAllText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "Poppins",
     fontWeight: "600",
+    letterSpacing: -0.2,
   },
   bannerScrollContent: {
     paddingHorizontal: 16,
-    gap: 14,
   },
   bannerItem: {
-    width: 240,
+    width: width - 32,
+    marginRight: 0,
   },
   bannerGradient: {
-    borderRadius: 18,
-    padding: 16,
-    height: 130,
-    justifyContent: "space-between",
+    borderRadius: 20,
+    padding: 20,
+    height: 160,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+  },
+  bannerContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: "100%",
+  },
+  bannerTextSection: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingRight: 16,
   },
   bannerTitle: {
-    fontSize: 17,
+    fontSize: 22,
     fontFamily: "Poppins",
     fontWeight: "700",
     color: "white",
+    letterSpacing: -0.5,
+    marginBottom: 6,
   },
   bannerSubtitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "OpenSans",
     fontWeight: "600",
-    color: "rgba(255,255,255,0.9)",
-    marginTop: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
-  },
-  bannerBottom: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    color: "rgba(255,255,255,0.95)",
+    lineHeight: 20,
+    marginBottom: 16,
   },
   claimButton: {
     backgroundColor: "rgba(255,255,255,0.25)",
-    borderWidth: 1.2,
-    borderColor: "rgba(255,255,255,0.35)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.4)",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
+    alignSelf: "flex-start",
   },
   claimText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "Poppins",
     fontWeight: "700",
     color: "white",
-  },
-  claimArrow: {
-    marginLeft: 5,
+    letterSpacing: -0.2,
   },
   bannerImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.4)",
+    width: 100,
+    height: 100,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.3)",
   },
-
-  // Section styles
+  paginationDots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 16,
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+    transition: "all 0.3s ease",
+  },
   section: {
     paddingHorizontal: 16,
   },
-  sectionHeaderWithSubtitle: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "Poppins",
     fontWeight: "700",
-    letterSpacing: 0.3,
+    letterSpacing: -0.5,
   },
-
   sectionSubtitle: {
     fontSize: 13,
     fontFamily: "OpenSans",
-    fontWeight: "600",
-    marginTop: 2,
-    lineHeight: 18,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    fontWeight: "500",
+    marginTop: 4,
+    opacity: 0.8,
   },
-  // Categories
   categoriesRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 10,
+    gap: 8,
   },
   categoryWrapper: {
     flex: 1,
     alignItems: "center",
-    borderRadius: 16,
-    paddingInline: 10,
-    paddingVertical: 8,
   },
   categoryPressable: {
     alignItems: "center",
     width: "100%",
   },
   categoryImageContainer: {
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
     shadowRadius: 12,
     elevation: 6,
-    borderRadius: 36,
-    marginBottom: 8,
+    borderRadius: 40,
+    marginBottom: 10,
     backgroundColor: "white",
+    position: "relative",
   },
   categoryImage: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  categoryOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.5)",
   },
   categoryText: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "Poppins",
     fontWeight: "600",
     textAlign: "center",
-    letterSpacing: 0.3,
-    lineHeight: 14,
-    paddingHorizontal: 2,
+    letterSpacing: -0.2,
+    lineHeight: 16,
   },
-
-  // Offers
   offersScrollContent: {
-    paddingHorizontal: 16,
-  },
-  offersRow: {
-    flexDirection: "row",
+    paddingRight: 16,
     gap: 12,
   },
   offerCard: {
-    width: 140,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-    borderRadius: 20,
+    width: 150,
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    borderRadius: 18,
     alignItems: "center",
     elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
   },
   offerIcon: {
-    width: 52,
-    height: 52,
+    width: 56,
+    height: 56,
     borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
+    backgroundColor: "rgba(255,255,255,0.25)",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    marginBottom: 14,
     borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.4)",
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   offerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "Poppins",
     fontWeight: "700",
     color: "white",
     textAlign: "center",
-    letterSpacing: 0.3,
+    letterSpacing: -0.3,
   },
   offerSubtitle: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "OpenSans",
     fontWeight: "600",
-    color: "rgba(255,255,255,0.95)",
-    marginTop: 2,
+    color: "rgba(255,255,255,0.9)",
+    marginTop: 4,
     textAlign: "center",
   },
-
-  // Kitchens
   kitchensScrollContent: {
     paddingRight: 16,
-  },
-  kitchensRow: {
-    flexDirection: "row",
     gap: 12,
   },
   kitchenCard: {
-    borderRadius: 20,
+    borderRadius: 18,
     backgroundColor: "white",
     overflow: "hidden",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 8,
+    borderWidth: 1,
+    borderColor: "#f3f4f6",
   },
   kitchenImage: {
     width: "100%",
@@ -840,75 +849,92 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: "55%",
+    height: "60%",
   },
   discountBadge: {
     position: "absolute",
-    top: 10,
-    right: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    top: 12,
+    right: 12,
     borderRadius: 12,
-    backgroundColor: "transparent",
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
-    zIndex: 10,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  discountInner: {
+  discountGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 4,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.3)",
   },
   discountText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     color: "#fff",
-    letterSpacing: 0.3,
-    marginLeft: 6,
-    textAlignVertical: "center",
+    letterSpacing: 0.2,
+    fontFamily: "Poppins",
   },
   kitchenInfo: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 14,
+    padding: 16,
   },
   kitchenName: {
     fontSize: 16,
     fontWeight: "700",
     color: "white",
-    letterSpacing: 0.3,
-    textShadowColor: "rgba(0, 0, 0, 0.7)",
-    textShadowOffset: { width: 0, height: 3 },
-    textShadowRadius: 6,
+    letterSpacing: -0.3,
+    fontFamily: "Poppins",
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+    marginBottom: 8,
   },
   kitchenMetaRow: {
-    marginTop: 6,
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
+  },
+  ratingBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(249, 115, 22, 0.9)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+  },
+  ratingText: {
+    fontSize: 11,
+    fontFamily: "Poppins",
+    fontWeight: "700",
+    color: "#fff",
+    letterSpacing: -0.1,
   },
   kitchenMeta: {
     fontSize: 12,
     fontFamily: "OpenSans",
     fontWeight: "600",
-    color: "rgba(255,255,255,0.95)",
+    color: "rgba(255,255,255,0.9)",
   },
   kitchenDot: {
     fontSize: 12,
     fontFamily: "OpenSans",
     fontWeight: "600",
-    color: "rgba(255,255,255,0.7)",
+    color: "rgba(255,255,255,0.6)",
   },
-
-  // All kitchens header
   allKitchensHeader: {
     gap: 6,
-    marginBottom: 12,
+    marginBottom: 16,
   },
 });

@@ -8,6 +8,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -90,14 +91,24 @@ export default function LoginScreen({ navigation }) {
               keyboardShouldPersistTaps='handled'
               keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
               <VStack space={10} alignItems='center' w='100%'>
-                {/* Logo */}
+                <Pressable onPress={() => navigation.navigate("PartnerLogin")}>
+                  <Text
+                    fontFamily='Poppins'
+                    fontWeight='500'
+                    color='brand.orange'
+                    w='100%'
+                    textAlign='right'
+                    textDecorationLine='underline'>
+                    Login with Raavito Partner
+                  </Text>
+                </Pressable>
+
                 <Image
                   source={require("../assets/logo.png")}
                   alt='Raavito'
                   w={120}
                   h={120}
                   resizeMode='contain'
-                  mb={2}
                 />
 
                 {/* Title */}
@@ -188,7 +199,7 @@ export default function LoginScreen({ navigation }) {
                       start: [0, 0],
                       end: [1, 1],
                     }}>
-                    Sign In
+                    User Sign In
                   </Button>
 
                   {/* Google login */}
