@@ -131,7 +131,7 @@ export function PartnerLoginScreen({ navigation }) {
               keyboardShouldPersistTaps='handled'
               keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
               <VStack space={10} alignItems='center' w='100%'>
-                <Pressable onPress={() => navigation.navigate("AuthStack")}>
+                {/* <Pressable onPress={() => navigation.navigate("AuthStack")}>
                   <Text
                     fontFamily='Poppins'
                     fontWeight='500'
@@ -142,7 +142,7 @@ export function PartnerLoginScreen({ navigation }) {
                     pr={2}>
                     Back to User Login
                   </Text>
-                </Pressable>
+                </Pressable> */}
 
                 <Image
                   source={require("../assets/logo.png")}
@@ -276,6 +276,22 @@ export function PartnerLoginScreen({ navigation }) {
                     Register Kitchen
                   </Text>
                 </HStack>
+                <Pressable
+                  onPress={() => navigation.navigate("AuthStack")}
+                  style={styles.partnerCard}>
+                  <View style={styles.partnerCardContent}>
+                    <View style={styles.partnerIconContainer}>
+                      <Ionicons name='person' size={24} color={theme.colors.brand.green} />
+                    </View>
+                    <View style={styles.partnerTextContainer}>
+                      <Text style={styles.partnerTitle}>Not a Restaurant Partner?</Text>
+                      <Text style={styles.partnerSubtitle}>
+                        Login as a user to explore kitchens
+                      </Text>
+                    </View>
+                    <Ionicons name='arrow-forward' size={20} color={theme.colors.brand.green} />
+                  </View>
+                </Pressable>
               </VStack>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -330,7 +346,7 @@ export function KitchenRegisterScreen({ navigation }) {
       } else {
         Alert.alert("Registration Failed", data?.message || "Could not register");
       }
-    } catch (e) {
+    } catch (_e) {
       Alert.alert("Error", "Registration failed. Please try again.");
     } finally {
       setBusy(false);
@@ -351,20 +367,7 @@ export function KitchenRegisterScreen({ navigation }) {
               contentContainerStyle={styles.content}
               keyboardShouldPersistTaps='handled'
               keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
-              <VStack space={8} alignItems='center' w='100%'>
-                <Pressable onPress={() => navigation.replace("PartnerLogin")}>
-                  <Text
-                    fontFamily='Poppins'
-                    fontWeight='500'
-                    color='brand.orange'
-                    w='100%'
-                    textAlign='right'
-                    textDecorationLine='underline'
-                    pr={2}>
-                    Back to Login
-                  </Text>
-                </Pressable>
-
+              <VStack space={5} alignItems='center' w='100%'>
                 <Image
                   source={require("../assets/logo.png")}
                   alt='Raavito'
@@ -591,18 +594,14 @@ export function KitchenRegisterScreen({ navigation }) {
                     onPress={handleRegister}
                     isLoading={busy}
                     shadow={6}
+                    w='60%'
                     rounded='xl'
-                    variant='outline'
+                    variant='solid'
                     borderColor='brand.light'
                     _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
                     leftIcon={<Icon as={Ionicons} name='save-outline' size={6} color='white' />}
-                    bg={{
-                      linearGradient: {
-                        colors: [theme.colors.brand.orange, theme.colors.brand.green],
-                        start: [0, 0],
-                        end: [1, 1],
-                      },
-                    }}>
+                    _pressed={{ bg: "brand.green" }}
+                    bg='brand.orange'>
                     Register Kitchen
                   </Button>
 
@@ -660,8 +659,8 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 0.5,
-    borderColor: "#E5E7EB",
+    borderWidth: 0.7,
+    borderColor: "#59595a",
     borderRadius: 16,
     paddingHorizontal: 12,
     backgroundColor: "rgba(255,255,255,0.9)",
@@ -685,5 +684,47 @@ const styles = StyleSheet.create({
     height: 80,
     paddingTop: 14,
     paddingBottom: 14,
+  },
+  partnerCard: {
+    width: "100%",
+    marginBottom: 8,
+  },
+  partnerCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.95)",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: "#fed7aa",
+    shadowColor: "#f97316",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  partnerIconContainer: {
+    width: 48,
+    height: 30,
+    borderRadius: 24,
+    backgroundColor: "#fff7ed",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  partnerTextContainer: {
+    flex: 1,
+  },
+  partnerTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111827",
+    fontFamily: "Poppins",
+    marginBottom: 2,
+  },
+  partnerSubtitle: {
+    fontSize: 13,
+    color: "#6b7280",
+    fontFamily: "OpenSans",
   },
 });

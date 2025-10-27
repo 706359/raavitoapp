@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 0.7,
     borderColor: "#ddd",
     backgroundColor: "#F5F5F5", // brand.light
     fontSize: 16,

@@ -91,18 +91,6 @@ export default function LoginScreen({ navigation }) {
               keyboardShouldPersistTaps='handled'
               keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
               <VStack space={10} alignItems='center' w='100%'>
-                <Pressable onPress={() => navigation.navigate("PartnerLogin")}>
-                  <Text
-                    fontFamily='Poppins'
-                    fontWeight='500'
-                    color='brand.orange'
-                    w='100%'
-                    textAlign='right'
-                    textDecorationLine='underline'>
-                    Login with Raavito Partner
-                  </Text>
-                </Pressable>
-
                 <Image
                   source={require("../assets/logo.png")}
                   alt='Raavito'
@@ -203,7 +191,7 @@ export default function LoginScreen({ navigation }) {
                   </Button>
 
                   {/* Google login */}
-                  <Button
+                  {/* <Button
                     variant='outline'
                     borderColor='brand.light'
                     _text={{ color: "brand.light", fontWeight: "600" }}
@@ -211,7 +199,7 @@ export default function LoginScreen({ navigation }) {
                       <Icon as={Ionicons} name='logo-google' size={5} color='brand.orange' />
                     }>
                     Continue with Google
-                  </Button>
+                  </Button> */}
 
                   {/* Terms */}
                   <Text fontSize='xs' color='coolGray.600' textAlign='center' mt={2}>
@@ -227,7 +215,7 @@ export default function LoginScreen({ navigation }) {
                 </VStack>
 
                 {/* Register */}
-                <HStack mt={5}>
+                <HStack mt={2}>
                   <Text fontSize='md' color='coolGray.700'>
                     New here?{" "}
                   </Text>
@@ -239,6 +227,20 @@ export default function LoginScreen({ navigation }) {
                     Register
                   </Text>
                 </HStack>
+                <Pressable
+                  onPress={() => navigation.navigate("PartnerLogin")}
+                  style={styles.partnerCard}>
+                  <View style={styles.partnerCardContent}>
+                    <View style={styles.partnerIconContainer}>
+                      <Ionicons name='business' size={24} color={theme.colors.brand.green} />
+                    </View>
+                    <View style={styles.partnerTextContainer}>
+                      <Text style={styles.partnerTitle}>Are you a Restaurant Partner?</Text>
+                      <Text style={styles.partnerSubtitle}>Login to manage your kitchen</Text>
+                    </View>
+                    <Ionicons name='arrow-forward' size={20} color={theme.colors.brand.green} />
+                  </View>
+                </Pressable>
               </VStack>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -254,8 +256,8 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 24,
+    paddingHorizontal: 25,
+    paddingVertical: 20,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -264,10 +266,53 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 12,
   },
+
   icon: { marginRight: 8 },
   input: {
     flex: 1,
     height: 50,
     fontSize: 16,
+  },
+  partnerCard: {
+    width: "100%",
+    marginBottom: 8,
+  },
+  partnerCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.95)",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: "#fed7aa",
+    shadowColor: "#f97316",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  partnerIconContainer: {
+    width: 48,
+    height: 30,
+    borderRadius: 24,
+    backgroundColor: "#fff7ed",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  partnerTextContainer: {
+    flex: 1,
+  },
+  partnerTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111827",
+    fontFamily: "Poppins",
+    marginBottom: 2,
+  },
+  partnerSubtitle: {
+    fontSize: 13,
+    color: "#6b7280",
+    fontFamily: "OpenSans",
   },
 });

@@ -3,8 +3,8 @@ import { extendTheme } from "native-base";
 const theme = extendTheme({
   colors: {
     brand: {
-      orange: "#FF7A00",
-      green: "#00A86B",
+      orange: "#b94a01ff",
+      green: "#029962ff",
       dark: "#1A1A1A",
       light: "#F9F9F9",
       gray: "#A1A1A1",

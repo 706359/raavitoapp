@@ -1,33 +1,72 @@
+// screens/EditProfile.js
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { Box, Button, HStack, Image, ScrollView, Text, VStack, useTheme } from "native-base";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 export default function EditProfileScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const theme = useTheme();
-  const [profileImage, setProfileImage] = useState(null);
-  const [name, setName] = useState("Shiv Ram Rana");
-  const [email, setEmail] = useState("shiv@example.com");
-  const [phone, setPhone] = useState("+91 9876543210");
-  const [address, setAddress] = useState("Muzaffarnagar, Uttar Pradesh");
+
+  const incoming = route.params?.profile || {};
+
+  const [profileImage, setProfileImage] = useState(incoming.image || null);
+  const [name, setName] = useState(incoming.name || "");
+  const [email, setEmail] = useState(incoming.email || "");
+  const [phone, setPhone] = useState(incoming.mobile || "");
+  const [address, setAddress] = useState(incoming.address || "");
+  const [saving, setSaving] = useState(false);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) setProfileImage(result.assets[0].uri);
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission required",
+          "We need access to your media library to select a profile image."
+        );
+        return;
+      }
+
+      const mediaType = ImagePicker.MediaTypeOptions.Images;
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: mediaType,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: Platform.OS === "ios" ? 1 : 0.8,
+        base64: false,
+      });
+
+      if (!result.canceled) {
+        setProfileImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Unable to select image. Please try again.");
+    }
   };
 
-  const handleSave = () => {
-    // Save logic here (API call or AsyncStorage)
-    navigation.goBack();
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const updated = { name, email, mobile: phone, address, image: profileImage };
+      await AsyncStorage.setItem("userProfile", JSON.stringify(updated));
+
+      Alert.alert("Profile Updated", "Your profile information has been saved successfully.", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch {
+      Alert.alert("Error", "Something went wrong while saving your profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -60,7 +99,7 @@ export default function EditProfileScreen() {
           </Pressable>
         </VStack>
 
-        {/* Input Fields */}
+        {/* Inputs */}
         <VStack space={5} mt={6}>
           <Box>
             <Text style={styles.label}>Full Name</Text>
@@ -74,6 +113,7 @@ export default function EditProfileScreen() {
               value={email}
               onChangeText={setEmail}
               keyboardType='email-address'
+              autoCapitalize='none'
             />
           </Box>
 
@@ -98,23 +138,8 @@ export default function EditProfileScreen() {
           </Box>
         </VStack>
 
-        {/* Save Button */}
-        {/* <Button
-          mt={8}
-          borderRadius={12}
-          py={4}
-          bg={{
-            linearGradient: {
-              colors: ["#FF9F43", "#FF6F00"],
-              start: [0, 0],
-              end: [1, 1],
-            },
-          }}
-          _text={{ fontWeight: "bold", fontSize: 16 }}
-          onPress={handleSave}>
-          Save Changes
-        </Button> */}
         <Button
+          isLoading={saving}
           onPress={handleSave}
           mt={10}
           shadow={6}
@@ -142,18 +167,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
-  headerTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
-  },
-  avatarContainer: {
-    position: "relative",
-  },
+  headerTitle: { color: "#fff", fontSize: 20, fontWeight: "600" },
+  content: { paddingHorizontal: 20, paddingBottom: 100 },
+  avatarContainer: { position: "relative" },
   avatar: {
     width: 110,
     height: 110,
@@ -170,12 +186,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 5,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#555",
-    marginBottom: 6,
-  },
+  label: { fontSize: 14, fontWeight: "500", color: "#555", marginBottom: 6 },
   input: {
     height: 50,
     backgroundColor: "#f7f7f7",

@@ -2,16 +2,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import EditProfileScreen from "../screens/EditProfile";
+import { KitchenRegisterScreen, PartnerLoginScreen } from "../screens/PartnerAuth";
+import PartnerDashboardScreen from "../screens/PartnerDashboard";
+import ProfileScreen from "../screens/ProfileScreen";
 import SplashScreen from "../screens/SplashScreen";
 import WelcomeScreen from "../screens/welcomeScreen";
 import AuthStack from "./AuthStack";
 import ExtraStack from "./ExtraStacks";
 import MainTabs from "./MainTabs";
 import PartnerNavigator from "./PartnerNavigator";
-// add partner auth screens
-import { KitchenRegisterScreen, PartnerLoginScreen } from "../screens/PartnerAuth";
-// add partner dashboard
-import PartnerDashboardScreen from "../screens/PartnerDashboard";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,20 +50,21 @@ export default function AppNavigator() {
       {!user ? (
         <>
           <Stack.Screen name='AuthStack' component={AuthStack} />
-          {/* Partner-specific auth routes */}
+
           <Stack.Screen name='Partner' component={PartnerNavigator} />
           <Stack.Screen name='PartnerLogin' component={PartnerLoginScreen} />
           <Stack.Screen name='KitchenRegister' component={KitchenRegisterScreen} />
         </>
       ) : (
         <>
-          {/* Check if user is a partner */}
           {user.role === "partner" ? (
             <Stack.Screen name='PartnerDashboard' component={PartnerDashboardScreen} />
           ) : (
             <>
               <Stack.Screen name='MainTabs' component={MainTabs} />
               <Stack.Screen name='ExtraStack' component={ExtraStack} />
+              <Stack.Screen name='UserProfile' component={ProfileScreen} />
+              <Stack.Screen name='EditProfile' component={EditProfileScreen} />
             </>
           )}
         </>
