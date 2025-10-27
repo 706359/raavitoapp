@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useRef } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useAddress } from "../context/AddressContext";
-import { useCart } from "../context/CartContext";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect, useRef } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAddress } from '../context/AddressContext';
+import { useCart } from '../context/CartContext';
 
 export default function HeaderBar({ showBack = false, showCart = true }) {
   const navigation = useNavigation();
@@ -15,10 +15,10 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
 
   // Handle address object or string
   const getAddressText = () => {
-    if (!selectedAddress) return "Select location";
-    if (typeof selectedAddress === "string") return selectedAddress;
+    if (!selectedAddress) return 'Select location';
+    if (typeof selectedAddress === 'string') return selectedAddress;
     // If it's an object, extract the address field
-    return selectedAddress.address || selectedAddress.type || "Select location";
+    return selectedAddress.address || selectedAddress.type || 'Select location';
   };
 
   // Animation values
@@ -63,7 +63,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
   }, [badgeScale, totalQty]);
 
   return (
-    <SafeAreaView edges={["left", "right"]} style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <Animated.View
         style={[
           styles.container,
@@ -82,7 +82,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => navigation.navigate("ProfileTab", { screen: "ManageAddresses" })}
+              onPress={() => navigation.navigate('ProfileTab', { screen: 'ManageAddresses' })}
               style={({ pressed }) => [
                 styles.locationContainer,
                 pressed && styles.locationPressed,
@@ -106,7 +106,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
           <View style={styles.rightContainer}>
             {showCart && (
               <Pressable
-                onPress={() => navigation.navigate("CartScreen")}
+                onPress={() => navigation.navigate('Cart')}
                 style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
                 <View style={styles.cartIconContainer}>
                   <Ionicons name='cart-outline' size={26} color='#374151' />
@@ -118,7 +118,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
                           transform: [{ scale: badgeScale }],
                         },
                       ]}>
-                      <Text style={styles.badgeText}>{totalQty > 99 ? "99+" : totalQty}</Text>
+                      <Text style={styles.badgeText}>{totalQty > 99 ? '99+' : totalQty}</Text>
                     </Animated.View>
                   )}
                 </View>
@@ -126,7 +126,7 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
             )}
 
             <Pressable
-              onPress={() => navigation.navigate("ExtraStack", { screen: "UserProfile" })}
+              onPress={() => navigation.navigate('ExtraStack', { screen: 'UserProfile' })}
               style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
               <View style={styles.profileButton}>
                 <Ionicons name='person' size={20} color='#fff' />
@@ -141,11 +141,11 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   container: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
+    backgroundColor: '#fff',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -155,12 +155,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   // Back Button Styles
   backButton: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   backButtonPressed: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: '#f3f4f6',
     opacity: 0.8,
   },
   // Location Styles
@@ -184,31 +184,31 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   deliverToRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
   },
   deliverToText: {
     fontSize: 11,
-    fontWeight: "500",
-    color: "#6b7280",
+    fontWeight: '500',
+    color: '#6b7280',
     letterSpacing: 0.5,
   },
   addressRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   addressText: {
     fontSize: 15,
-    fontWeight: "700",
-    color: "#1f2937",
+    fontWeight: '700',
+    color: '#1f2937',
     flex: 1,
   },
   // Right Container Styles
   rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
   },
   iconButton: {
@@ -219,20 +219,20 @@ const styles = StyleSheet.create({
   },
   // Cart Icon Styles
   cartIconContainer: {
-    position: "relative",
+    position: 'relative',
   },
   badge: {
-    position: "absolute",
+    position: 'absolute',
     top: -6,
     right: -8,
-    backgroundColor: "#ef4444",
+    backgroundColor: '#ef4444',
     borderRadius: 20,
     minWidth: 20,
     height: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 6,
-    shadowColor: "#ef4444",
+    shadowColor: '#ef4444',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -243,18 +243,18 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 10,
-    fontWeight: "800",
-    color: "#fff",
+    fontWeight: '800',
+    color: '#fff',
   },
   // Profile Button Styles
   profileButton: {
-    backgroundColor: "#f97316",
+    backgroundColor: '#f97316',
     borderRadius: 50,
     width: 36,
     height: 36,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
