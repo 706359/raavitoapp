@@ -36,14 +36,44 @@
 //   return ctx;
 // };
 
-// context/CartContext.js
-import { createContext, useContext, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
+  // 🔹 Load saved cart from AsyncStorage on app start
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const storedCart = await AsyncStorage.getItem('cart');
+        if (storedCart) {
+          setCart(JSON.parse(storedCart));
+        }
+      } catch (error) {
+        console.error('Error loading cart from storage:', error);
+      }
+    };
+    loadCart();
+  }, []);
+
+  // 🔹 Save cart to AsyncStorage whenever it changes
+  useEffect(() => {
+    const saveCart = async () => {
+      try {
+        await AsyncStorage.setItem('cart', JSON.stringify(cart));
+      } catch (error) {
+        console.error('Error saving cart to storage:', error);
+      }
+    };
+    if (cart.length >= 0) saveCart();
+  }, [cart]);
+
+  // -------------------------
+  // Cart functions
+  // -------------------------
   const addToCart = (item) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
@@ -54,7 +84,6 @@ export function CartProvider({ children }) {
     });
   };
 
-  // decrease quantity by 1; if qty becomes 0, remove item
   const decreaseQty = (id) => {
     setCart((prev) =>
       prev
@@ -63,15 +92,16 @@ export function CartProvider({ children }) {
     );
   };
 
-  // remove a single item entirely from cart (trash)
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // alias if you want a function that only removes one qty (kept for clarity)
   const removeOneFromCart = (id) => decreaseQty(id);
 
-  const clearCart = () => setCart([]);
+  const clearCart = async () => {
+    setCart([]);
+    await AsyncStorage.removeItem('cart'); // also clear from storage
+  };
 
   const getTotal = () => cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
 

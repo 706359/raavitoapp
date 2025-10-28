@@ -223,7 +223,10 @@ export default function UserProfile({ navigation }) {
             <Text style={styles.sectionTitle}>Settings</Text>
           </View>
 
-          <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.settingsBtn}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('PaymentMethod')}>
             <View style={styles.settingsIconWrapper}>
               <Ionicons name='card-outline' size={20} color='#6366f1' />
             </View>
@@ -242,7 +245,10 @@ export default function UserProfile({ navigation }) {
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.settingsBtn}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('Notification')}>
             <View style={styles.settingsIconWrapper}>
               <Ionicons name='notifications-outline' size={20} color='#6366f1' />
             </View>
