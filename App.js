@@ -1,15 +1,16 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { registerRootComponent } from "expo";
-import { NativeBaseProvider } from "native-base";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { NavigationContainer } from '@react-navigation/native';
+import { registerRootComponent } from 'expo';
+import { NativeBaseProvider } from 'native-base';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { AddressProvider } from "./app/context/AddressContext";
-import { AuthProvider } from "./app/context/AuthContext";
-import { CartProvider } from "./app/context/CartContext";
-import { OrderProvider } from "./app/context/OrderContext";
-import AppNavigator from "./app/navigation/AppNavigator";
-import "./patches/fixBackhandler";
-import theme from "./theme";
+import { AddressProvider } from './app/context/AddressContext';
+import { AuthProvider } from './app/context/AuthContext';
+import { CartProvider } from './app/context/CartContext';
+import { FavoritesProvider } from './app/context/FavoritesContext';
+import { OrderProvider } from './app/context/OrderContext';
+import AppNavigator from './app/navigation/AppNavigator';
+import './patches/fixBackhandler';
+import theme from './theme';
 
 function App() {
   return (
@@ -19,10 +20,12 @@ function App() {
           <CartProvider>
             <OrderProvider>
               <AddressProvider>
-                {/* Only one NavigationContainer */}
-                <NavigationContainer>
-                  <AppNavigator />
-                </NavigationContainer>
+                <FavoritesProvider>
+                  {/* Only one NavigationContainer */}
+                  <NavigationContainer>
+                    <AppNavigator />
+                  </NavigationContainer>
+                </FavoritesProvider>
               </AddressProvider>
             </OrderProvider>
           </CartProvider>

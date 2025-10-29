@@ -383,10 +383,19 @@ export default function PaymentMethod() {
 
           <Divider />
 
-          <Pressable style={styles.paymentItem}>
+          {/* <Pressable style={styles.paymentItem}>
             <HStack alignItems='center' space={3}>
               <View style={styles.iconCircle}>
                 <Text style={styles.pluxeeText}>P</Text>
+              </View>
+              <Text style={styles.itemText}>Add Pluxee</Text>
+            </HStack>
+            <Icon as={Entypo} name='plus' size={5} color='#f97316' />
+          </Pressable> */}
+          <Pressable style={styles.paymentItem}>
+            <HStack alignItems='center' space={3}>
+              <View style={styles.logoCircle}>
+                <Image source={require('../assets/Pluxee_Logo.png')} style={styles.logo} />
               </View>
               <Text style={styles.itemText}>Add Pluxee</Text>
             </HStack>
@@ -423,7 +432,8 @@ export default function PaymentMethod() {
             <HStack alignItems='center' space={3}>
               <View style={styles.logoCircle}>
                 <Image
-                  source={require('../assets/Amazon_Pay_logo.png')}
+                  source={require('../assets/amazon-pay-svgrepo-com.png')}
+                  // source={require('../assets/Amazon_Pay_logo.png')}
                   style={styles.amazonLogo}
                 />
               </View>
@@ -433,12 +443,26 @@ export default function PaymentMethod() {
 
           <Divider />
 
-          <Pressable style={styles.paymentItem}>
+          {/* <Pressable style={styles.paymentItem}>
             <HStack alignItems='center' space={3}>
               <View style={styles.iconCircle}>
                 <Icon as={MaterialIcons} name='add-circle-outline' size={5} color='#f97316' />
               </View>
               <Text style={styles.itemText}>Add new UPI ID</Text>
+            </HStack>
+            <Icon as={Entypo} name='plus' size={5} color='#f97316' />
+          </Pressable> */}
+
+          <Pressable style={styles.paymentItem}>
+            <HStack alignItems='center' space={3}>
+              <View style={styles.logoCircle}>
+                <Image
+                  source={require('../assets/upi.png')}
+                  // source={require('../assets/Amazon_Pay_logo.png')}
+                  style={styles.amazonLogo}
+                />
+              </View>
+              <Text style={styles.itemText}>Add New UPI ID</Text>
             </HStack>
             <Icon as={Entypo} name='plus' size={5} color='#f97316' />
           </Pressable>
@@ -453,7 +477,7 @@ export default function PaymentMethod() {
             <HStack alignItems='center' space={3}>
               <View style={styles.logoCircle}>
                 <Image
-                  source={require('../assets/Amazon_Pay_logo.png')}
+                  source={require('../assets/amazon-pay-svgrepo-com.png')}
                   style={styles.amazonLogo}
                 />
               </View>
@@ -482,7 +506,7 @@ export default function PaymentMethod() {
             <HStack alignItems='center' space={3}>
               <View style={styles.logoCircle}>
                 <Image
-                  source={require('../assets/Amazon_Pay_logo.png')}
+                  source={require('../assets/amazon-pay-svgrepo-com.png')}
                   style={styles.amazonLogo}
                 />
               </View>

@@ -1,4 +1,4 @@
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import {
   Badge,
   Box,
@@ -11,144 +11,146 @@ import {
   ScrollView,
   Text,
   VStack,
-} from "native-base";
-import React, { useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useCart } from "../context/CartContext";
+} from 'native-base';
+import React, { useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCart } from '../context/CartContext';
+import { useFavorites } from '../context/FavoritesContext';
 
 export default function KitchenScreen({ route, navigation }) {
   const { kitchen } = route.params;
   const { addToCart, removeFromCart, cart } = useCart();
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
-  const menuTabs = ["Lunch", "Dinner", "Breakfast", "Snacks"];
-  const [activeTab, setActiveTab] = useState("Lunch");
+  const menuTabs = ['Lunch', 'Dinner', 'Breakfast', 'Snacks'];
+  const [activeTab, setActiveTab] = useState('Lunch');
 
   // All menu items with category
   const allMenuItems = useMemo(
     () => [
       {
-        id: "1",
-        name: "Small Lunch Thali",
+        id: '1',
+        name: 'Small Lunch Thali',
         price: 50,
-        desc: "Max veg 3, Chapati, Rice",
-        img: require("../assets/Dosa.jpg"),
+        desc: 'Max veg 3, Chapati, Rice',
+        img: require('../assets/Dosa.jpg'),
         isVeg: true,
         isBestseller: true,
-        category: "Lunch",
+        category: 'Lunch',
       },
       {
-        id: "2",
-        name: "Medium Lunch Thali",
+        id: '2',
+        name: 'Medium Lunch Thali',
         price: 90,
-        desc: "Full veg thali with rice, chapati, dal",
-        img: require("../assets/Gujarati.jpeg"),
+        desc: 'Full veg thali with rice, chapati, dal',
+        img: require('../assets/Gujarati.jpeg'),
         isVeg: true,
         isBestseller: false,
-        category: "Lunch",
+        category: 'Lunch',
       },
       {
-        id: "3",
-        name: "Family Lunch Special",
+        id: '3',
+        name: 'Family Lunch Special',
         price: 150,
-        desc: "Complete thali for 2 with dessert",
-        img: require("../assets/Rajasthani.jpg"),
+        desc: 'Complete thali for 2 with dessert',
+        img: require('../assets/Rajasthani.jpg'),
         isVeg: true,
         isBestseller: true,
-        category: "Lunch",
+        category: 'Lunch',
       },
       {
-        id: "4",
-        name: "Light Dinner",
+        id: '4',
+        name: 'Light Dinner',
         price: 70,
-        desc: "Roti, sabzi, dal with salad",
-        img: require("../assets/Punjabi.webp"),
+        desc: 'Roti, sabzi, dal with salad',
+        img: require('../assets/Punjabi.webp'),
         isVeg: true,
         isBestseller: false,
-        category: "Dinner",
+        category: 'Dinner',
       },
       {
-        id: "5",
-        name: "Royal Dinner Thali",
+        id: '5',
+        name: 'Royal Dinner Thali',
         price: 120,
-        desc: "Premium thali with paneer, dal makhani",
-        img: require("../assets/Gujarati.jpeg"),
+        desc: 'Premium thali with paneer, dal makhani',
+        img: require('../assets/Gujarati.jpeg'),
         isVeg: true,
         isBestseller: true,
-        category: "Dinner",
+        category: 'Dinner',
       },
       {
-        id: "6",
-        name: "Family Dinner Pack",
+        id: '6',
+        name: 'Family Dinner Pack',
         price: 200,
-        desc: "Complete dinner for family of 3",
-        img: require("../assets/Rajasthani.jpg"),
+        desc: 'Complete dinner for family of 3',
+        img: require('../assets/Rajasthani.jpg'),
         isVeg: true,
         isBestseller: true,
-        category: "Dinner",
+        category: 'Dinner',
       },
       {
-        id: "7",
-        name: "Breakfast Combo",
+        id: '7',
+        name: 'Breakfast Combo',
         price: 40,
-        desc: "Poha, tea and fruits",
-        img: require("../assets/Dosa.jpg"),
+        desc: 'Poha, tea and fruits',
+        img: require('../assets/Dosa.jpg'),
         isVeg: true,
         isBestseller: true,
-        category: "Breakfast",
+        category: 'Breakfast',
       },
       {
-        id: "8",
-        name: "South Indian Breakfast",
+        id: '8',
+        name: 'South Indian Breakfast',
         price: 60,
-        desc: "Dosa, idli, sambar and chutney",
-        img: require("../assets/Dosa.jpg"),
+        desc: 'Dosa, idli, sambar and chutney',
+        img: require('../assets/Dosa.jpg'),
         isVeg: true,
         isBestseller: false,
-        category: "Breakfast",
+        category: 'Breakfast',
       },
       {
-        id: "9",
-        name: "Paratha Breakfast",
+        id: '9',
+        name: 'Paratha Breakfast',
         price: 55,
-        desc: "2 Parathas with curd and pickle",
-        img: require("../assets/Punjabi.webp"),
+        desc: '2 Parathas with curd and pickle',
+        img: require('../assets/Punjabi.webp'),
         isVeg: true,
         isBestseller: false,
-        category: "Breakfast",
+        category: 'Breakfast',
       },
       {
-        id: "10",
-        name: "Samosa (2 pcs)",
+        id: '10',
+        name: 'Samosa (2 pcs)',
         price: 30,
-        desc: "Crispy samosas with chutney",
-        img: require("../assets/Gujarati.jpeg"),
+        desc: 'Crispy samosas with chutney',
+        img: require('../assets/Gujarati.jpeg'),
         isVeg: true,
         isBestseller: true,
-        category: "Snacks",
+        category: 'Snacks',
       },
       {
-        id: "11",
-        name: "Vada Pav (2 pcs)",
+        id: '11',
+        name: 'Vada Pav (2 pcs)',
         price: 25,
-        desc: "Mumbai special street food",
-        img: require("../assets/Dosa.jpg"),
+        desc: 'Mumbai special street food',
+        img: require('../assets/Dosa.jpg'),
         isVeg: true,
         isBestseller: true,
-        category: "Snacks",
+        category: 'Snacks',
       },
       {
-        id: "12",
-        name: "Pakora Plate",
+        id: '12',
+        name: 'Pakora Plate',
         price: 35,
-        desc: "Mixed vegetable pakoras",
-        img: require("../assets/Gujarati.jpeg"),
+        desc: 'Mixed vegetable pakoras',
+        img: require('../assets/Gujarati.jpeg'),
         isVeg: true,
         isBestseller: false,
-        category: "Snacks",
+        category: 'Snacks',
       },
     ],
-    []
+    [],
   );
 
   // Filter menu items based on active tab
@@ -175,7 +177,7 @@ export default function KitchenScreen({ route, navigation }) {
                   borderRadius='full'
                   style={styles.iconButton}
                 />
-                <Text style={styles.headerTitle}>{kitchen?.name || "Kitchen"}</Text>
+                <Text style={styles.headerTitle}>{kitchen?.name || 'Kitchen'}</Text>
               </HStack>
               <HStack style={styles.headerRight}>
                 <IconButton
@@ -183,8 +185,23 @@ export default function KitchenScreen({ route, navigation }) {
                   borderRadius='full'
                   style={styles.iconButton}
                 />
-                <IconButton
+                {/* <IconButton
                   icon={<Icon as={Ionicons} name='heart-outline' color='white' size='md' />}
+                  borderRadius='full'
+                  style={styles.iconButton}
+                /> */}
+                <IconButton
+                  onPress={() =>
+                    isFavorite(kitchen.id) ? removeFavorite(kitchen.id) : addFavorite(kitchen)
+                  }
+                  icon={
+                    <Icon
+                      as={Ionicons}
+                      name={isFavorite(kitchen.id) ? 'heart' : 'heart-outline'}
+                      color={isFavorite(kitchen.id) ? 'red.400' : 'white'}
+                      size='md'
+                    />
+                  }
                   borderRadius='full'
                   style={styles.iconButton}
                 />
@@ -197,11 +214,11 @@ export default function KitchenScreen({ route, navigation }) {
             <HStack style={styles.infoHeader}>
               <VStack style={styles.infoHeaderLeft}>
                 <Text style={styles.infoName}>
-                  {kitchen?.name || "Taste of India Tiffin Services"}
+                  {kitchen?.name || 'Taste of India Tiffin Services'}
                 </Text>
                 <HStack style={styles.locationRow}>
                   <Icon as={MaterialIcons} name='place' size='xs' color='gray.500' />
-                  <Text style={styles.infoSub}>{kitchen?.location || "Gotala Nagar"}</Text>
+                  <Text style={styles.infoSub}>{kitchen?.location || 'Gotala Nagar'}</Text>
                 </HStack>
               </VStack>
               <Badge style={styles.openBadge}>OPEN</Badge>
@@ -211,12 +228,12 @@ export default function KitchenScreen({ route, navigation }) {
               <HStack style={styles.metaItem}>
                 <Box style={styles.ratingBadge}>
                   <Icon as={Ionicons} name='star' color='white' size='xs' />
-                  <Text style={styles.ratingText}>{kitchen?.rating || "4.0"}</Text>
+                  <Text style={styles.ratingText}>{kitchen?.rating || '4.0'}</Text>
                 </Box>
               </HStack>
               <HStack style={styles.metaItem}>
                 <Icon as={Ionicons} name='time-outline' color='orange.600' size='sm' />
-                <Text style={styles.metaText}>{kitchen?.time || "30 min"}</Text>
+                <Text style={styles.metaText}>{kitchen?.time || '30 min'}</Text>
               </HStack>
               <HStack style={styles.metaItem}>
                 <Icon as={MaterialIcons} name='delivery-dining' color='orange.600' size='sm' />
@@ -227,7 +244,7 @@ export default function KitchenScreen({ route, navigation }) {
             <Divider style={styles.divider} />
 
             <Text style={styles.infoDesc}>
-              {kitchen?.desc || "American, Fast Food • Inner Circle, Connaught Place"}
+              {kitchen?.desc || 'American, Fast Food • Inner Circle, Connaught Place'}
             </Text>
           </Box>
 
@@ -242,7 +259,7 @@ export default function KitchenScreen({ route, navigation }) {
                 <View
                   style={[styles.galleryItem, { transform: [{ scale: isPressed ? 0.95 : 1 }] }]}>
                   <Image
-                    source={require("../assets/food.jpeg")}
+                    source={require('../assets/food.jpeg')}
                     alt='Food'
                     style={styles.galleryImage}
                   />
@@ -254,7 +271,7 @@ export default function KitchenScreen({ route, navigation }) {
                 <View
                   style={[styles.galleryItem, { transform: [{ scale: isPressed ? 0.95 : 1 }] }]}>
                   <Image
-                    source={require("../assets/Dosa.jpg")}
+                    source={require('../assets/Dosa.jpg')}
                     alt='Food'
                     style={styles.galleryImage}
                   />
@@ -266,7 +283,7 @@ export default function KitchenScreen({ route, navigation }) {
                 <View
                   style={[styles.galleryItem, { transform: [{ scale: isPressed ? 0.95 : 1 }] }]}>
                   <Image
-                    source={require("../assets/Gujarati.jpeg")}
+                    source={require('../assets/Gujarati.jpeg')}
                     alt='Food'
                     style={styles.galleryImage}
                   />
@@ -342,12 +359,12 @@ export default function KitchenScreen({ route, navigation }) {
                           <Box
                             style={[
                               styles.vegIndicator,
-                              { borderColor: item.isVeg ? "#22c55e" : "#ef4444" },
+                              { borderColor: item.isVeg ? '#22c55e' : '#ef4444' },
                             ]}>
                             <Box
                               style={[
                                 styles.vegDot,
-                                { backgroundColor: item.isVeg ? "#22c55e" : "#ef4444" },
+                                { backgroundColor: item.isVeg ? '#22c55e' : '#ef4444' },
                               ]}
                             />
                           </Box>
@@ -417,16 +434,16 @@ export default function KitchenScreen({ route, navigation }) {
   );
 }
 
-const ORANGE = "#f97316";
+const ORANGE = '#f97316';
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fafafa",
+    backgroundColor: '#fafafa',
   },
   container: {
     flex: 1,
-    backgroundColor: "#fafafa",
+    backgroundColor: '#fafafa',
   },
 
   /* Premium Header */
@@ -441,37 +458,37 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   headerRow: {
-    alignItems: "center",
-    justifyContent: "space-between",
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
   headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   headerRight: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
   },
   iconButton: {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   headerTitle: {
-    color: "#fff",
-    fontWeight: "700",
+    color: '#fff',
+    fontWeight: '700',
     fontSize: 18,
-    fontFamily: "Poppins",
+    fontFamily: 'Poppins',
   },
 
   /* Premium Info Card */
   infoCard: {
     paddingHorizontal: 20,
     paddingVertical: 20,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -480,77 +497,77 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   infoHeader: {
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 8,
   },
   infoHeaderLeft: {
     flex: 1,
   },
   infoName: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 20,
-    color: "#1f2937",
-    fontFamily: "Poppins",
+    color: '#1f2937',
+    fontFamily: 'Poppins',
   },
   locationRow: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 4,
     marginTop: 4,
   },
   infoSub: {
-    color: "#6b7280",
+    color: '#6b7280',
     fontSize: 13,
-    fontFamily: "OpenSans",
+    fontFamily: 'OpenSans',
   },
   openBadge: {
-    backgroundColor: "#22c55e",
+    backgroundColor: '#22c55e',
     borderRadius: 9999,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    color: "white",
+    color: 'white',
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   infoMetaRow: {
     marginTop: 12,
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 16,
   },
   metaItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   ratingBadge: {
-    backgroundColor: "#22c55e",
-    flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: '#22c55e',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
     gap: 4,
   },
   ratingText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 13,
-    fontWeight: "700",
-    fontFamily: "Poppins",
+    fontWeight: '700',
+    fontFamily: 'Poppins',
   },
   metaText: {
     fontSize: 13,
-    color: "#4b5563",
-    fontWeight: "600",
-    fontFamily: "OpenSans",
+    color: '#4b5563',
+    fontWeight: '600',
+    fontFamily: 'OpenSans',
   },
   divider: {
     marginVertical: 12,
   },
   infoDesc: {
-    color: "#6b7280",
+    color: '#6b7280',
     fontSize: 13,
     lineHeight: 18,
-    fontFamily: "OpenSans",
+    fontFamily: 'OpenSans',
   },
 
   /* Premium Gallery */
@@ -566,33 +583,33 @@ const styles = StyleSheet.create({
     height: 150,
     marginRight: 12,
     borderRadius: 16,
-    overflow: "hidden",
-    backgroundColor: "#eee",
-    shadowColor: "#000",
+    overflow: 'hidden',
+    backgroundColor: '#eee',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 4,
   },
   galleryImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   galleryOverlay: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   galleryText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Poppins",
+    fontWeight: '700',
+    fontFamily: 'Poppins',
   },
 
   /* Premium Offer Card */
@@ -600,9 +617,9 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 16,
     borderRadius: 16,
-    backgroundColor: "#fff7ed",
+    backgroundColor: '#fff7ed',
     borderWidth: 2,
-    borderColor: "#fed7aa",
+    borderColor: '#fed7aa',
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -611,7 +628,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   offerContent: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 12,
   },
   offerIconBox: {
@@ -619,8 +636,8 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     backgroundColor: ORANGE,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -632,15 +649,15 @@ const styles = StyleSheet.create({
   },
   offerTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: '700',
     color: ORANGE,
-    fontFamily: "Poppins",
+    fontFamily: 'Poppins',
   },
   offerSub: {
     fontSize: 12,
-    color: "#9a6b3f",
+    color: '#9a6b3f',
     marginTop: 2,
-    fontFamily: "OpenSans",
+    fontFamily: 'OpenSans',
   },
 
   /* Premium Tabs */
@@ -655,7 +672,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     marginRight: 10,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: '#f3f4f6',
   },
   tabItemActive: {
     backgroundColor: ORANGE,
@@ -667,13 +684,13 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 14,
-    color: "#6b7280",
-    fontWeight: "600",
-    fontFamily: "Poppins",
+    color: '#6b7280',
+    fontWeight: '600',
+    fontFamily: 'Poppins',
   },
   tabTextActive: {
-    color: "#fff",
-    fontWeight: "700",
+    color: '#fff',
+    fontWeight: '700',
   },
 
   /* Premium Menu Items */
@@ -682,54 +699,54 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   sectionHeaderRow: {
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
     marginTop: 8,
   },
   sectionTitle: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 18,
-    color: "#1f2937",
-    fontFamily: "Poppins",
+    color: '#1f2937',
+    fontFamily: 'Poppins',
   },
   itemCount: {
     fontSize: 13,
-    color: "#9ca3af",
-    fontWeight: "600",
-    fontFamily: "OpenSans",
+    color: '#9ca3af',
+    fontWeight: '600',
+    fontFamily: 'OpenSans',
   },
   emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 60,
   },
   emptyText: {
     fontSize: 15,
-    color: "#9ca3af",
+    color: '#9ca3af',
     marginTop: 16,
-    fontFamily: "OpenSans",
+    fontFamily: 'OpenSans',
   },
   menuItemCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   menuItemRow: {
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
     gap: 12,
   },
   menuItemDetails: {
     flex: 1,
   },
   itemBadges: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 8,
     marginBottom: 8,
   },
@@ -738,8 +755,8 @@ const styles = StyleSheet.create({
     height: 18,
     borderWidth: 2,
     borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   vegDot: {
     width: 8,
@@ -747,33 +764,33 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   bestsellerBadge: {
-    backgroundColor: "#fff7ed",
+    backgroundColor: '#fff7ed',
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    color: "#ea580c",
+    color: '#ea580c',
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   itemName: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 16,
-    color: "#1f2937",
+    color: '#1f2937',
     marginBottom: 4,
-    fontFamily: "Poppins",
+    fontFamily: 'Poppins',
   },
   itemPrice: {
     fontSize: 15,
-    color: "#1f2937",
-    fontWeight: "700",
+    color: '#1f2937',
+    fontWeight: '700',
     marginBottom: 6,
-    fontFamily: "Poppins",
+    fontFamily: 'Poppins',
   },
   itemDesc: {
     fontSize: 13,
-    color: "#6b7280",
+    color: '#6b7280',
     lineHeight: 18,
-    fontFamily: "OpenSans",
+    fontFamily: 'OpenSans',
   },
   customizeButton: {
     marginTop: 8,
@@ -781,35 +798,35 @@ const styles = StyleSheet.create({
   customizeText: {
     fontSize: 12,
     color: ORANGE,
-    fontWeight: "600",
-    fontFamily: "OpenSans",
+    fontWeight: '600',
+    fontFamily: 'OpenSans',
   },
 
   /* Image with Controls */
   imageContainer: {
-    position: "relative",
+    position: 'relative',
     width: 120,
     height: 120,
   },
   itemImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 12,
   },
   controlOverlay: {
-    position: "absolute",
+    position: 'absolute',
     bottom: -8,
     left: 0,
     right: 0,
-    alignItems: "center",
+    alignItems: 'center',
   },
   addButton: {
     backgroundColor: ORANGE,
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 2 },
@@ -818,38 +835,38 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   addButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 13,
-    fontWeight: "700",
-    fontFamily: "Poppins",
+    fontWeight: '700',
+    fontFamily: 'Poppins',
   },
   qtyControl: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 4,
-    alignItems: "center",
+    alignItems: 'center',
     gap: 8,
   },
   qtyButton: {
     padding: 4,
     borderRadius: 6,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: '#f3f4f6',
   },
   qtyButtonActive: {
     backgroundColor: ORANGE,
   },
   qtyNumber: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 14,
     minWidth: 20,
-    textAlign: "center",
-    color: "#1f2937",
-    fontFamily: "Poppins",
+    textAlign: 'center',
+    color: '#1f2937',
+    fontFamily: 'Poppins',
   },
 });

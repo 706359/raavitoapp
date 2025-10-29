@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../context/FavoritesContext';
 
 export default function UserProfile({ navigation }) {
   const { user = {}, logout = () => {} } = useAuth() || {};
@@ -21,13 +22,14 @@ export default function UserProfile({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const { favorites } = useFavorites();
 
   const [profile, setProfile] = useState({
     name: user?.name || 'Guest User',
     mobile: user?.mobile || 'xxxxxxxxxx',
     image: user?.profileImage || null,
     orderHistory: user?.orderHistory || [],
-    favorites: user?.favorites || [],
+    Userfavorites: user?.Userfavorites || [],
     rewards: user?.rewards || { points: 0 },
     dietaryTags: user?.dietaryTags || [],
   });
@@ -72,7 +74,7 @@ export default function UserProfile({ navigation }) {
     mobile,
     image,
     orderHistory = [],
-    favorites = [],
+    Userfavorites = [],
     rewards = { points: 0 },
     dietaryTags = [],
   } = profile;
@@ -150,14 +152,14 @@ export default function UserProfile({ navigation }) {
         )}
 
         {/* Favorites */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name='heart' size={20} color='#ef4444' />
             <Text style={styles.sectionTitle}>Favorites</Text>
           </View>
           <View style={styles.favoritesList}>
-            {favorites.length > 0 ? (
-              favorites.map((item, idx) => (
+            {Userfavorites.length > 0 ? (
+              Userfavorites.map((item, idx) => (
                 <TouchableOpacity key={idx} style={styles.favoriteItem} activeOpacity={0.7}>
                   <View style={styles.foodImgWrapper}>
                     <Image
@@ -167,6 +169,44 @@ export default function UserProfile({ navigation }) {
                   </View>
                   <Text style={styles.foodName} numberOfLines={2}>
                     {item.name || 'Unknown'}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Ionicons name='heart-outline' size={40} color='#d1d5db' />
+                <Text style={styles.emptyText}>No favorites yet</Text>
+                <Text style={styles.emptySubtext}>Start adding your favorite dishes</Text>
+              </View>
+            )}
+          </View>
+        </View> */}
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name='heart' size={20} color='#ef4444' />
+            <Text style={styles.sectionTitle}>Favorite Kitchens</Text>
+          </View>
+
+          <View style={styles.favoritesList}>
+            {favorites.length > 0 ? (
+              favorites.map((kitchen, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={styles.favoriteItem}
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate('KitchenScreen', { kitchen })}>
+                  <View style={styles.foodImgWrapper}>
+                    <Image
+                      source={kitchen?.img || require('../assets/logo.png')}
+                      style={styles.foodImg}
+                    />
+                  </View>
+                  <Text style={styles.foodName} numberOfLines={2}>
+                    {kitchen.name || 'Unknown Kitchen'}
+                  </Text>
+                  <Text style={{ color: '#9ca3af', fontSize: 12 }}>
+                    {kitchen.location || 'Location unavailable'}
                   </Text>
                 </TouchableOpacity>
               ))
@@ -219,7 +259,7 @@ export default function UserProfile({ navigation }) {
         {/* Settings */}
         <View style={styles.section}>
           <View className='sectionHeader' style={styles.sectionHeader}>
-            <Ionicons name='settings' size={20} color='#6366f1' />
+            <Ionicons name='settings' size={20} color='#f97316' />
             <Text style={styles.sectionTitle}>Settings</Text>
           </View>
 
@@ -256,7 +296,10 @@ export default function UserProfile({ navigation }) {
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.settingsBtn}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('PrivacySecurity')}>
             <View style={styles.settingsIconWrapper}>
               <Ionicons name='shield-checkmark-outline' size={20} color='#6366f1' />
             </View>

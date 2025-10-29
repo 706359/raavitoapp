@@ -3,6 +3,7 @@ import ManageAddresses from '@/screens/ManageAddresses';
 import Notification from '@/screens/Notification';
 import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
 import PaymentMethod from '@/screens/PaymentMethod';
+import PrivacySecurity from '@/screens/PrivacySecurity';
 import UserProfile from '@/screens/UserProfile';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -17,6 +18,7 @@ export default function ExtraStack() {
       <Stack.Screen name='ManageAddresses' component={ManageAddresses} />
       <Stack.Screen name='PaymentMethod' component={PaymentMethod} />
       <Stack.Screen name='Notification' component={Notification} />
+      <Stack.Screen name='PrivacySecurity' component={PrivacySecurity} />
     </Stack.Navigator>
   );
 }
