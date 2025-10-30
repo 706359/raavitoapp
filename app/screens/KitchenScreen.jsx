@@ -190,7 +190,36 @@ export default function KitchenScreen({ route, navigation }) {
                   borderRadius='full'
                   style={styles.iconButton}
                 /> */}
+
                 <IconButton
+                  onPress={() => {
+                    if (isFavorite(kitchen.id)) {
+                      removeFavorite(kitchen.id);
+                    } else {
+                      const favoriteKitchen = {
+                        id: kitchen.id || Math.random().toString(36).substr(2, 9),
+                        name: kitchen.name || 'Unknown Kitchen',
+                        // location: kitchen.location || 'Unknown Location',
+                        img: kitchen.img || require('../assets/food.jpeg'),
+                        rating: kitchen.rating || '4.0',
+                        desc: kitchen.desc || '',
+                      };
+                      addFavorite(favoriteKitchen);
+                    }
+                  }}
+                  icon={
+                    <Icon
+                      as={Ionicons}
+                      name={isFavorite(kitchen.id) ? 'heart' : 'heart-outline'}
+                      color={isFavorite(kitchen.id) ? 'red.400' : 'white'}
+                      size='md'
+                    />
+                  }
+                  borderRadius='full'
+                  style={styles.iconButton}
+                />
+
+                {/* <IconButton
                   onPress={() =>
                     isFavorite(kitchen.id) ? removeFavorite(kitchen.id) : addFavorite(kitchen)
                   }
@@ -204,7 +233,7 @@ export default function KitchenScreen({ route, navigation }) {
                   }
                   borderRadius='full'
                   style={styles.iconButton}
-                />
+                /> */}
               </HStack>
             </HStack>
           </Box>

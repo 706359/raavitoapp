@@ -185,10 +185,11 @@ export default function UserProfile({ navigation }) {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name='heart' size={20} color='#ef4444' />
-            <Text style={styles.sectionTitle}>Favorite Kitchens</Text>
+            <Text style={styles.sectionTitle}>Favorites</Text>
           </View>
 
-          <View style={styles.favoritesList}>
+          <View
+            style={[styles.favoritesList, favorites.length === 0 && { justifyContent: 'center' }]}>
             {favorites.length > 0 ? (
               favorites.map((kitchen, idx) => (
                 <TouchableOpacity
@@ -205,9 +206,9 @@ export default function UserProfile({ navigation }) {
                   <Text style={styles.foodName} numberOfLines={2}>
                     {kitchen.name || 'Unknown Kitchen'}
                   </Text>
-                  <Text style={{ color: '#9ca3af', fontSize: 12 }}>
+                  {/* <Text style={{ color: '#9ca3af', fontSize: 12 }}>
                     {kitchen.location || 'Location unavailable'}
-                  </Text>
+                  </Text> */}
                 </TouchableOpacity>
               ))
             ) : (
@@ -432,9 +433,16 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1f2937' },
 
   // favoritesList: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  favoritesList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'flex-start',
+  },
+
   favoriteItem: { width: 90, alignItems: 'center' },
   foodImgWrapper: {
-    borderRadius: 16,
+    // borderRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

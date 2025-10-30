@@ -1,5 +1,7 @@
+import ManageAddresses from '@/screens/ManageAddresses';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { Image } from 'native-base';
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -82,7 +84,8 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => navigation.navigate('ProfileTab', { screen: 'ManageAddresses' })}
+              // onPress={() => navigation.navigate('ProfileTab', { screen: 'ManageAddresses' })}
+              onPress={() => navigation.navigate(ManageAddresses)}
               style={({ pressed }) => [
                 styles.locationContainer,
                 pressed && styles.locationPressed,
@@ -125,11 +128,21 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
               </Pressable>
             )}
 
-            <Pressable
+            {/* <Pressable
               onPress={() => navigation.navigate('ExtraStack', { screen: 'UserProfile' })}
               style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
               <View style={styles.profileButton}>
                 <Ionicons name='person' size={20} color='#fff' />
+              </View>
+            </Pressable> */}
+            <Pressable
+              onPress={() => navigation.navigate('ExtraStack', { screen: 'UserProfile' })}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
+              <View style={styles.profileButton}>
+                <Image
+                  source={require('../assets/logo.png')} // 👈 make sure path is correct
+                  style={styles.profileImage}
+                />
               </View>
             </Pressable>
           </View>
@@ -247,20 +260,37 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   // Profile Button Styles
+  // profileButton: {
+  //   backgroundColor: '#f97316',
+  //   borderRadius: 50,
+  //   width: 36,
+  //   height: 36,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 2,
+  //   },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 4,
+  //   elevation: 2,
+  // },
   profileButton: {
-    backgroundColor: '#f97316',
-    borderRadius: 50,
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#000',
+    // backgroundColor: '#10b981',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    justifyContent: 'center',
+  },
+
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 });

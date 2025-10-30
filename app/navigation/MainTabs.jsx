@@ -25,6 +25,7 @@ function HomeStackNavigator() {
       <Stack.Screen name='HomeScreen' component={HomeScreen} />
       <Stack.Screen name='KitchenScreen' component={KitchenScreen} />
       <Stack.Screen name='Cart' component={PremiumCartScreen} />
+      <Stack.Screen name='ManageAddresses' component={ManageAddresses} />
     </Stack.Navigator>
   );
 }

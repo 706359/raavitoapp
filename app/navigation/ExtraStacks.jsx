@@ -1,4 +1,5 @@
 import CheckoutScreen from '@/screens/CheckoutScreen';
+import KitchenScreen from '@/screens/KitchenScreen';
 import ManageAddresses from '@/screens/ManageAddresses';
 import Notification from '@/screens/Notification';
 import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
@@ -19,6 +20,7 @@ export default function ExtraStack() {
       <Stack.Screen name='PaymentMethod' component={PaymentMethod} />
       <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen name='PrivacySecurity' component={PrivacySecurity} />
+      <Stack.Screen name='KitchenScreen' component={KitchenScreen} />
     </Stack.Navigator>
   );
 }
