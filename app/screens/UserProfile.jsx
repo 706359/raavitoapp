@@ -269,10 +269,12 @@ export default function UserProfile({ navigation }) {
             activeOpacity={0.7}
             onPress={() => navigation.navigate('PaymentMethod')}>
             <View style={styles.settingsIconWrapper}>
-              <Ionicons name='card-outline' size={20} color='#6366f1' />
+              <Ionicons name='card-outline' size={20} color='#f97316' />
+              {/* <Ionicons name='card-outline' size={20} color='#6366f1' /> */}
             </View>
             <Text style={styles.settingsText}>Payment Methods</Text>
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />
+            {/* <Ionicons name='chevron-forward' size={20} color='#9ca3af' /> */}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -280,7 +282,7 @@ export default function UserProfile({ navigation }) {
             activeOpacity={0.7}
             onPress={() => navigation.navigate('ManageAddresses')}>
             <View style={styles.settingsIconWrapper}>
-              <Ionicons name='home-outline' size={20} color='#6366f1' />
+              <Ionicons name='home-outline' size={20} color='#f97316' />
             </View>
             <Text style={styles.settingsText}>Saved Addresses</Text>
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />
@@ -291,7 +293,7 @@ export default function UserProfile({ navigation }) {
             activeOpacity={0.7}
             onPress={() => navigation.navigate('Notification')}>
             <View style={styles.settingsIconWrapper}>
-              <Ionicons name='notifications-outline' size={20} color='#6366f1' />
+              <Ionicons name='notifications-outline' size={20} color='#f97316' />
             </View>
             <Text style={styles.settingsText}>Notifications</Text>
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />
@@ -302,7 +304,7 @@ export default function UserProfile({ navigation }) {
             activeOpacity={0.7}
             onPress={() => navigation.navigate('PrivacySecurity')}>
             <View style={styles.settingsIconWrapper}>
-              <Ionicons name='shield-checkmark-outline' size={20} color='#6366f1' />
+              <Ionicons name='shield-checkmark-outline' size={20} color='#f97316' />
             </View>
             <Text style={styles.settingsText}>Privacy & Security</Text>
             <Ionicons name='chevron-forward' size={20} color='#9ca3af' />

@@ -1,3 +1,5 @@
+import CheckoutScreen from '@/screens/CheckoutScreen';
+import PaymentMethod from '@/screens/PaymentMethod';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -26,6 +28,8 @@ function HomeStackNavigator() {
       <Stack.Screen name='KitchenScreen' component={KitchenScreen} />
       <Stack.Screen name='Cart' component={PremiumCartScreen} />
       <Stack.Screen name='ManageAddresses' component={ManageAddresses} />
+      <Stack.Screen name='CheckoutScreen' component={CheckoutScreen} />
+      <Stack.Screen name='PaymentMethod' component={PaymentMethod} />
     </Stack.Navigator>
   );
 }

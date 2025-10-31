@@ -8,6 +8,7 @@ import { AuthProvider } from './app/context/AuthContext';
 import { CartProvider } from './app/context/CartContext';
 import { FavoritesProvider } from './app/context/FavoritesContext';
 import { OrderProvider } from './app/context/OrderContext';
+import { PaymentProvider } from './app/context/PaymentContext';
 import AppNavigator from './app/navigation/AppNavigator';
 import './patches/fixBackhandler';
 import theme from './theme';
@@ -20,12 +21,14 @@ function App() {
           <CartProvider>
             <OrderProvider>
               <AddressProvider>
-                <FavoritesProvider>
-                  {/* Only one NavigationContainer */}
-                  <NavigationContainer>
-                    <AppNavigator />
-                  </NavigationContainer>
-                </FavoritesProvider>
+                <PaymentProvider>
+                  <FavoritesProvider>
+                    {/* Only one NavigationContainer */}
+                    <NavigationContainer>
+                      <AppNavigator />
+                    </NavigationContainer>
+                  </FavoritesProvider>
+                </PaymentProvider>
               </AddressProvider>
             </OrderProvider>
           </CartProvider>
