@@ -22,55 +22,93 @@ import { useAuth } from "../context/AuthContext";
 import { axios_ } from "./../../utils/utils";
 
 export default function LoginScreen({ navigation }) {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [remember, setRemember] = useState(true);
   const [formData, setFormData] = useState({});
   const theme = useTheme();
 
+  // Restore saved credentials
   useEffect(() => {
-    getRemembered();
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem("remember");
+        if (saved) setFormData(JSON.parse(saved));
+      } catch (e) {
+        console.log("restore remember failed", e);
+      }
+    })();
   }, []);
 
-  async function getRemembered() {
-    let remember = await AsyncStorage.getItem("remember");
-    console.log("remember", remember);
-    if (remember) {
-      remember = JSON.parse(remember);
-      setFormData(remember);
-    }
-  }
+  // ❌ REMOVED: Auto-navigation useEffect that was causing issues
+  // AppNavigator will handle navigation based on user state
+
   function handleFormData(name, value) {
-    setFormData((prev) => {
-      let obj = { ...prev };
-      obj[name] = value;
-      return obj;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
+
   const handleLogin = async () => {
     try {
-      let { mobile, password } = formData;
+      const { mobile, password } = formData;
       if (!mobile || !password) {
         return Alert.alert("Invalid Credentials", "Please enter valid credentials");
       }
-      if (remember) {
-        AsyncStorage.setItem("remember", JSON.stringify({ mobile, password }));
-      } else {
-        AsyncStorage.removeItem("remember");
-      }
-      let response = await axios_.post("/users/login", formData);
 
-      response = response.data;
-      if (response.token) {
-        // success: save user & token
-        login({ id: response._id, name: response.name, mobile, token: response.token });
-        Alert.alert("Success", "Login successful!");
-        // navigation.replace("MainTabs");
+      // Save credentials if remember is checked
+      if (remember) {
+        await AsyncStorage.setItem("remember", JSON.stringify({ mobile, password }));
       } else {
-        Alert.alert("Login Failed", response.message || "Invalid credentials");
+        await AsyncStorage.removeItem("remember");
       }
+
+      // Call backend login endpoint
+      const res = await axios_.post("/users/login", { mobile, password });
+      const data = res.data || {};
+
+      // Extract token and user data
+      const token = data.token || data?.data?.token;
+      const userFromServer = data.user || data?.data?.user || data;
+
+      if (!token) {
+        return Alert.alert("Login Failed", data.message || "Invalid credentials");
+      }
+
+      const role = userFromServer?.role || "user";
+
+      // Persist token and role
+      await AsyncStorage.multiSet([
+        ["token", token],
+        ["role", role],
+      ]);
+
+      // Build full name
+      const fullName = [userFromServer?.firstName, userFromServer?.lastName]
+        .filter(Boolean)
+        .join(" ");
+
+      // Update auth context - this will trigger AppNavigator to show appropriate screens
+      await login({
+        id: userFromServer?.id || userFromServer?._id || data._id || null,
+        firstName: userFromServer?.firstName || "",
+        lastName: userFromServer?.lastName || "",
+        name: fullName || userFromServer?.mobile || mobile,
+        mobile: userFromServer?.mobile || mobile,
+        role,
+        token,
+      });
+
+      console.log("Login success. role:", role, "token saved.");
+
+      // ✅ FIXED: Don't show success alert or navigate manually
+      // AppNavigator will automatically handle navigation based on role:
+      // - admin → RoleSelection screen
+      // - partner → PartnerDashboard
+      // - user → MainTabs
     } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert("Error", "Something went wrong while logging in.");
+      console.error("Login error:", error?.response?.data || error?.message || error);
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message || "Something went wrong while logging in."
+      );
     }
   };
 
@@ -127,9 +165,7 @@ export default function LoginScreen({ navigation }) {
                     <TextInput
                       style={[styles.input, { color: theme.colors.brand.dark }]}
                       value={formData?.mobile}
-                      onChangeText={(value) => {
-                        handleFormData("mobile", value);
-                      }}
+                      onChangeText={(value) => handleFormData("mobile", value)}
                       placeholder='Mobile Number'
                       keyboardType='phone-pad'
                       maxLength={10}
@@ -149,9 +185,7 @@ export default function LoginScreen({ navigation }) {
                     <TextInput
                       style={[styles.input, { color: theme.colors.brand.dark }]}
                       value={formData?.password}
-                      onChangeText={(value) => {
-                        handleFormData("password", value);
-                      }}
+                      onChangeText={(value) => handleFormData("password", value)}
                       placeholder='Password'
                       secureTextEntry
                       blurOnSubmit={true}
@@ -162,9 +196,7 @@ export default function LoginScreen({ navigation }) {
                   {/* Remember + Forgot */}
                   <HStack justifyContent='space-between' alignItems='center' mt={1}>
                     <Checkbox
-                      onChange={() => {
-                        setRemember((prev) => !prev);
-                      }}
+                      onChange={() => setRemember((prev) => !prev)}
                       defaultIsChecked={remember}>
                       Remember me
                     </Checkbox>
@@ -189,17 +221,6 @@ export default function LoginScreen({ navigation }) {
                     }}>
                     User Sign In
                   </Button>
-
-                  {/* Google login */}
-                  {/* <Button
-                    variant='outline'
-                    borderColor='brand.light'
-                    _text={{ color: "brand.light", fontWeight: "600" }}
-                    leftIcon={
-                      <Icon as={Ionicons} name='logo-google' size={5} color='brand.orange' />
-                    }>
-                    Continue with Google
-                  </Button> */}
 
                   {/* Terms */}
                   <Text fontSize='xs' color='coolGray.600' textAlign='center' mt={2}>
@@ -227,6 +248,8 @@ export default function LoginScreen({ navigation }) {
                     Register
                   </Text>
                 </HStack>
+
+                {/* Partner Login */}
                 <Pressable
                   onPress={() => navigation.navigate("PartnerLogin")}
                   style={styles.partnerCard}>
@@ -266,7 +289,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 12,
   },
-
   icon: { marginRight: 8 },
   input: {
     flex: 1,

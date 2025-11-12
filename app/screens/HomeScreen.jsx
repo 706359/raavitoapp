@@ -178,8 +178,8 @@ export default function HomeScreen() {
         });
         if (geo.length > 0) {
           const place = geo[0];
-          const city = place.city || place.subregion || place.district || "";
-          const region = place.region || place.country || "";
+          const city = place.city || place.subregion || place.district || undefined;
+          const region = place.region || place.country || undefined;
           setLocation(city && region ? `${city}, ${region}` : city || region || "Unknown");
         } else {
           setLocation("Location not found");
