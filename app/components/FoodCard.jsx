@@ -1,4 +1,4 @@
-import { useCart } from "@/context/CartContext";
+import { useCart } from "../context/CartContext";
 import { Box, Button, HStack, Image, Text, VStack } from "native-base";
 
 export default function FoodCard({ item }) {

@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { fetchUserProfile } from "../utils/apiHelpers";
+import { axios_ } from "../../utils/utils";
 
 export default function ProfileScreen({ navigation }) {
   const { user = {}, logout = () => {} } = useAuth() || {};
@@ -27,12 +29,13 @@ export default function ProfileScreen({ navigation }) {
   const isSmallScreen = width < 380;
 
   const [profile, setProfile] = useState({
-    name: user?.name || "Your Name",
+    name: user?.name || user?.firstName || "Your Name",
     email: user?.email || "",
     mobile: user?.mobile || "+91 0000000000",
     address: user?.address || "",
     image: user?.profileImage || null,
   });
+  const [loading, setLoading] = useState(false);
 
   const menuItems = [
     { icon: "restaurant-outline", label: "Meal Subscription", route: "Subscription" },
@@ -50,13 +53,33 @@ export default function ProfileScreen({ navigation }) {
 
   const loadProfile = useCallback(async () => {
     try {
-      const val = await AsyncStorage.getItem("userProfile");
-      if (val) {
-        const saved = JSON.parse(val);
-        setProfile((prev) => ({ ...prev, ...saved }));
+      setLoading(true);
+      const userData = await fetchUserProfile();
+      if (userData) {
+        const fullName = [userData.firstName, userData.lastName].filter(Boolean).join(" ") || userData.mobile;
+        setProfile({
+          name: fullName,
+          email: userData.email || "",
+          mobile: userData.mobile || user?.mobile || "+91 0000000000",
+          address: userData.address || "",
+          image: userData.profileImage || null,
+        });
       }
-    } catch {}
-  }, []);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+      // Fallback to user from context
+      const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.name || user?.mobile;
+      setProfile({
+        name: fullName,
+        email: user?.email || "",
+        mobile: user?.mobile || "+91 0000000000",
+        address: user?.address || "",
+        image: user?.profileImage || null,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     Animated.parallel([

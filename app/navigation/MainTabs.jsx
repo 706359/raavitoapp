@@ -12,6 +12,7 @@ import KitchenScreen from "../screens/KitchenScreen";
 import ManageAddresses from "../screens/ManageAddresses";
 import MenuScreen from "../screens/MenuScreen";
 import OrdersHistoryScreen from "../screens/OrdersHistoryScreen";
+import OrdersStack from "./OrdersStack";
 import PaymentMethod from "../screens/PaymentMethod";
 import ProfileScreen from "../screens/ProfileScreen";
 import Subscription from "../screens/Subscription";
@@ -40,6 +41,7 @@ function MenuStackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='MenuScreen' component={MenuScreen} />
       <Stack.Screen name='KitchenScreen' component={KitchenScreen} />
+      <Stack.Screen name='Cart' component={PremiumCartScreen} />
     </Stack.Navigator>
   );
 }
@@ -55,6 +57,7 @@ function ProfileStackNavigator() {
       <Stack.Screen name='Help' component={Help} />
       <Stack.Screen name='FAQ' component={FAQ} />
       <Stack.Screen name='Wallet' component={Wallet} />
+      <Stack.Screen name='Cart' component={PremiumCartScreen} />
     </Stack.Navigator>
   );
 }
@@ -81,7 +84,11 @@ export default function MainTabs() {
       <Tab.Screen name='MenuTab' component={MenuStackNavigator} options={{ title: "Kitchen" }} />
       {/* <Tab.Screen name='Cart' component={CartScreen} /> */}
       <Tab.Screen name='Subscription' component={Subscription} />
-      <Tab.Screen name='Orders' component={OrdersHistoryScreen} />
+      <Tab.Screen 
+        name='Orders' 
+        component={OrdersStack}
+        options={{ title: "Orders" }}
+      />
       {/* <Tab.Screen name='Profile' component={ProfileScreen} /> */}
       <Tab.Screen
         name='ProfileTab'

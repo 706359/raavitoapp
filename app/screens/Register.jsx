@@ -22,21 +22,58 @@ export default function RegisterScreen({ navigation }) {
   const theme = useTheme();
   const [formData, setFormData] = useState({});
   const handleSignUp = async () => {
-    let { firstName, lastName, mobile, password } = formData;
+    let { firstName, lastName, mobile, password, referalCode } = formData;
     if (firstName === "" || lastName === "" || mobile === "" || password === "") {
+      Alert.alert("Error", "Please fill all required fields");
+      return;
+    }
+
+    if (mobile.length !== 10) {
+      Alert.alert("Error", "Please enter a valid 10-digit mobile number");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters");
       return;
     }
 
     try {
-      let res = await axios_.post("/users/register", formData);
-      if (res.status === 201) {
-        Alert.alert("Success", "Registration successful");
-        login({ id: res._id, token: res.token });
-        navigation.replace("Login");
+      const res = await axios_.post("/users/register", {
+        firstName,
+        lastName,
+        mobile,
+        password,
+        referalCode: referalCode || "DEFAULT",
+      });
+
+      if (res.data?.token && res.data?.user) {
+        Alert.alert("Success", "Registration successful!", [
+          {
+            text: "OK",
+            onPress: () => {
+              // Auto-login after registration
+              login({
+                id: res.data.user._id,
+                firstName: res.data.user.firstName,
+                lastName: res.data.user.lastName,
+                name: `${res.data.user.firstName} ${res.data.user.lastName}`,
+                mobile: res.data.user.mobile,
+                role: res.data.user.role || "user",
+                token: res.data.token,
+              });
+              // Navigation will be handled by AppNavigator based on user state
+            },
+          },
+        ]);
+      } else {
+        Alert.alert("Error", "Registration failed. Please try again.");
       }
     } catch (err) {
-      console.log(err);
-      Alert.alert("Error", "Something went wrong while registering.");
+      console.error("Registration error:", err);
+      const errorMessage =
+        err?.response?.data?.message || "Something went wrong while registering.";
+      Alert.alert("Error", errorMessage);
     }
   };
 

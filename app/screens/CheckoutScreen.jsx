@@ -1,5 +1,7 @@
-import { useAddress } from '@/context/AddressContext';
-import { usePayment } from '@/context/PaymentContext';
+import { useAddress } from '../context/AddressContext';
+import { usePayment } from '../context/PaymentContext';
+import { useCart } from '../context/CartContext';
+import { axios_ } from '../../utils/utils';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Icon } from 'native-base';
 import React, { useEffect, useState } from 'react';
@@ -19,9 +21,60 @@ export default function CheckoutScreen({ navigation }) {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const { selectedAddress } = useAddress();
   const { selectedPayment } = usePayment();
+  const { cart, getTotal, clearCart } = useCart();
+  const [loading, setLoading] = useState(false);
 
-  const handlePlaceOrder = () => {
-    Alert.alert('Order Placed', 'Your order has been successfully placed!');
+  const handlePlaceOrder = async () => {
+    if (!selectedAddress) {
+      Alert.alert('Error', 'Please select a delivery address');
+      return;
+    }
+
+    if (!cart || cart.length === 0) {
+      Alert.alert('Error', 'Your cart is empty');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Prepare order items
+      const items = cart.map((item) => ({
+        menuItem: item._id || item.id,
+        qty: item.qty || 1,
+        price: item.price,
+      }));
+
+      const total = getTotal();
+      const orderData = {
+        items,
+        total,
+        address: selectedAddress.address || selectedAddress,
+        paymentMode: paymentMethod,
+        walletUsed: 0, // TODO: Get from wallet context
+        couponCode: null, // TODO: Get from coupon context
+      };
+
+      const { data } = await axios_.post('/orders', orderData);
+      
+      // Clear cart after successful order
+      await clearCart();
+      
+      Alert.alert('Success', 'Your order has been placed successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('OrderConfirmed', { orderId: data._id }),
+        },
+      ]);
+    } catch (error) {
+      console.error('Order error:', error);
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Failed to place order. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

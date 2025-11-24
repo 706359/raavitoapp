@@ -15,8 +15,9 @@ import {
   useTheme,
 } from "native-base";
 import React, { useEffect, useMemo, useState } from "react";
-import { BackHandler, RefreshControl, StyleSheet } from "react-native";
+import { BackHandler, RefreshControl, StyleSheet, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { fetchWallet } from "../utils/apiHelpers";
 
 export default function WalletScreen() {
   const navigation = useNavigation();
@@ -25,6 +26,8 @@ export default function WalletScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("all");
+  const [wallet, setWallet] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -34,25 +37,49 @@ export default function WalletScreen() {
     return () => sub.remove();
   }, [navigation]);
 
-  const data = useMemo(
-    () => [
-      { desc: "Order #1042", date: "Today, 6:49 PM", amount: -112, type: "debit" },
-      { desc: "UPI Add", date: "Today, 6:20 PM", amount: 300, type: "credit" },
-      { desc: "Promo Bonus", date: "Yesterday, 9:10 PM", amount: 40, type: "credit" },
-      { desc: "Order #1031", date: "Sep 25, 02:35 PM", amount: -100, type: "debit" },
-      { desc: "Referral Reward", date: "Sep 24, 02:27 PM", amount: 100, type: "credit" },
-    ],
-    []
-  );
+  const loadWallet = async () => {
+    try {
+      setLoading(true);
+      const walletData = await fetchWallet();
+      setWallet(walletData);
+    } catch (error) {
+      console.error("Error loading wallet:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadWallet();
+  }, []);
+
+  const transactions = useMemo(() => {
+    if (!wallet?.transactions) return [];
+    return wallet.transactions.map((tx) => ({
+      desc: tx.description || "Transaction",
+      date: new Date(tx.createdAt).toLocaleString(),
+      amount: tx.type === "credit" ? tx.amount : -tx.amount,
+      type: tx.type,
+    }));
+  }, [wallet]);
 
   const list = useMemo(
-    () => (tab === "all" ? data : data.filter((d) => d.type === tab)),
-    [tab, data]
+    () => (tab === "all" ? transactions : transactions.filter((d) => d.type === tab)),
+    [tab, transactions]
   );
 
-  const onRefresh = () => {
+  const balance = wallet?.balance || 0;
+  const earned = transactions
+    .filter((t) => t.type === "credit")
+    .reduce((sum, t) => sum + t.amount, 0);
+  const spent = Math.abs(
+    transactions.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0)
+  );
+
+  const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 700);
+    await loadWallet();
+    setRefreshing(false);
   };
 
   return (
@@ -76,14 +103,32 @@ export default function WalletScreen() {
               <HStack alignItems='center' justifyContent='space-between'>
                 <VStack>
                   <Text style={styles.balanceLabel}>Available Balance</Text>
-                  <HStack alignItems='flex-end'>
-                    <Text style={[styles.balanceValue, { color: brand.orange }]}>0</Text>
-                    <Text style={styles.balanceUnit}> RC</Text>
-                  </HStack>
-                  <HStack mt={3} space={3}>
-                    <StatPill icon='trending-up' label='Earned' value='+352' tint={brand.green} />
-                    <StatPill icon='trending-down' label='Spent' value='-212' tint='#EF4444' />
-                  </HStack>
+                  {loading ? (
+                    <ActivityIndicator size='small' color={brand.orange} style={{ marginTop: 10 }} />
+                  ) : (
+                    <>
+                      <HStack alignItems='flex-end'>
+                        <Text style={[styles.balanceValue, { color: brand.orange }]}>
+                          {balance.toFixed(2)}
+                        </Text>
+                        <Text style={styles.balanceUnit}> ₹</Text>
+                      </HStack>
+                      <HStack mt={3} space={3}>
+                        <StatPill
+                          icon='trending-up'
+                          label='Earned'
+                          value={`+${earned.toFixed(2)}`}
+                          tint={brand.green}
+                        />
+                        <StatPill
+                          icon='trending-down'
+                          label='Spent'
+                          value={`-${spent.toFixed(2)}`}
+                          tint='#EF4444'
+                        />
+                      </HStack>
+                    </>
+                  )}
                 </VStack>
                 <Avatar bg={brand.light} shadow={3}>
                   <Icon as={MaterialIcons} name='account-balance-wallet' color={brand.orange} />

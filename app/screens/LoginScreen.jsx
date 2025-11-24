@@ -200,7 +200,9 @@ export default function LoginScreen({ navigation }) {
                       defaultIsChecked={remember}>
                       Remember me
                     </Checkbox>
-                    <Link _text={{ color: "brand.orange", fontWeight: "600" }}>
+                    <Link
+                      _text={{ color: "brand.orange", fontWeight: "600" }}
+                      onPress={() => navigation.navigate("ForgotPassword")}>
                       Forgot Password?
                     </Link>
                   </HStack>

@@ -362,7 +362,7 @@
 //   amazonLogo: { width: 34, height: 24, resizeMode: 'contain' },
 // });
 
-import { usePayment } from '@/context/PaymentContext'; // ✅ make sure you have this context
+import { usePayment } from '../context/PaymentContext';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Divider, Icon, Pressable, ScrollView } from 'native-base';

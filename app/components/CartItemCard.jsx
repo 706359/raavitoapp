@@ -1,4 +1,4 @@
-import { useCart } from "@/context/CartContext";
+import { useCart } from "../context/CartContext";
 import { Box, Button, HStack, Text } from "native-base";
 
 export default function CartItemCard({ item }) {

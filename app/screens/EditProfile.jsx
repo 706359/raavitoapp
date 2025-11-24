@@ -56,14 +56,33 @@ export default function EditProfileScreen() {
   const handleSave = async () => {
     try {
       setSaving(true);
+      
+      // Split name into firstName and lastName
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Update profile via API
+      const response = await axios_.put('/users/profile', {
+        firstName,
+        lastName,
+        email: email || undefined,
+        profileImage: profileImage || undefined,
+      });
+
+      // Also save to AsyncStorage for local caching
       const updated = { name, email, mobile: phone, address, image: profileImage };
       await AsyncStorage.setItem("userProfile", JSON.stringify(updated));
 
       Alert.alert("Profile Updated", "Your profile information has been saved successfully.", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
-    } catch {
-      Alert.alert("Error", "Something went wrong while saving your profile.");
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message || "Something went wrong while saving your profile."
+      );
     } finally {
       setSaving(false);
     }

@@ -1,5 +1,5 @@
 // AdminDashboard.js - Screen Component for your existing app
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   Modal,
@@ -13,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import { axios_ } from "../../utils/utils";
+import ColorPicker from "../components/ColorPicker";
 
 const AdminDashboard = ({ navigation }) => {
   const { logout } = useAuth();
@@ -20,6 +22,8 @@ const AdminDashboard = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
   const [selectedKitchen, setSelectedKitchen] = useState(null);
+  const [deals, setDeals] = useState([]);
+  const [loadingDeals, setLoadingDeals] = useState(false);
 
   const [kitchens, setKitchens] = useState([
     {
@@ -128,6 +132,26 @@ const AdminDashboard = ({ navigation }) => {
 
   const [formData, setFormData] = useState({});
 
+  // Load deals from API
+  useEffect(() => {
+    if (activeTab === "deals") {
+      loadDeals();
+    }
+  }, [activeTab]);
+
+  const loadDeals = async () => {
+    try {
+      setLoadingDeals(true);
+      const { data } = await axios_.get("/deals");
+      setDeals(data);
+    } catch (error) {
+      console.error("Error loading deals:", error);
+      Alert.alert("Error", "Failed to load deals");
+    } finally {
+      setLoadingDeals(false);
+    }
+  };
+
   const stats = {
     totalRevenue: 24580,
     totalOrders: 579,
@@ -198,20 +222,64 @@ const AdminDashboard = ({ navigation }) => {
     Alert.alert("Success", "Menu item saved successfully!");
   };
 
+  const handleSaveDeal = async () => {
+    if (!formData.title || !formData.gradient || formData.gradient.length === 0) {
+      Alert.alert("Error", "Please fill title and gradient colors");
+      return;
+    }
+
+    try {
+      const dealData = {
+        title: formData.title,
+        subtitle: formData.subtitle || "",
+        description: formData.description || "",
+        gradient: formData.gradient || [],
+        image: formData.image || "",
+        isActive: formData.isActive !== false,
+        startDate: formData.startDate || new Date(),
+        endDate: formData.endDate || null,
+      };
+
+      if (formData._id || formData.id) {
+        const { data } = await axios_.put(`/deals/${formData._id || formData.id}`, dealData);
+        setDeals(deals.map((d) => (d._id || d.id) === (formData._id || formData.id) ? data : d));
+        Alert.alert("Success", "Deal updated successfully!");
+      } else {
+        const { data } = await axios_.post("/deals", dealData);
+        setDeals([...deals, data]);
+        Alert.alert("Success", "Deal created successfully!");
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Error saving deal:", error);
+      Alert.alert("Error", error.response?.data?.message || "Failed to save deal");
+    }
+  };
+
   const handleDelete = (type, id) => {
     Alert.alert("Confirm Delete", `Are you sure you want to delete this ${type}?`, [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => {
-          if (type === "kitchen") {
+        onPress: async () => {
+          if (type === "deal") {
+            try {
+              await axios_.delete(`/deals/${id}`);
+              setDeals(deals.filter((d) => (d._id || d.id) !== id));
+              Alert.alert("Success", "Deal deleted successfully!");
+            } catch (error) {
+              console.error("Error deleting deal:", error);
+              Alert.alert("Error", "Failed to delete deal");
+            }
+          } else if (type === "kitchen") {
             setKitchens(kitchens.filter((k) => k.id !== id));
             setMenuItems(menuItems.filter((m) => m.kitchenId !== id));
+            Alert.alert("Success", `${type} deleted successfully!`);
           } else if (type === "menu") {
             setMenuItems(menuItems.filter((m) => m.id !== id));
+            Alert.alert("Success", `${type} deleted successfully!`);
           }
-          Alert.alert("Success", `${type} deleted successfully!`);
         },
       },
     ]);
@@ -555,6 +623,78 @@ const AdminDashboard = ({ navigation }) => {
     </View>
   );
 
+  const renderDeals = () => (
+    <View>
+      <TouchableOpacity onPress={() => openModal("deal")} style={styles.addButton}>
+        <Text style={styles.addButtonText}>➕ Add New Deal</Text>
+      </TouchableOpacity>
+
+      {loadingDeals ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>Loading deals...</Text>
+        </View>
+      ) : deals.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateIcon}>🎁</Text>
+          <Text style={styles.emptyStateTitle}>No Deals Yet</Text>
+          <Text style={styles.emptyStateText}>Start creating exclusive deals for your customers</Text>
+        </View>
+      ) : (
+        deals.map((deal) => (
+          <View key={deal._id || deal.id} style={styles.card}>
+            <View style={styles.cardHeader}>
+              <View style={styles.flex1}>
+                <Text style={styles.itemTitle}>{deal.title}</Text>
+                <Text style={styles.itemSubtitle}>{deal.subtitle || "Exclusive Deal"}</Text>
+                {deal.description && (
+                  <Text style={styles.itemLocation}>{deal.description}</Text>
+                )}
+              </View>
+              <View
+                style={[
+                  styles.statusBadge,
+                  deal.isActive ? styles.statusActive : styles.statusInactive,
+                ]}>
+                <Text style={styles.statusText}>{deal.isActive ? "Active" : "Inactive"}</Text>
+              </View>
+            </View>
+
+            {(deal.startDate || deal.endDate) && (
+              <View style={styles.kitchenStats}>
+                <View style={styles.kitchenStat}>
+                  <Text style={styles.kitchenStatValue}>
+                    {deal.startDate ? new Date(deal.startDate).toLocaleDateString() : "N/A"}
+                  </Text>
+                  <Text style={styles.kitchenStatLabel}>Start Date</Text>
+                </View>
+                <View style={styles.divider} />
+                <View style={styles.kitchenStat}>
+                  <Text style={styles.kitchenStatValue}>
+                    {deal.endDate ? new Date(deal.endDate).toLocaleDateString() : "No End"}
+                  </Text>
+                  <Text style={styles.kitchenStatLabel}>End Date</Text>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                onPress={() => openModal("deal", deal)}
+                style={[styles.actionButton, styles.editButton]}>
+                <Text style={styles.editButtonText}>✏️ Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleDelete("deal", deal._id || deal.id)}
+                style={[styles.actionButton, styles.deleteButton]}>
+                <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))
+      )}
+    </View>
+  );
+
   const renderModal = () => {
     if (modalType === "kitchen") {
       return (
@@ -779,6 +919,124 @@ const AdminDashboard = ({ navigation }) => {
         </Modal>
       );
     }
+
+    if (modalType === "deal") {
+      return (
+        <Modal
+          animationType='slide'
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  {formData._id || formData.id ? "Edit Deal" : "Add Deal"}
+                </Text>
+                <TouchableOpacity onPress={closeModal}>
+                  <Text style={styles.closeButton}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <Text style={styles.inputLabel}>Title *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder='e.g., Premium Subscription'
+                  placeholderTextColor='#9CA3AF'
+                  value={formData.title || ""}
+                  onChangeText={(text) => setFormData({ ...formData, title: text })}
+                />
+
+                <Text style={styles.inputLabel}>Subtitle</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder='e.g., Save up to 60% for 6 months'
+                  placeholderTextColor='#9CA3AF'
+                  value={formData.subtitle || ""}
+                  onChangeText={(text) => setFormData({ ...formData, subtitle: text })}
+                />
+
+                <Text style={styles.inputLabel}>Description</Text>
+                <TextInput
+                  style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+                  placeholder='Deal description (optional)'
+                  placeholderTextColor='#9CA3AF'
+                  multiline
+                  numberOfLines={3}
+                  value={formData.description || ""}
+                  onChangeText={(text) => setFormData({ ...formData, description: text })}
+                />
+
+                <ColorPicker
+                  label="Gradient Colors"
+                  value={formData.gradient || []}
+                  onChange={(colors) => setFormData({ ...formData, gradient: colors })}
+                />
+
+                <Text style={styles.inputLabel}>Image URL (optional)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder='https://example.com/image.jpg'
+                  placeholderTextColor='#9CA3AF'
+                  value={formData.image || ""}
+                  onChangeText={(text) => setFormData({ ...formData, image: text })}
+                />
+
+                <Text style={styles.inputLabel}>Start Date (optional)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder='YYYY-MM-DD or leave empty for now'
+                  placeholderTextColor='#9CA3AF'
+                  value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
+                  onChangeText={(text) => {
+                    if (text) {
+                      setFormData({ ...formData, startDate: new Date(text) });
+                    } else {
+                      setFormData({ ...formData, startDate: null });
+                    }
+                  }}
+                />
+
+                <Text style={styles.inputLabel}>End Date (optional)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder='YYYY-MM-DD or leave empty for no end date'
+                  placeholderTextColor='#9CA3AF'
+                  value={formData.endDate ? new Date(formData.endDate).toISOString().split('T')[0] : ""}
+                  onChangeText={(text) => {
+                    if (text) {
+                      setFormData({ ...formData, endDate: new Date(text) });
+                    } else {
+                      setFormData({ ...formData, endDate: null });
+                    }
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={() => {
+                    setFormData({ ...formData, isActive: !formData.isActive });
+                  }}
+                  style={[
+                    styles.actionButton,
+                    { marginTop: 12, backgroundColor: formData.isActive !== false ? '#D1FAE5' : '#E5E7EB' },
+                  ]}>
+                  <Text style={[styles.editButtonText, { color: formData.isActive !== false ? '#059669' : '#6B7280' }]}>
+                    {formData.isActive !== false ? '✓ Active' : '✕ Inactive'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleSaveDeal} style={styles.saveButton}>
+                  <Text style={styles.saveButtonText}>
+                    {formData._id || formData.id ? "Update Deal" : "Save Deal"}
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      );
+    }
   };
 
   const handleLogout = () => {
@@ -824,6 +1082,7 @@ const AdminDashboard = ({ navigation }) => {
           <NavItem icon='🏪' label='Kitchens' tab='kitchens' />
           <NavItem icon='🍽️' label='Menu' tab='menu' />
           <NavItem icon='🛍️' label='Orders' tab='orders' />
+          <NavItem icon='🎁' label='Deals' tab='deals' />
         </ScrollView>
       </View>
 
@@ -832,6 +1091,7 @@ const AdminDashboard = ({ navigation }) => {
         {activeTab === "kitchens" && renderKitchens()}
         {activeTab === "menu" && renderMenu()}
         {activeTab === "orders" && renderOrders()}
+        {activeTab === "deals" && renderDeals()}
       </ScrollView>
 
       {renderModal()}

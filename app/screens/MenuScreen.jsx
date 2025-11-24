@@ -273,39 +273,59 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Badge, Box, FlatList, HStack, Icon, Image, Pressable, Text, VStack } from 'native-base';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FilterModal from '../components/FilterModal'; // 👈 make sure this path is correct
+import FilterModal from '../components/FilterModal';
 import HeaderBar from '../components/HeaderBar';
-import { kitchens } from '../data/menu';
+import { fetchKitchens } from '../utils/apiHelpers';
+import { ActivityIndicator } from 'react-native';
 
-export default function MenuScreen() {
+export default function MenuScreen({ route }) {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
-  // const [appliedFilters, setAppliedFilters] = useState({});
-  // const filterSheetRef = useRef(null);
-
+  const [kitchens, setKitchens] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [filters, setFilters] = useState({ 
+    cuisineType: route?.params?.cuisineType || null, 
+    minRating: null 
+  });
 
-  // const openFilter = () => {
-  //   filterSheetRef.current?.expand();
-  // };
+  // Fetch kitchens from API
+  useEffect(() => {
+    const loadKitchens = async () => {
+      try {
+        setLoading(true);
+        const apiFilters = {
+          search: searchQuery || undefined,
+          cuisineType: filters.cuisineType || route?.params?.cuisineType || undefined,
+          minRating: filters.minRating || undefined,
+        };
+        const data = await fetchKitchens(apiFilters);
+        // Transform API data to match expected format
+        const transformedKitchens = data.map((kitchen) => ({
+          id: kitchen._id,
+          name: kitchen.name,
+          rating: kitchen.rating || 4.0,
+          time: kitchen.deliveryTime || '30 mins',
+          image: kitchen.image ? { uri: kitchen.image } : require('../assets/food.jpeg'),
+          discount: kitchen.discount || null,
+          desc: kitchen.description || '',
+          location: kitchen.location || kitchen.address || '',
+        }));
+        setKitchens(transformedKitchens);
+      } catch (error) {
+        console.error('Error loading kitchens:', error);
+        setKitchens([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadKitchens();
+  }, [searchQuery, filters, route?.params?.cuisineType]);
 
-  // const closeFilter = () => {
-  //   filterSheetRef.current?.close();
-  // };
-
-  // const applyFilters = (selectedFilters) => {
-  //   setAppliedFilters(selectedFilters);
-  //   console.log('Applied Filters:', selectedFilters);
-  //   closeFilter();
-  // };
-
-  // Filter logic (temporary — you can expand this later)
-  const filteredKitchens = kitchens.filter((k) =>
-    k.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredKitchens = kitchens;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fafafa' }} edges={['top']}>
@@ -373,7 +393,7 @@ export default function MenuScreen() {
                   transform={isPressed ? [{ scale: 0.98 }] : [{ scale: 1 }]}>
                   <Box position='relative' h='180'>
                     <Image
-                      source={item.image}
+                      source={typeof item.image === 'string' ? { uri: item.image } : item.image}
                       alt={item.name}
                       w='100%'
                       h='100%'
@@ -498,26 +518,35 @@ export default function MenuScreen() {
               )}
             </Pressable>
           )}
-          ListEmptyComponent={() => (
-            <Box alignItems='center' mt={20}>
-              <Box
-                w='100'
-                h='100'
-                borderRadius='50'
-                bg='gray.100'
-                alignItems='center'
-                justifyContent='center'
-                mb={4}>
-                <Icon as={Ionicons} name='search-outline' size='4xl' color='gray.400' />
+          ListEmptyComponent={() =>
+            loading ? (
+              <Box alignItems='center' mt={20}>
+                <ActivityIndicator size='large' color='#f97316' />
+                <Text fontSize='sm' color='gray.500' mt={4}>
+                  Loading kitchens...
+                </Text>
               </Box>
-              <Text fontSize='lg' bold color='gray.700' mb={2}>
-                No kitchens found
-              </Text>
-              <Text fontSize='sm' color='gray.500' textAlign='center' px={8}>
-                Try adjusting your search or filters
-              </Text>
-            </Box>
-          )}
+            ) : (
+              <Box alignItems='center' mt={20}>
+                <Box
+                  w='100'
+                  h='100'
+                  borderRadius='50'
+                  bg='gray.100'
+                  alignItems='center'
+                  justifyContent='center'
+                  mb={4}>
+                  <Icon as={Ionicons} name='search-outline' size='4xl' color='gray.400' />
+                </Box>
+                <Text fontSize='lg' bold color='gray.700' mb={2}>
+                  No kitchens found
+                </Text>
+                <Text fontSize='sm' color='gray.500' textAlign='center' px={8}>
+                  Try adjusting your search or filters
+                </Text>
+              </Box>
+            )
+          }
         />
 
         {/* 👇 Zomato-style Filter Bottom Sheet */}
@@ -525,7 +554,10 @@ export default function MenuScreen() {
         <FilterModal
           open={filterVisible}
           onClose={() => setFilterVisible(false)}
-          // onApply={(filters) => console.log(filters)}
+          onApply={(appliedFilters) => {
+            setFilters(appliedFilters);
+            setFilterVisible(false);
+          }}
         />
       </Box>
     </SafeAreaView>

@@ -1,53 +1,106 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Box, Button, HStack, Icon, Image, Pressable, ScrollView, Text, VStack } from 'native-base';
-import { useState } from 'react';
-import { Platform } from 'react-native';
+import { Box, Button, HStack, Icon, Image, Pressable, ScrollView, Text, VStack, useTheme } from 'native-base';
+import { useState, useEffect } from 'react';
+import { Platform, ActivityIndicator, Alert } from 'react-native';
 import theme from '../../theme';
-import { allItems, kitchens } from '../data/menu';
-
-// Dummy orders
-const DUMMY_ORDERS = [
-  {
-    id: 1,
-    kitchenId: 'k1',
-    itemId: 'i1',
-    status: 'New',
-    location: 'Sector 22, Delhi',
-  },
-  {
-    id: 2,
-    kitchenId: 'k2',
-    itemId: 'i4',
-    status: 'Ongoing',
-    location: 'Sector 12, Delhi',
-  },
-  {
-    id: 3,
-    kitchenId: 'k3',
-    itemId: 'i5',
-    status: 'Complete',
-    location: 'Sector 9, Delhi',
-  },
-  {
-    id: 4,
-    kitchenId: 'k1',
-    itemId: 'i2',
-    status: 'New',
-    location: 'Sector 22, Delhi',
-  },
-];
+import { fetchUserOrders } from '../utils/apiHelpers';
+import { axios_ } from '../../utils/utils';
+import { useCart } from '../context/CartContext';
 
 const STATUS_TABS = ['New', 'Ongoing', 'Complete', 'All'];
 
+// Map API status to display status
+const mapStatus = (status) => {
+  const statusMap = {
+    pending: 'New',
+    confirmed: 'New',
+    preparing: 'Ongoing',
+    out_for_delivery: 'Ongoing',
+    delivered: 'Complete',
+    cancelled: 'Complete',
+  };
+  return statusMap[status] || 'New';
+};
+
 export default function OrdersHistoryScreen({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('New');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const theme = useTheme();
 
-  const filteredOrders =
-    selectedTab === 'All' ? DUMMY_ORDERS : DUMMY_ORDERS.filter((o) => o.status === selectedTab);
+  // Fetch orders from API
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+        const status = selectedTab === 'All' ? null : selectedTab.toLowerCase();
+        const data = await fetchUserOrders(status);
+        setOrders(data || []);
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadOrders();
+  }, [selectedTab]);
 
-  const getKitchen = (id) => kitchens.find((k) => k.id === id);
-  const getItem = (id) => allItems.find((i) => i.id === id);
+  const handleCancelOrder = async (orderId) => {
+    try {
+      await axios_.put(`/orders/${orderId}/cancel`);
+      Alert.alert('Success', 'Order cancelled successfully');
+      // Reload orders
+      const status = selectedTab === 'All' ? null : selectedTab.toLowerCase();
+      const data = await fetchUserOrders(status);
+      setOrders(data || []);
+    } catch (error) {
+      Alert.alert('Error', error?.response?.data?.message || 'Failed to cancel order');
+    }
+  };
+
+  const handleReorder = async (order) => {
+    try {
+      // Fetch full order details with menu items
+      const { data: orderDetails } = await axios_.get(`/orders/${order._id || order.id}`);
+      
+      // Add all items from the order to cart
+      if (orderDetails.items && orderDetails.items.length > 0) {
+        for (const item of orderDetails.items) {
+          const menuItem = item.menuItem;
+          if (menuItem) {
+            addToCart({
+              id: menuItem._id || menuItem.id,
+              _id: menuItem._id || menuItem.id,
+              name: menuItem.name,
+              price: item.price,
+              qty: item.qty,
+              image: menuItem.image,
+            });
+          }
+        }
+        Alert.alert('Success', 'Items added to cart', [
+          {
+            text: 'View Cart',
+            onPress: () => {
+              // Navigate to Cart - it's in the same stack (OrdersStack)
+              navigation.navigate('Cart');
+            },
+          },
+          { text: 'Continue Shopping' },
+        ]);
+      } else {
+        Alert.alert('Error', 'No items found in this order');
+      }
+    } catch (error) {
+      console.error('Reorder error:', error);
+      Alert.alert('Error', 'Failed to reorder. Please try again.');
+    }
+  };
+
+  const filteredOrders = orders;
 
   return (
     <Box flex={1} safeArea bg='gray.50'>
@@ -107,21 +160,30 @@ export default function OrdersHistoryScreen({ navigation }) {
       {/* Orders List */}
       <ScrollView px={4} py={3}>
         <VStack space={4}>
-          {filteredOrders.length === 0 ? (
+          {loading ? (
+            <Box alignItems='center' mt={10}>
+              <ActivityIndicator size='large' color={theme.colors.brand.orange} />
+              <Text style={styles.noOrderText} mt={2}>
+                Loading orders...
+              </Text>
+            </Box>
+          ) : filteredOrders.length === 0 ? (
             <Box alignItems='center' mt={10}>
               <Text style={styles.noOrderText}>No orders found</Text>
             </Box>
           ) : (
             filteredOrders.map((order) => {
-              const kitchen = getKitchen(order.kitchenId) || { name: 'Unknown Kitchen' };
-              const item = getItem(order.itemId) || {
-                name: 'Unknown Item',
-                price: '-',
-                image: null,
-              };
+              const firstItem = order.items?.[0]?.menuItem || {};
+              const itemName = firstItem.name || 'Order Items';
+              const itemPrice = order.total || 0;
+              const itemImage = firstItem.image
+                ? { uri: firstItem.image }
+                : require('../assets/food.jpeg');
+              const status = mapStatus(order.status);
+
               return (
                 <Box
-                  key={order.id}
+                  key={order._id || order.id}
                   bg='white'
                   borderRadius='lg'
                   shadow={1}
@@ -129,18 +191,48 @@ export default function OrdersHistoryScreen({ navigation }) {
                   borderWidth={1}
                   borderColor='coolGray.200'>
                   <HStack space={3}>
-                    {item.image ? (
-                      <Image source={item.image} alt={item.name} size='md' borderRadius='md' />
-                    ) : (
-                      <Box size='md' borderRadius='md' bg='gray.100' />
-                    )}
+                    <Image source={itemImage} alt={itemName} size='md' borderRadius='md' />
                     <VStack flex={1} justifyContent='space-between'>
-                      <Text style={styles.kitchenName}>{kitchen.name}</Text>
-                      <Text style={styles.locationText}>{order.location}</Text>
-                      <Text style={styles.itemText}>{item.name}</Text>
-                      <Text style={styles.priceText}>₹{item.price}</Text>
-                      <Text style={styles.orderIdText}>ID#{order.id}</Text>
+                      <Text style={styles.kitchenName}>Order #{order._id?.slice(-6) || order.id}</Text>
+                      <Text style={styles.locationText}>{order.address}</Text>
+                      <Text style={styles.itemText}>
+                        {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
+                      </Text>
+                      <Text style={styles.priceText}>₹{itemPrice.toFixed(2)}</Text>
+                      <Text style={styles.orderIdText}>
+                        Status: {order.status} • {new Date(order.createdAt).toLocaleDateString()}
+                      </Text>
                       <HStack space={3} mt={2} justifyContent='flex-end'>
+                        {order.status !== 'cancelled' && order.status !== 'delivered' && (
+                          <Button
+                            variant='outline'
+                            borderColor='brand.light'
+                            _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
+                            _linearGradient={{
+                              as: LinearGradient,
+                              colors: [theme.colors.brand.orange, theme.colors.brand.green],
+                              start: [0, 0],
+                              end: [1, 1],
+                            }}
+                            onPress={() => handleCancelOrder(order._id || order.id)}>
+                            Cancel
+                          </Button>
+                        )}
+                        {order.status === 'delivered' && (
+                          <Button
+                            variant='outline'
+                            borderColor='brand.light'
+                            _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
+                            _linearGradient={{
+                              as: LinearGradient,
+                              colors: [theme.colors.brand.green, theme.colors.brand.orange],
+                              start: [0, 0],
+                              end: [1, 1],
+                            }}
+                            onPress={() => handleReorder(order)}>
+                            Reorder
+                          </Button>
+                        )}
                         <Button
                           variant='outline'
                           borderColor='brand.light'
@@ -150,20 +242,11 @@ export default function OrdersHistoryScreen({ navigation }) {
                             colors: [theme.colors.brand.orange, theme.colors.brand.green],
                             start: [0, 0],
                             end: [1, 1],
-                          }}>
-                          Cancel
-                        </Button>
-                        <Button
-                          variant='outline'
-                          borderColor='brand.light'
-                          _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
-                          _linearGradient={{
-                            as: LinearGradient,
-                            colors: [theme.colors.brand.orange, theme.colors.brand.green],
-                            start: [0, 0],
-                            end: [1, 1],
-                          }}>
-                          Pending
+                          }}
+                          onPress={() =>
+                            navigation.navigate('OrderTrackingScreen', { orderId: order._id || order.id })
+                          }>
+                          Track
                         </Button>
                       </HStack>
                     </VStack>

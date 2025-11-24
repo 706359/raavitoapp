@@ -1,40 +1,62 @@
 // context/FavoritesContext.js
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { axios_ } from '../../utils/utils';
+import { useAuth } from './AuthContext';
 
 const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    (async () => {
-      const saved = await AsyncStorage.getItem('favorites');
-      if (saved) setFavorites(JSON.parse(saved));
-    })();
-  }, []);
-
-  const saveFavorites = async (data) => {
-    setFavorites(data);
-    await AsyncStorage.setItem('favorites', JSON.stringify(data));
-  };
-
-  const addFavorite = (kitchen) => {
-    if (!favorites.some((f) => f.id === kitchen.id)) {
-      const updated = [...favorites, kitchen];
-      saveFavorites(updated);
+  // Load favorites from API
+  const loadFavorites = async () => {
+    if (!user) {
+      setFavorites([]);
+      return;
+    }
+    try {
+      setLoading(true);
+      const { data } = await axios_.get('/favorites');
+      setFavorites(data || []);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      setFavorites([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const removeFavorite = (id) => {
-    const updated = favorites.filter((f) => f.id !== id);
-    saveFavorites(updated);
+  useEffect(() => {
+    loadFavorites();
+  }, [user]);
+
+  const addFavorite = async (kitchen) => {
+    try {
+      await axios_.post('/favorites', { kitchenId: kitchen.id || kitchen._id });
+      await loadFavorites(); // Reload from server
+    } catch (error) {
+      console.error('Error adding favorite:', error);
+      throw error;
+    }
   };
 
-  const isFavorite = (id) => favorites.some((f) => f.id === id);
+  const removeFavorite = async (kitchenId) => {
+    try {
+      await axios_.delete(`/favorites/${kitchenId}`);
+      setFavorites((prev) => prev.filter((f) => (f._id || f.id) !== kitchenId));
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+      throw error;
+    }
+  };
+
+  const isFavorite = (id) => favorites.some((f) => (f._id || f.id) === id);
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
+    <FavoritesContext.Provider
+      value={{ favorites, addFavorite, removeFavorite, isFavorite, loadFavorites, loading }}>
       {children}
     </FavoritesContext.Provider>
   );

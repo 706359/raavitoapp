@@ -17,11 +17,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderBar from "../components/HeaderBar";
-import { kitchens } from "../data/menu";
+import { fetchKitchens, fetchOffers, fetchDeals } from "../utils/apiHelpers";
+import { ActivityIndicator } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-const CategoryCard = React.memo(({ item, shadowColor, textColor }) => {
+const CategoryCard = React.memo(({ item, shadowColor, textColor, onPress }) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -44,6 +45,7 @@ const CategoryCard = React.memo(({ item, shadowColor, textColor }) => {
       <Pressable
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        onPress={onPress}
         accessible
         accessibilityLabel={`${item.name} category`}
         style={styles.categoryPressable}>
@@ -77,6 +79,11 @@ export default function HomeScreen() {
   const [location, setLocation] = useState("Fetching...");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [kitchens, setKitchens] = useState([]);
+  const [topRatedKitchens, setTopRatedKitchens] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -85,66 +92,19 @@ export default function HomeScreen() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const banners = [
-    {
-      id: "1",
-      title: "Premium Subscription",
-      subtitle: "Save up to 60% for 6 months",
-      gradient: ["#f97316", "#fb923c"],
-      image: require("../assets/Rajasthani.jpg"),
-    },
-    {
-      id: "2",
-      title: "Fresh & Healthy",
-      subtitle: "Farm to table daily specials",
-      gradient: ["#10b981", "#34d399"],
-      image: require("../assets/Gujarati.jpeg"),
-    },
-    {
-      id: "3",
-      title: "Weekend Feast",
-      subtitle: "20% off on family combos",
-      gradient: ["#0ea5e9", "#38bdf8"],
-      image: require("../assets/Dosa.jpg"),
-    },
-  ];
+  // Map cuisine names to cuisineType values
+  const cuisineMap = {
+    "Dosa Thali": "South Indian",
+    "Gujarati Thali": "Gujarati",
+    "Rajasthani Thali": "Rajasthani",
+    "Punjabi Thali": "Punjabi",
+  };
 
   const categories = [
-    { id: "1", name: "Dosa Thali", image: require("../assets/Dosa.jpg") },
-    { id: "2", name: "Gujarati Thali", image: require("../assets/Gujarati.jpeg") },
-    { id: "3", name: "Rajasthani Thali", image: require("../assets/Rajasthani.jpg") },
-    { id: "4", name: "Punjabi Thali", image: require("../assets/Punjabi.webp") },
-  ];
-
-  const offers = [
-    {
-      id: "offer-1",
-      icon: "pricetag",
-      title: "₹50 OFF",
-      sub: "First Order",
-      colors: ["#f97316", "#ea580c"],
-    },
-    {
-      id: "offer-2",
-      icon: "nutrition",
-      title: "Combo Deal",
-      sub: "Thali + Drink",
-      colors: ["#10b981", "#059669"],
-    },
-    {
-      id: "offer-3",
-      icon: "people",
-      title: "Family Pack",
-      sub: "20% Discount",
-      colors: ["#8b5cf6", "#7c3aed"],
-    },
-    {
-      id: "offer-4",
-      icon: "flash",
-      title: "Flash Sale",
-      sub: "2 Hours Left",
-      colors: ["#ef4444", "#dc2626"],
-    },
+    { id: "1", name: "Dosa Thali", image: require("../assets/Dosa.jpg"), cuisineType: "South Indian" },
+    { id: "2", name: "Gujarati Thali", image: require("../assets/Gujarati.jpeg"), cuisineType: "Gujarati" },
+    { id: "3", name: "Rajasthani Thali", image: require("../assets/Rajasthani.jpg"), cuisineType: "Rajasthani" },
+    { id: "4", name: "Punjabi Thali", image: require("../assets/Punjabi.webp"), cuisineType: "Punjabi" },
   ];
 
   useEffect(() => {
@@ -162,6 +122,73 @@ export default function HomeScreen() {
       }),
     ]).start();
   }, [fadeAnim, slideAnim]);
+
+  // Transform kitchen data helper
+  const transformKitchen = (kitchen) => ({
+    id: kitchen._id,
+    _id: kitchen._id,
+    name: kitchen.name,
+    rating: kitchen.rating || 4.0,
+    time: kitchen.deliveryTime || "30 mins",
+    image: kitchen.image ? { uri: kitchen.image } : require("../assets/food.jpeg"),
+    discount: kitchen.discount || null,
+    desc: kitchen.description || "",
+    location: kitchen.location || kitchen.address || "",
+  });
+
+  // Fetch kitchens from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [kitchensData, topRatedData, offersData, dealsData] = await Promise.all([
+          fetchKitchens(),
+          fetchKitchens({ topRated: true }),
+          fetchOffers(),
+          fetchDeals(),
+        ]);
+
+        // Transform kitchens
+        const transformedKitchens = kitchensData.map(transformKitchen);
+        setKitchens(transformedKitchens);
+
+        // Transform top-rated kitchens
+        const transformedTopRated = topRatedData.map(transformKitchen);
+        setTopRatedKitchens(transformedTopRated);
+
+        // Transform offers
+        const transformedOffers = offersData.map((offer) => ({
+          id: offer._id,
+          title: offer.title,
+          sub: offer.description || "",
+          icon: offer.icon || "pricetag",
+          colors: offer.colors || ["#f97316", "#ea580c"],
+          code: offer.code,
+          autoApply: offer.autoApply,
+        }));
+        setOffers(transformedOffers);
+
+        // Transform deals
+        const transformedDeals = dealsData.map((deal) => ({
+          id: deal._id,
+          title: deal.title,
+          subtitle: deal.subtitle || "",
+          gradient: deal.gradient || ["#f97316", "#fb923c"],
+          image: deal.image ? { uri: deal.image } : require("../assets/Rajasthani.jpg"),
+        }));
+        setDeals(transformedDeals);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setKitchens([]);
+        setTopRatedKitchens([]);
+        setOffers([]);
+        setDeals([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -192,21 +219,23 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % banners.length;
-        if (bannerScrollRef.current && typeof bannerScrollRef.current.scrollTo === "function") {
-          bannerScrollRef.current.scrollTo({
-            x: nextIndex * (width - 32),
-            animated: true,
-          });
-        }
-        return nextIndex;
-      });
-    }, 5000);
+    if (deals.length > 0) {
+      const timer = setInterval(() => {
+        setActiveIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % deals.length;
+          if (bannerScrollRef.current && typeof bannerScrollRef.current.scrollTo === "function") {
+            bannerScrollRef.current.scrollTo({
+              x: nextIndex * (width - 32),
+              animated: true,
+            });
+          }
+          return nextIndex;
+        });
+      }, 5000);
 
-    return () => clearInterval(timer);
-  }, [banners.length]);
+      return () => clearInterval(timer);
+    }
+  }, [deals.length]);
 
   const CARD_WIDTH = width * 0.45;
   const CARD_HEIGHT = 220;
@@ -236,9 +265,10 @@ export default function HomeScreen() {
   const filteredKitchens = useMemo(() => {
     if (!searchQuery.trim()) return kitchens;
     return kitchens.filter((kitchen) =>
-      kitchen.name.toLowerCase().includes(searchQuery.toLowerCase())
+      kitchen.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (kitchen.desc && kitchen.desc.toLowerCase().includes(searchQuery.toLowerCase()))
     );
-  }, [searchQuery]);
+  }, [searchQuery, kitchens]);
 
   const KitchenCard = ({ item }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
@@ -264,7 +294,11 @@ export default function HomeScreen() {
           accessible
           accessibilityLabel={`Open details for ${item.name}`}>
           <View style={[styles.kitchenCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}>
-            <Image source={item.image} style={styles.kitchenImage} resizeMode='cover' />
+            <Image
+              source={typeof item.image === 'string' ? { uri: item.image } : item.image}
+              style={styles.kitchenImage}
+              resizeMode='cover'
+            />
             <LinearGradient
               colors={["transparent", "rgba(0,0,0,0.9)"]}
               style={styles.kitchenGradient}
@@ -360,56 +394,66 @@ export default function HomeScreen() {
                     contentContainerStyle={styles.bannerScrollContent}
                     snapToInterval={width - 32}
                     decelerationRate='fast'>
-                    {banners.map((item) => (
-                      <Pressable
-                        key={item.id}
-                        style={styles.bannerItem}
-                        accessible
-                        accessibilityLabel={item.title}>
-                        <LinearGradient
-                          colors={item.gradient}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={styles.bannerGradient}>
-                          <View style={styles.bannerContent}>
-                            <View style={styles.bannerTextSection}>
-                              <Text style={styles.bannerTitle}>{item.title}</Text>
-                              <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+                    {deals.length > 0 ? (
+                      deals.map((item) => (
+                        <Pressable
+                          key={item.id}
+                          style={styles.bannerItem}
+                          accessible
+                          accessibilityLabel={item.title}>
+                          <LinearGradient
+                            colors={item.gradient}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.bannerGradient}>
+                            <View style={styles.bannerContent}>
+                              <View style={styles.bannerTextSection}>
+                                <Text style={styles.bannerTitle}>{item.title}</Text>
+                                <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
 
-                              <Pressable style={styles.claimButton}>
-                                <Text style={styles.claimText}>Claim Now</Text>
-                                <Ionicons name='arrow-forward' size={14} color='white' />
-                              </Pressable>
+                                <Pressable style={styles.claimButton}>
+                                  <Text style={styles.claimText}>Claim Now</Text>
+                                  <Ionicons name='arrow-forward' size={14} color='white' />
+                                </Pressable>
+                              </View>
+
+                              <Image
+                                source={typeof item.image === 'string' ? { uri: item.image } : item.image}
+                                style={styles.bannerImage}
+                                resizeMode='cover'
+                              />
                             </View>
-
-                            <Image
-                              source={item.image}
-                              style={styles.bannerImage}
-                              resizeMode='cover'
-                            />
-                          </View>
-                        </LinearGradient>
-                      </Pressable>
-                    ))}
+                          </LinearGradient>
+                        </Pressable>
+                      ))
+                    ) : (
+                      <View style={styles.bannerItem}>
+                        <Text style={{ color: theme.colors.brand.gray, padding: 20 }}>
+                          No exclusive deals available
+                        </Text>
+                      </View>
+                    )}
                   </ScrollView>
 
-                  <View style={styles.paginationDots}>
-                    {banners.map((_, index) => (
-                      <View
-                        key={index}
-                        style={[
-                          styles.dot,
-                          {
-                            backgroundColor:
-                              index === activeIndex
-                                ? theme.colors.brand.orange
-                                : theme.colors.brand.gray,
-                            width: index === activeIndex ? 24 : 8,
-                          },
-                        ]}
-                      />
-                    ))}
-                  </View>
+                  {deals.length > 0 && (
+                    <View style={styles.paginationDots}>
+                      {deals.map((_, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.dot,
+                            {
+                              backgroundColor:
+                                index === activeIndex
+                                  ? theme.colors.brand.orange
+                                  : theme.colors.brand.gray,
+                              width: index === activeIndex ? 24 : 8,
+                            },
+                          ]}
+                        />
+                      ))}
+                    </View>
+                  )}
                 </View>
 
                 <View style={styles.section}>
@@ -426,6 +470,13 @@ export default function HomeScreen() {
                         item={cat}
                         shadowColor={theme.colors.brand.orange}
                         textColor={theme.colors.brand.dark}
+                        onPress={() => {
+                          // Navigate to MenuScreen with cuisine filter
+                          navigation.navigate("MenuTab", {
+                            screen: "MenuScreen",
+                            params: { cuisineType: cat.cuisineType },
+                          });
+                        }}
                       />
                     ))}
                   </View>
@@ -447,17 +498,23 @@ export default function HomeScreen() {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.offersScrollContent}
                     scrollEventThrottle={16}>
-                    {offers.map((offer) => (
-                      <Pressable key={offer.id} accessible>
-                        <LinearGradient colors={offer.colors} style={styles.offerCard}>
-                          <View style={styles.offerIcon}>
-                            <Ionicons name={offer.icon} size={26} color='white' />
-                          </View>
-                          <Text style={styles.offerTitle}>{offer.title}</Text>
-                          <Text style={styles.offerSubtitle}>{offer.sub}</Text>
-                        </LinearGradient>
-                      </Pressable>
-                    ))}
+                    {offers.length > 0 ? (
+                      offers.map((offer) => (
+                        <Pressable key={offer.id} accessible>
+                          <LinearGradient colors={offer.colors} style={styles.offerCard}>
+                            <View style={styles.offerIcon}>
+                              <Ionicons name={offer.icon} size={26} color='white' />
+                            </View>
+                            <Text style={styles.offerTitle}>{offer.title}</Text>
+                            <Text style={styles.offerSubtitle}>{offer.sub}</Text>
+                          </LinearGradient>
+                        </Pressable>
+                      ))
+                    ) : (
+                      <Text style={{ color: theme.colors.brand.gray, padding: 20 }}>
+                        No offers available
+                      </Text>
+                    )}
                   </ScrollView>
                 </View>
 
@@ -509,9 +566,15 @@ export default function HomeScreen() {
                     contentContainerStyle={styles.kitchensScrollContent}
                     scrollEventThrottle={16}
                     onScroll={handleTopKitchensScroll}>
-                    {kitchens.slice(6, 11).map((kitchen) => (
-                      <KitchenCard key={`top-${kitchen.id}`} item={kitchen} />
-                    ))}
+                    {topRatedKitchens.length > 0 ? (
+                      topRatedKitchens.slice(0, 10).map((kitchen) => (
+                        <KitchenCard key={`top-${kitchen.id}`} item={kitchen} />
+                      ))
+                    ) : (
+                      <Text style={{ color: theme.colors.brand.gray, padding: 20 }}>
+                        No top-rated kitchens available
+                      </Text>
+                    )}
                   </ScrollView>
                 </View>
 
@@ -529,6 +592,20 @@ export default function HomeScreen() {
               </View>
             }
             renderItem={({ item }) => <KitchenCard item={item} />}
+            ListEmptyComponent={
+              loading ? (
+                <View style={{ padding: 40, alignItems: "center" }}>
+                  <ActivityIndicator size="large" color={theme.colors.brand.orange} />
+                  <Text style={{ marginTop: 12, color: theme.colors.brand.gray }}>
+                    Loading kitchens...
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ padding: 40, alignItems: "center" }}>
+                  <Text style={{ color: theme.colors.brand.gray }}>No kitchens found</Text>
+                </View>
+              )
+            }
           />
         </Animated.View>
       </View>

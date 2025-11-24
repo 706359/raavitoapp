@@ -1,4 +1,4 @@
-import ManageAddresses from '@/screens/ManageAddresses';
+import ManageAddresses from '../screens/ManageAddresses';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Image } from 'native-base';

@@ -1,11 +1,14 @@
-import CheckoutScreen from '@/screens/CheckoutScreen';
-import KitchenScreen from '@/screens/KitchenScreen';
-import ManageAddresses from '@/screens/ManageAddresses';
-import Notification from '@/screens/Notification';
-import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
-import PaymentMethod from '@/screens/PaymentMethod';
-import PrivacySecurity from '@/screens/PrivacySecurity';
-import UserProfile from '@/screens/UserProfile';
+import CheckoutScreen from '../screens/CheckoutScreen';
+import KitchenScreen from '../screens/KitchenScreen';
+import ManageAddresses from '../screens/ManageAddresses';
+import Notification from '../screens/Notification';
+import OrderTrackingScreen from '../screens/OrderTrackingScreen';
+import PaymentMethod from '../screens/PaymentMethod';
+import PrivacySecurity from '../screens/PrivacySecurity';
+import UserProfile from '../screens/UserProfile';
+import ForgotPassword from '../screens/ForgotPassword';
+import ChangePassword from '../screens/ChangePassword';
+import PremiumCartScreen from '../screens/CartScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
@@ -21,6 +24,9 @@ export default function ExtraStack() {
       <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen name='PrivacySecurity' component={PrivacySecurity} />
       <Stack.Screen name='KitchenScreen' component={KitchenScreen} />
+      <Stack.Screen name='Cart' component={PremiumCartScreen} />
+      <Stack.Screen name='ForgotPassword' component={ForgotPassword} />
+      <Stack.Screen name='ChangePassword' component={ChangePassword} />
     </Stack.Navigator>
   );
 }

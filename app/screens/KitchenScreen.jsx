@@ -12,145 +12,78 @@ import {
   Text,
   VStack,
 } from 'native-base';
-import React, { useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
+import { fetchMenuItems, fetchKitchenDetails } from '../utils/apiHelpers';
+import { ActivityIndicator } from 'react-native';
 
 export default function KitchenScreen({ route, navigation }) {
   const { kitchen } = route.params;
   const { addToCart, removeFromCart, cart } = useCart();
-  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   const menuTabs = ['Lunch', 'Dinner', 'Breakfast', 'Snacks'];
   const [activeTab, setActiveTab] = useState('Lunch');
+  const [allMenuItems, setAllMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [kitchenData, setKitchenData] = useState(kitchen);
 
-  // All menu items with category
-  const allMenuItems = useMemo(
-    () => [
-      {
-        id: '1',
-        name: 'Small Lunch Thali',
-        price: 50,
-        desc: 'Max veg 3, Chapati, Rice',
-        img: require('../assets/Dosa.jpg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Lunch',
-      },
-      {
-        id: '2',
-        name: 'Medium Lunch Thali',
-        price: 90,
-        desc: 'Full veg thali with rice, chapati, dal',
-        img: require('../assets/Gujarati.jpeg'),
-        isVeg: true,
-        isBestseller: false,
-        category: 'Lunch',
-      },
-      {
-        id: '3',
-        name: 'Family Lunch Special',
-        price: 150,
-        desc: 'Complete thali for 2 with dessert',
-        img: require('../assets/Rajasthani.jpg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Lunch',
-      },
-      {
-        id: '4',
-        name: 'Light Dinner',
-        price: 70,
-        desc: 'Roti, sabzi, dal with salad',
-        img: require('../assets/Punjabi.webp'),
-        isVeg: true,
-        isBestseller: false,
-        category: 'Dinner',
-      },
-      {
-        id: '5',
-        name: 'Royal Dinner Thali',
-        price: 120,
-        desc: 'Premium thali with paneer, dal makhani',
-        img: require('../assets/Gujarati.jpeg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Dinner',
-      },
-      {
-        id: '6',
-        name: 'Family Dinner Pack',
-        price: 200,
-        desc: 'Complete dinner for family of 3',
-        img: require('../assets/Rajasthani.jpg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Dinner',
-      },
-      {
-        id: '7',
-        name: 'Breakfast Combo',
-        price: 40,
-        desc: 'Poha, tea and fruits',
-        img: require('../assets/Dosa.jpg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Breakfast',
-      },
-      {
-        id: '8',
-        name: 'South Indian Breakfast',
-        price: 60,
-        desc: 'Dosa, idli, sambar and chutney',
-        img: require('../assets/Dosa.jpg'),
-        isVeg: true,
-        isBestseller: false,
-        category: 'Breakfast',
-      },
-      {
-        id: '9',
-        name: 'Paratha Breakfast',
-        price: 55,
-        desc: '2 Parathas with curd and pickle',
-        img: require('../assets/Punjabi.webp'),
-        isVeg: true,
-        isBestseller: false,
-        category: 'Breakfast',
-      },
-      {
-        id: '10',
-        name: 'Samosa (2 pcs)',
-        price: 30,
-        desc: 'Crispy samosas with chutney',
-        img: require('../assets/Gujarati.jpeg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Snacks',
-      },
-      {
-        id: '11',
-        name: 'Vada Pav (2 pcs)',
-        price: 25,
-        desc: 'Mumbai special street food',
-        img: require('../assets/Dosa.jpg'),
-        isVeg: true,
-        isBestseller: true,
-        category: 'Snacks',
-      },
-      {
-        id: '12',
-        name: 'Pakora Plate',
-        price: 35,
-        desc: 'Mixed vegetable pakoras',
-        img: require('../assets/Gujarati.jpeg'),
-        isVeg: true,
-        isBestseller: false,
-        category: 'Snacks',
-      },
-    ],
-    [],
+  // Fetch kitchen details and menu items
+  const loadKitchenData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const kitchenId = kitchen?._id || kitchen?.id;
+      if (!kitchenId) {
+        setLoading(false);
+        return;
+      }
+
+      // Fetch kitchen details and menu items
+      const [kitchenDetails, menuItems] = await Promise.all([
+        fetchKitchenDetails(kitchenId),
+        fetchMenuItems({ kitchenId }),
+      ]);
+
+      // Update kitchen data
+      if (kitchenDetails.kitchen) {
+        setKitchenData({
+          ...kitchen,
+          ...kitchenDetails.kitchen,
+          id: kitchenDetails.kitchen._id,
+        });
+      }
+
+      // Transform menu items
+      const transformedItems = (menuItems || kitchenDetails.menuItems || []).map((item) => ({
+        id: item._id,
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        desc: item.description || '',
+        img: item.image ? { uri: item.image } : require('../assets/Dosa.jpg'),
+        image: item.image,
+        isVeg: item.isVeg !== undefined ? item.isVeg : true,
+        isBestseller: item.isBestseller || false,
+        category: item.category || 'Lunch',
+      }));
+
+      setAllMenuItems(transformedItems);
+    } catch (error) {
+      console.error('Error loading kitchen data:', error);
+      setAllMenuItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [kitchen?._id || kitchen?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadKitchenData();
+    }, [loadKitchenData])
   );
 
   // Filter menu items based on active tab
@@ -159,7 +92,7 @@ export default function KitchenScreen({ route, navigation }) {
   }, [activeTab, allMenuItems]);
 
   const getQty = (id) => {
-    const item = cart.find((c) => c.id === id);
+    const item = cart.find((c) => c.id === id || c._id === id);
     return item ? item.qty : 0;
   };
 
@@ -177,7 +110,7 @@ export default function KitchenScreen({ route, navigation }) {
                   borderRadius='full'
                   style={styles.iconButton}
                 />
-                <Text style={styles.headerTitle}>{kitchen?.name || 'Kitchen'}</Text>
+                <Text style={styles.headerTitle}>{kitchenData?.name || kitchen?.name || 'Kitchen'}</Text>
               </HStack>
               <HStack style={styles.headerRight}>
                 <IconButton
@@ -192,26 +125,19 @@ export default function KitchenScreen({ route, navigation }) {
                 /> */}
 
                 <IconButton
-                  onPress={() => {
-                    if (isFavorite(kitchen.id)) {
-                      removeFavorite(kitchen.id);
+                  onPress={async () => {
+                    const kitchenId = kitchenData?._id || kitchenData?.id || kitchen?.id || kitchen?._id;
+                    if (isFavorite(kitchenId)) {
+                      await removeFavorite(kitchenId);
                     } else {
-                      const favoriteKitchen = {
-                        id: kitchen.id || Math.random().toString(36).substr(2, 9),
-                        name: kitchen.name || 'Unknown Kitchen',
-                        // location: kitchen.location || 'Unknown Location',
-                        img: kitchen.img || require('../assets/food.jpeg'),
-                        rating: kitchen.rating || '4.0',
-                        desc: kitchen.desc || '',
-                      };
-                      addFavorite(favoriteKitchen);
+                      await addFavorite({ id: kitchenId, ...kitchenData });
                     }
                   }}
                   icon={
                     <Icon
                       as={Ionicons}
-                      name={isFavorite(kitchen.id) ? 'heart' : 'heart-outline'}
-                      color={isFavorite(kitchen.id) ? 'red.400' : 'white'}
+                      name={isFavorite(kitchenData?._id || kitchenData?.id || kitchen?.id || kitchen?._id) ? 'heart' : 'heart-outline'}
+                      color={isFavorite(kitchenData?._id || kitchenData?.id || kitchen?.id || kitchen?._id) ? 'red.400' : 'white'}
                       size='md'
                     />
                   }
@@ -243,26 +169,34 @@ export default function KitchenScreen({ route, navigation }) {
             <HStack style={styles.infoHeader}>
               <VStack style={styles.infoHeaderLeft}>
                 <Text style={styles.infoName}>
-                  {kitchen?.name || 'Taste of India Tiffin Services'}
+                  {kitchenData?.name || kitchen?.name || 'Taste of India Tiffin Services'}
                 </Text>
                 <HStack style={styles.locationRow}>
                   <Icon as={MaterialIcons} name='place' size='xs' color='gray.500' />
-                  <Text style={styles.infoSub}>{kitchen?.location || 'Gotala Nagar'}</Text>
+                  <Text style={styles.infoSub}>
+                    {kitchenData?.location || kitchenData?.address || kitchen?.location || 'Gotala Nagar'}
+                  </Text>
                 </HStack>
               </VStack>
-              <Badge style={styles.openBadge}>OPEN</Badge>
+              <Badge style={styles.openBadge}>
+                {kitchenData?.isActive !== false ? 'OPEN' : 'CLOSED'}
+              </Badge>
             </HStack>
 
             <HStack style={styles.infoMetaRow}>
               <HStack style={styles.metaItem}>
                 <Box style={styles.ratingBadge}>
                   <Icon as={Ionicons} name='star' color='white' size='xs' />
-                  <Text style={styles.ratingText}>{kitchen?.rating || '4.0'}</Text>
+                  <Text style={styles.ratingText}>
+                    {kitchenData?.rating || kitchen?.rating || '4.0'}
+                  </Text>
                 </Box>
               </HStack>
               <HStack style={styles.metaItem}>
                 <Icon as={Ionicons} name='time-outline' color='orange.600' size='sm' />
-                <Text style={styles.metaText}>{kitchen?.time || '30 min'}</Text>
+                <Text style={styles.metaText}>
+                  {kitchenData?.deliveryTime || kitchen?.time || '30 min'}
+                </Text>
               </HStack>
               <HStack style={styles.metaItem}>
                 <Icon as={MaterialIcons} name='delivery-dining' color='orange.600' size='sm' />
@@ -273,7 +207,7 @@ export default function KitchenScreen({ route, navigation }) {
             <Divider style={styles.divider} />
 
             <Text style={styles.infoDesc}>
-              {kitchen?.desc || 'American, Fast Food • Inner Circle, Connaught Place'}
+              {kitchenData?.description || kitchenData?.desc || kitchen?.desc || 'American, Fast Food • Inner Circle, Connaught Place'}
             </Text>
           </Box>
 
@@ -369,7 +303,12 @@ export default function KitchenScreen({ route, navigation }) {
               <Text style={styles.itemCount}>{filteredMenuItems.length} Items</Text>
             </HStack>
 
-            {filteredMenuItems.length === 0 ? (
+            {loading ? (
+              <Box style={styles.emptyState}>
+                <ActivityIndicator size='large' color='#f97316' />
+                <Text style={styles.emptyText}>Loading menu...</Text>
+              </Box>
+            ) : filteredMenuItems.length === 0 ? (
               <Box style={styles.emptyState}>
                 <Icon as={Ionicons} name='restaurant-outline' size='4xl' color='gray.300' />
                 <Text style={styles.emptyText}>No items available in {activeTab}</Text>
@@ -411,7 +350,11 @@ export default function KitchenScreen({ route, navigation }) {
 
                       {/* Image with Add Button Overlay */}
                       <Box style={styles.imageContainer}>
-                        <Image source={item.img} alt={item.name} style={styles.itemImage} />
+                        <Image
+                          source={typeof item.img === 'string' || item.image ? { uri: item.image || item.img } : item.img}
+                          alt={item.name}
+                          style={styles.itemImage}
+                        />
 
                         {/* Add/Quantity Control Overlay */}
                         <Box style={styles.controlOverlay}>
