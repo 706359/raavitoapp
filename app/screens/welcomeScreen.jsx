@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import theme from '../../theme';
 import CustomButton from '../components/CustomButton';
 import { useAuth } from '../context/AuthContext';
@@ -154,7 +153,7 @@ export default function WelcomeScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Animated Background Gradient */}
       <Animated.View
         style={[
@@ -321,7 +320,7 @@ export default function WelcomeScreen() {
           By continuing, you agree to our Terms of Service and Privacy Policy
         </Text>
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 

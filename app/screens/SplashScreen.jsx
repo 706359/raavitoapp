@@ -1,8 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Box, Image, Text } from 'native-base';
 import { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Easing } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Animated, Dimensions, Easing, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -84,7 +83,7 @@ export default function SplashScreen() {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <LinearGradient
         colors={['#fff8f1', '#fff3e0', '#ffedd5', '#fed7aa']}
         start={{ x: 0, y: 0 }}
@@ -371,6 +370,6 @@ export default function SplashScreen() {
           </Animated.View>
         </Box>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 }
