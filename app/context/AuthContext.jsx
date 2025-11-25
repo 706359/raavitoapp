@@ -14,32 +14,59 @@ export function AuthProvider({ children }) {
       try {
         const token = await AsyncStorage.getItem("token");
         const role = await AsyncStorage.getItem("role");
+        const savedUser = await AsyncStorage.getItem("user");
 
         if (!token) {
           setLoading(false);
           return;
         }
 
-        // attach token to axios headers
+        // attach token to axios headers immediately
         axios_.defaults.headers.common.Authorization = `Bearer ${token}`;
 
         // verify token and fetch user info
-        const { data } = await axios_.get("/auth/me").catch(() => ({ data: null }));
-        if (data?.user) {
-          setUser({
-            id: data.user._id || data.user.id,
-            firstName: data.user.firstName,
-            lastName: data.user.lastName,
-            mobile: data.user.mobile,
-            role: data.user.role || role || "user",
-            token,
-          });
-        } else {
-          await AsyncStorage.multiRemove(["token", "role"]);
+        try {
+          const { data } = await axios_.get("/auth/me");
+          if (data?.user) {
+            const userData = {
+              id: data.user._id || data.user.id,
+              _id: data.user._id || data.user.id,
+              firstName: data.user.firstName,
+              lastName: data.user.lastName,
+              mobile: data.user.mobile,
+              email: data.user.email,
+              role: data.user.role || role || "user",
+              token,
+              address: data.user.address,
+              profileImage: data.user.profileImage,
+            };
+            setUser(userData);
+            // Save user data for offline access
+            await AsyncStorage.setItem("user", JSON.stringify(userData));
+          } else {
+            // Token invalid, clear storage
+            await AsyncStorage.multiRemove(["token", "role", "user"]);
+            delete axios_.defaults.headers.common.Authorization;
+          }
+        } catch (authError) {
+          // If token is invalid/expired, try to use saved user data as fallback
+          if (savedUser) {
+            try {
+              const parsedUser = JSON.parse(savedUser);
+              setUser({ ...parsedUser, token });
+              // Keep token for retry later
+            } catch (parseError) {
+              await AsyncStorage.multiRemove(["token", "role", "user"]);
+              delete axios_.defaults.headers.common.Authorization;
+            }
+          } else {
+            await AsyncStorage.multiRemove(["token", "role", "user"]);
+            delete axios_.defaults.headers.common.Authorization;
+          }
         }
       } catch (e) {
         console.log("Auth load error:", e);
-        await AsyncStorage.multiRemove(["token", "role"]);
+        // Don't clear storage on general errors, just log
       } finally {
         setLoading(false);
       }
@@ -51,10 +78,16 @@ export function AuthProvider({ children }) {
   // Save user and token at login
   const login = async (userData) => {
     try {
-      setUser(userData);
+      const fullUserData = {
+        ...userData,
+        id: userData.id || userData._id,
+        _id: userData._id || userData.id,
+      };
+      setUser(fullUserData);
       await AsyncStorage.multiSet([
         ["token", userData.token],
         ["role", userData.role || "user"],
+        ["user", JSON.stringify(fullUserData)],
       ]);
       axios_.defaults.headers.common.Authorization = `Bearer ${userData.token}`;
     } catch (e) {

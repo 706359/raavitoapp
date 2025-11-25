@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import theme from "../../theme";
 
 export default function CustomButton({
@@ -40,7 +40,12 @@ export default function CustomButton({
       ]}
       {...props}>
       {loading ? (
-        <ActivityIndicator color={variant === "solid" ? "#fff" : brandColor} />
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator 
+            size="small" 
+            color={variant === "solid" ? "#fff" : brandColor} 
+          />
+        </View>
       ) : (
         <Text
           style={[
@@ -67,5 +72,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  loaderContainer: {
+    minWidth: 20,
+    minHeight: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

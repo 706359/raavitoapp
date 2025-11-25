@@ -1,8 +1,9 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Box, Button, HStack, Icon, Image, Pressable, ScrollView, Text, VStack, useTheme } from 'native-base';
 import { useState, useEffect } from 'react';
-import { Platform, ActivityIndicator, Alert } from 'react-native';
+import { Platform, Alert, TextInput, TouchableOpacity } from 'react-native';
+import Loader from '../components/Loader';
 import theme from '../../theme';
 import { fetchUserOrders } from '../utils/apiHelpers';
 import { axios_ } from '../../utils/utils';
@@ -27,6 +28,7 @@ export default function OrdersHistoryScreen({ navigation }) {
   const [selectedTab, setSelectedTab] = useState('New');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { addToCart } = useCart();
   const theme = useTheme();
 
@@ -36,7 +38,11 @@ export default function OrdersHistoryScreen({ navigation }) {
       try {
         setLoading(true);
         const status = selectedTab === 'All' ? null : selectedTab.toLowerCase();
-        const data = await fetchUserOrders(status);
+        let url = '/orders/my';
+        if (status) url += `?status=${status}`;
+        if (searchQuery) url += `${status ? '&' : '?'}search=${encodeURIComponent(searchQuery)}`;
+        
+        const { data } = await axios_.get(url);
         setOrders(data || []);
       } catch (error) {
         console.error('Error loading orders:', error);
@@ -46,7 +52,7 @@ export default function OrdersHistoryScreen({ navigation }) {
       }
     };
     loadOrders();
-  }, [selectedTab]);
+  }, [selectedTab, searchQuery]);
 
   const handleCancelOrder = async (orderId) => {
     try {
@@ -63,14 +69,14 @@ export default function OrdersHistoryScreen({ navigation }) {
 
   const handleReorder = async (order) => {
     try {
-      // Fetch full order details with menu items
-      const { data: orderDetails } = await axios_.get(`/orders/${order._id || order.id}`);
+      // Use reorder endpoint
+      const { data } = await axios_.get(`/orders/${order._id || order.id}/reorder`);
       
-      // Add all items from the order to cart
-      if (orderDetails.items && orderDetails.items.length > 0) {
-        for (const item of orderDetails.items) {
+      // Add available items from the order to cart
+      if (data.availableItems && data.availableItems.length > 0) {
+        for (const item of data.availableItems) {
           const menuItem = item.menuItem;
-          if (menuItem) {
+          if (menuItem && menuItem.isAvailable !== false) {
             addToCart({
               id: menuItem._id || menuItem.id,
               _id: menuItem._id || menuItem.id,
@@ -81,23 +87,72 @@ export default function OrdersHistoryScreen({ navigation }) {
             });
           }
         }
-        Alert.alert('Success', 'Items added to cart', [
-          {
-            text: 'View Cart',
-            onPress: () => {
-              // Navigate to Cart - it's in the same stack (OrdersStack)
-              navigation.navigate('Cart');
+        
+        if (data.unavailableItems > 0) {
+          Alert.alert(
+            'Items Added',
+            `${data.availableItems.length} items added to cart. ${data.unavailableItems} items are no longer available.`,
+            [
+              {
+                text: 'View Cart',
+                onPress: () => navigation.navigate('Cart'),
+              },
+              { text: 'Continue Shopping' },
+            ]
+          );
+        } else {
+          Alert.alert('Success', 'Items added to cart', [
+            {
+              text: 'View Cart',
+              onPress: () => navigation.navigate('Cart'),
             },
-          },
-          { text: 'Continue Shopping' },
-        ]);
+            { text: 'Continue Shopping' },
+          ]);
+        }
       } else {
-        Alert.alert('Error', 'No items found in this order');
+        Alert.alert('Error', 'No items available for reorder');
       }
     } catch (error) {
       console.error('Reorder error:', error);
       Alert.alert('Error', 'Failed to reorder. Please try again.');
     }
+  };
+
+  const handleRateOrder = async (order) => {
+    Alert.prompt(
+      'Rate Your Order',
+      'Please rate your order from 1 to 5 stars',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Submit',
+          onPress: async (rating) => {
+            const ratingNum = parseInt(rating);
+            if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+              Alert.alert('Error', 'Please enter a valid rating between 1 and 5');
+              return;
+            }
+            
+            try {
+              await axios_.post(`/orders/${order._id || order.id}/rate`, {
+                rating: ratingNum,
+                review: '',
+              });
+              Alert.alert('Success', 'Thank you for your rating!');
+              // Reload orders
+              const status = selectedTab === 'All' ? null : selectedTab.toLowerCase();
+              const { data } = await axios_.get(`/orders/my${status ? `?status=${status}` : ''}`);
+              setOrders(data || []);
+            } catch (error) {
+              Alert.alert('Error', error?.response?.data?.message || 'Failed to submit rating');
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '',
+      'numeric'
+    );
   };
 
   const filteredOrders = orders;
@@ -136,6 +191,25 @@ export default function OrdersHistoryScreen({ navigation }) {
         </HStack>
       </Box>
 
+      {/* Search Bar */}
+      <Box bg='white' px={4} py={3} borderBottomWidth={1} borderColor='coolGray.200'>
+        <HStack space={2} alignItems='center' bg='gray.100' borderRadius='md' px={3} py={2}>
+          <Ionicons name='search-outline' size={20} color='#6b7280' />
+          <TextInput
+            style={{ flex: 1, fontSize: 14, color: '#111827' }}
+            placeholder='Search orders by ID or item name...'
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor='#9ca3af'
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Ionicons name='close-circle' size={20} color='#6b7280' />
+            </TouchableOpacity>
+          )}
+        </HStack>
+      </Box>
+
       {/* Tabs */}
       <HStack bg='white' px={4} py={2} borderBottomWidth={1} borderColor='coolGray.200'>
         {STATUS_TABS.map((tab) => (
@@ -162,10 +236,7 @@ export default function OrdersHistoryScreen({ navigation }) {
         <VStack space={4}>
           {loading ? (
             <Box alignItems='center' mt={10}>
-              <ActivityIndicator size='large' color={theme.colors.brand.orange} />
-              <Text style={styles.noOrderText} mt={2}>
-                Loading orders...
-              </Text>
+              <Loader size="large" color="orange" text="Loading orders..." />
             </Box>
           ) : filteredOrders.length === 0 ? (
             <Box alignItems='center' mt={10}>
@@ -199,9 +270,17 @@ export default function OrdersHistoryScreen({ navigation }) {
                         {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
                       </Text>
                       <Text style={styles.priceText}>₹{itemPrice.toFixed(2)}</Text>
-                      <Text style={styles.orderIdText}>
-                        Status: {order.status} • {new Date(order.createdAt).toLocaleDateString()}
-                      </Text>
+                      <HStack space={2} alignItems='center' mt={1}>
+                        <Text style={styles.orderIdText}>
+                          Status: {order.status} • {new Date(order.createdAt || order.created_at).toLocaleDateString()}
+                        </Text>
+                        {order.rating && (
+                          <HStack space={1} alignItems='center'>
+                            <Ionicons name='star' size={14} color='#fbbf24' />
+                            <Text style={{ fontSize: 12, color: '#fbbf24' }}>{order.rating}</Text>
+                          </HStack>
+                        )}
+                      </HStack>
                       <HStack space={3} mt={2} justifyContent='flex-end'>
                         {order.status !== 'cancelled' && order.status !== 'delivered' && (
                           <Button
@@ -219,19 +298,31 @@ export default function OrdersHistoryScreen({ navigation }) {
                           </Button>
                         )}
                         {order.status === 'delivered' && (
-                          <Button
-                            variant='outline'
-                            borderColor='brand.light'
-                            _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
-                            _linearGradient={{
-                              as: LinearGradient,
-                              colors: [theme.colors.brand.green, theme.colors.brand.orange],
-                              start: [0, 0],
-                              end: [1, 1],
-                            }}
-                            onPress={() => handleReorder(order)}>
-                            Reorder
-                          </Button>
+                          <>
+                            {!order.rating && (
+                              <Button
+                                variant='outline'
+                                borderColor='yellow.400'
+                                _text={{ fontWeight: '700', fontSize: 'sm', color: 'yellow.600' }}
+                                onPress={() => handleRateOrder(order)}
+                                size='sm'>
+                                Rate
+                              </Button>
+                            )}
+                            <Button
+                              variant='outline'
+                              borderColor='brand.light'
+                              _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
+                              _linearGradient={{
+                                as: LinearGradient,
+                                colors: [theme.colors.brand.green, theme.colors.brand.orange],
+                                start: [0, 0],
+                                end: [1, 1],
+                              }}
+                              onPress={() => handleReorder(order)}>
+                              Reorder
+                            </Button>
+                          </>
                         )}
                         <Button
                           variant='outline'
@@ -244,7 +335,7 @@ export default function OrdersHistoryScreen({ navigation }) {
                             end: [1, 1],
                           }}
                           onPress={() =>
-                            navigation.navigate('OrderTrackingScreen', { orderId: order._id || order.id })
+                            navigation.navigate('OrderTrackingScreen', { order: order })
                           }>
                           Track
                         </Button>

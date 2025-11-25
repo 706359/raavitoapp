@@ -35,6 +35,16 @@ function HomeStackNavigator() {
   );
 }
 
+// 👉 Stack for Subscription flow
+function SubscriptionStackNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name='Subscription' component={Subscription} />
+      <Stack.Screen name='ManageAddresses' component={ManageAddresses} />
+    </Stack.Navigator>
+  );
+}
+
 // 👉 Stack for Menu flow
 function MenuStackNavigator() {
   return (
@@ -83,7 +93,11 @@ export default function MainTabs() {
       <Tab.Screen name='HomeTab' component={HomeStackNavigator} options={{ title: "Home" }} />
       <Tab.Screen name='MenuTab' component={MenuStackNavigator} options={{ title: "Kitchen" }} />
       {/* <Tab.Screen name='Cart' component={CartScreen} /> */}
-      <Tab.Screen name='Subscription' component={Subscription} />
+      <Tab.Screen 
+        name='Subscription' 
+        component={SubscriptionStackNavigator}
+        options={{ title: "Subscription" }}
+      />
       <Tab.Screen 
         name='Orders' 
         component={OrdersStack}

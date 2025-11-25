@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderBar from "../components/HeaderBar";
+import Loader from "../components/Loader";
 import { fetchKitchens, fetchOffers, fetchDeals } from "../utils/apiHelpers";
-import { ActivityIndicator } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -594,11 +594,8 @@ export default function HomeScreen() {
             renderItem={({ item }) => <KitchenCard item={item} />}
             ListEmptyComponent={
               loading ? (
-                <View style={{ padding: 40, alignItems: "center" }}>
-                  <ActivityIndicator size="large" color={theme.colors.brand.orange} />
-                  <Text style={{ marginTop: 12, color: theme.colors.brand.gray }}>
-                    Loading kitchens...
-                  </Text>
+                <View style={styles.loadingContainer}>
+                  <Loader size="large" color="orange" text="Loading kitchens..." />
                 </View>
               ) : (
                 <View style={{ padding: 40, alignItems: "center" }}>
@@ -1013,5 +1010,10 @@ const styles = StyleSheet.create({
   allKitchensHeader: {
     gap: 6,
     marginBottom: 16,
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

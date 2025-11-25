@@ -130,3 +130,131 @@ export const fetchUserProfile = async () => {
   }
 };
 
+/**
+ * Fetch subscription plans
+ * @returns {Promise<Array>} Array of subscription plans
+ */
+export const fetchSubscriptionPlans = async () => {
+  try {
+    const { data } = await axios_.get('/subscriptions/plans');
+    return data;
+  } catch (error) {
+    console.error('Error fetching subscription plans:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch user's subscriptions
+ * @returns {Promise<Array>} Array of user subscriptions
+ */
+export const fetchMySubscriptions = async () => {
+  try {
+    const { data } = await axios_.get('/subscriptions/my');
+    return data;
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch active subscription
+ * @returns {Promise<Object|null>} Active subscription or null if none exists
+ */
+export const fetchActiveSubscription = async () => {
+  try {
+    const { data } = await axios_.get('/subscriptions/active');
+    return data; // Will be null if no active subscription
+  } catch (error) {
+    // Handle 404 gracefully - it means no active subscription
+    if (error?.response?.status === 404) {
+      return null;
+    }
+    console.error('Error fetching active subscription:', error);
+    return null; // Return null on any error to prevent app crash
+  }
+};
+
+/**
+ * Fetch subscription calendar
+ * @param {number} month - Month (1-12)
+ * @param {number} year - Year
+ * @returns {Promise<Object>} Subscription calendar data
+ */
+export const fetchSubscriptionCalendar = async (month, year) => {
+  try {
+    const params = new URLSearchParams();
+    if (month) params.append('month', month);
+    if (year) params.append('year', year);
+    const { data } = await axios_.get(`/subscriptions/calendar?${params.toString()}`);
+    return data || { subscription: null, calendar: {} };
+  } catch (error) {
+    // Handle 404 gracefully
+    if (error?.response?.status === 404) {
+      return { subscription: null, calendar: {} };
+    }
+    console.error('Error fetching subscription calendar:', error);
+    return { subscription: null, calendar: {} }; // Return empty calendar on error
+  }
+};
+
+/**
+ * Create subscription
+ * @param {Object} subscriptionData - Subscription data
+ * @returns {Promise<Object>} Created subscription
+ */
+export const createSubscription = async (subscriptionData) => {
+  try {
+    const { data } = await axios_.post('/subscriptions', subscriptionData);
+    return data;
+  } catch (error) {
+    console.error('Error creating subscription:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel subscription
+ * @param {string} reason - Cancellation reason
+ * @returns {Promise<Object>} Cancelled subscription
+ */
+export const cancelSubscription = async (reason) => {
+  try {
+    const { data } = await axios_.put('/subscriptions/cancel', { reason });
+    return data;
+  } catch (error) {
+    console.error('Error cancelling subscription:', error);
+    throw error;
+  }
+};
+
+/**
+ * Pause subscription
+ * @param {Date} pauseUntil - Date to pause until
+ * @returns {Promise<Object>} Paused subscription
+ */
+export const pauseSubscription = async (pauseUntil) => {
+  try {
+    const { data } = await axios_.put('/subscriptions/pause', { pauseUntil });
+    return data;
+  } catch (error) {
+    console.error('Error pausing subscription:', error);
+    throw error;
+  }
+};
+
+/**
+ * Resume subscription
+ * @returns {Promise<Object>} Resumed subscription
+ */
+export const resumeSubscription = async () => {
+  try {
+    const { data } = await axios_.put('/subscriptions/resume');
+    return data;
+  } catch (error) {
+    console.error('Error resuming subscription:', error);
+    throw error;
+  }
+};
+

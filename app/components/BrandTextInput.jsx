@@ -1,4 +1,5 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from 'react-native';
+import theme from '../../theme';
 
 export default function BrandTextInput({
   value,
@@ -6,17 +7,20 @@ export default function BrandTextInput({
   placeholder,
   secureTextEntry,
   keyboardType,
+  style,
+  ...props
 }) {
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, style]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor='#888'
+        placeholderTextColor={theme.colors.brand.gray}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        {...props}
       />
     </View>
   );
@@ -24,18 +28,18 @@ export default function BrandTextInput({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
     marginVertical: 8,
   },
   input: {
-    width: "100%",
+    width: '100%',
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 12,
-    borderWidth: 0.7,
-    borderColor: "#ddd",
-    backgroundColor: "#F5F5F5", // brand.light
+    borderWidth: 1,
+    borderColor: theme.colors.brand.softGray,
+    backgroundColor: 'white',
     fontSize: 16,
-    color: "#1A1A1A", // brand.dark
+    color: theme.colors.brand.dark,
   },
 });

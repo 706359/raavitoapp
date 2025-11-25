@@ -279,7 +279,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterModal from '../components/FilterModal';
 import HeaderBar from '../components/HeaderBar';
 import { fetchKitchens } from '../utils/apiHelpers';
-import { ActivityIndicator } from 'react-native';
+import Loader from '../components/Loader';
 
 export default function MenuScreen({ route }) {
   const navigation = useNavigation();
@@ -521,10 +521,7 @@ export default function MenuScreen({ route }) {
           ListEmptyComponent={() =>
             loading ? (
               <Box alignItems='center' mt={20}>
-                <ActivityIndicator size='large' color='#f97316' />
-                <Text fontSize='sm' color='gray.500' mt={4}>
-                  Loading kitchens...
-                </Text>
+                <Loader size="large" color="orange" text="Loading kitchens..." />
               </Box>
             ) : (
               <Box alignItems='center' mt={20}>

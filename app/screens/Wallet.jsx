@@ -15,7 +15,8 @@ import {
   useTheme,
 } from "native-base";
 import React, { useEffect, useMemo, useState } from "react";
-import { BackHandler, RefreshControl, StyleSheet, ActivityIndicator } from "react-native";
+import { BackHandler, RefreshControl, StyleSheet } from "react-native";
+import Loader from "../components/Loader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchWallet } from "../utils/apiHelpers";
 
@@ -103,8 +104,8 @@ export default function WalletScreen() {
               <HStack alignItems='center' justifyContent='space-between'>
                 <VStack>
                   <Text style={styles.balanceLabel}>Available Balance</Text>
-                  {loading ? (
-                    <ActivityIndicator size='small' color={brand.orange} style={{ marginTop: 10 }} />
+                    {loading ? (
+                    <Loader size="small" color="orange" style={{ marginTop: 10 }} />
                   ) : (
                     <>
                       <HStack alignItems='flex-end'>

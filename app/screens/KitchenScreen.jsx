@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { fetchMenuItems, fetchKitchenDetails } from '../utils/apiHelpers';
-import { ActivityIndicator } from 'react-native';
+import Loader from '../components/Loader';
 
 export default function KitchenScreen({ route, navigation }) {
   const { kitchen } = route.params;
@@ -305,8 +305,7 @@ export default function KitchenScreen({ route, navigation }) {
 
             {loading ? (
               <Box style={styles.emptyState}>
-                <ActivityIndicator size='large' color='#f97316' />
-                <Text style={styles.emptyText}>Loading menu...</Text>
+                <Loader size="large" color="orange" text="Loading menu..." />
               </Box>
             ) : filteredMenuItems.length === 0 ? (
               <Box style={styles.emptyState}>

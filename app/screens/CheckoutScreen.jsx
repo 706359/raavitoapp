@@ -8,21 +8,43 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Platform,
-  // SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CheckoutScreen({ navigation }) {
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const { selectedAddress } = useAddress();
   const { selectedPayment } = usePayment();
   const { cart, getTotal, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
+  const [deliveryInstructions, setDeliveryInstructions] = useState('');
+  const [scheduleOrder, setScheduleOrder] = useState(false);
+  const [scheduledTime, setScheduledTime] = useState(null);
+
+  // Calculate fees
+  const calculateFees = () => {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+    const deliveryFee = subtotal >= 200 ? 0 : 30;
+    const serviceCharge = Math.round(subtotal * 0.05);
+    const tax = Math.round((subtotal + serviceCharge) * 0.05);
+    const total = subtotal + deliveryFee + serviceCharge + tax;
+    
+    return {
+      subtotal,
+      deliveryFee,
+      serviceCharge,
+      tax,
+      total,
+    };
+  };
+
+  const fees = calculateFees();
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
@@ -45,14 +67,21 @@ export default function CheckoutScreen({ navigation }) {
         price: item.price,
       }));
 
-      const total = getTotal();
+      // Get kitchen ID from first item (assuming all items from same kitchen)
+      const kitchenId = cart[0]?.kitchenId || cart[0]?.kitchen?._id || null;
+
       const orderData = {
         items,
-        total,
+        subtotal: fees.subtotal,
+        total: fees.total,
         address: selectedAddress.address || selectedAddress,
-        paymentMode: paymentMethod,
+        deliveryInstructions: deliveryInstructions.trim() || undefined,
+        scheduledTime: scheduleOrder && scheduledTime ? scheduledTime.toISOString() : undefined,
+        paymentMode: paymentMethod === 'card' ? 'online' : paymentMethod,
         walletUsed: 0, // TODO: Get from wallet context
         couponCode: null, // TODO: Get from coupon context
+        discountAmount: 0,
+        kitchenId,
       };
 
       const { data } = await axios_.post('/orders', orderData);
@@ -147,30 +176,110 @@ export default function CheckoutScreen({ navigation }) {
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Order Summary</Text>
 
+          {/* Items List */}
+          {cart.map((item, index) => (
+            <View key={index} style={styles.itemRow}>
+              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemQty}>x{item.qty || 1}</Text>
+              <Text style={styles.itemPrice}>₹{(item.price * (item.qty || 1)).toFixed(2)}</Text>
+            </View>
+          ))}
+
+          <View style={styles.divider} />
+
           <View style={styles.rowBetween}>
             <Text style={styles.summaryText}>Subtotal</Text>
-            <Text style={styles.summaryText}>₹529.8</Text>
+            <Text style={styles.summaryText}>₹{fees.subtotal.toFixed(2)}</Text>
+          </View>
+          <View style={styles.rowBetween}>
+            <Text style={styles.summaryText}>Service Charge (5%)</Text>
+            <Text style={styles.summaryText}>₹{fees.serviceCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.rowBetween}>
+            <Text style={styles.summaryText}>Tax (GST 5%)</Text>
+            <Text style={styles.summaryText}>₹{fees.tax.toFixed(2)}</Text>
           </View>
           <View style={styles.rowBetween}>
             <Text style={styles.summaryText}>Delivery Fee</Text>
-            <Text style={styles.freeText}>Free</Text>
+            <Text style={fees.deliveryFee === 0 ? styles.freeText : styles.summaryText}>
+              {fees.deliveryFee === 0 ? 'Free' : `₹${fees.deliveryFee.toFixed(2)}`}
+            </Text>
           </View>
-          <View style={styles.rowBetween}>
-            <Text style={styles.summaryText}>Tax</Text>
-            <Text style={styles.summaryText}>₹14</Text>
-          </View>
+
+          {fees.subtotal < 200 && (
+            <Text style={styles.freeDeliveryHint}>
+              Add ₹{(200 - fees.subtotal).toFixed(2)} more for free delivery
+            </Text>
+          )}
 
           <View style={styles.divider} />
 
           <View style={styles.rowBetween}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalAmount}>₹543.8</Text>
+            <Text style={styles.totalAmount}>₹{fees.total.toFixed(2)}</Text>
           </View>
 
           <View style={styles.deliveryBox}>
             <MaterialIcons name='access-time' size={20} color='#b95a01ff' />
-            <Text style={styles.deliveryText}>Estimated Delivery: 25–35 mins</Text>
+            <Text style={styles.deliveryText}>
+              {scheduleOrder && scheduledTime
+                ? `Scheduled for: ${scheduledTime.toLocaleString()}`
+                : 'Estimated Delivery: 30–40 mins'}
+            </Text>
           </View>
+        </View>
+
+        {/* Delivery Instructions */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Delivery Instructions (Optional)</Text>
+          <TextInput
+            style={styles.instructionsInput}
+            placeholder="E.g., Leave at door, Call before delivery, etc."
+            value={deliveryInstructions}
+            onChangeText={setDeliveryInstructions}
+            multiline
+            numberOfLines={3}
+            maxLength={200}
+          />
+          <Text style={styles.charCount}>{deliveryInstructions.length}/200</Text>
+        </View>
+
+        {/* Schedule Order */}
+        <View style={styles.card}>
+          <View style={styles.rowBetween}>
+            <View>
+              <Text style={styles.sectionTitle}>Schedule Order</Text>
+              <Text style={styles.subText}>Order for later delivery</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setScheduleOrder(!scheduleOrder)}
+              style={styles.toggleSwitch}>
+              <View style={[styles.toggleCircle, scheduleOrder && styles.toggleCircleActive]} />
+            </TouchableOpacity>
+          </View>
+          {scheduleOrder && (
+            <View style={styles.scheduleOptions}>
+              <TouchableOpacity
+                style={styles.scheduleOption}
+                onPress={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  tomorrow.setHours(12, 0, 0, 0);
+                  setScheduledTime(tomorrow);
+                }}>
+                <Text style={styles.scheduleOptionText}>Tomorrow, 12:00 PM</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.scheduleOption}
+                onPress={() => {
+                  const later = new Date();
+                  later.setHours(later.getHours() + 2);
+                  setScheduledTime(later);
+                }}>
+                <Text style={styles.scheduleOptionText}>In 2 hours</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* Payment Method */}
@@ -491,5 +600,84 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  itemName: {
+    flex: 1,
+    fontSize: 14,
+    color: '#374151',
+  },
+  itemQty: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginHorizontal: 8,
+  },
+  itemPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  freeDeliveryHint: {
+    fontSize: 12,
+    color: '#16a34a',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  instructionsInput: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    color: '#111827',
+    marginTop: 8,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  charCount: {
+    fontSize: 11,
+    color: '#9ca3af',
+    textAlign: 'right',
+    marginTop: 4,
+  },
+  toggleSwitch: {
+    width: 50,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#e5e7eb',
+    justifyContent: 'center',
+    padding: 2,
+  },
+  toggleCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    alignSelf: 'flex-start',
+  },
+  toggleCircleActive: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#b95a01ff',
+  },
+  scheduleOptions: {
+    marginTop: 12,
+    gap: 8,
+  },
+  scheduleOption: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    backgroundColor: '#f9fafb',
+  },
+  scheduleOptionText: {
+    fontSize: 14,
+    color: '#111827',
+    fontWeight: '500',
   },
 });

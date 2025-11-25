@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Box, FlatList, HStack, Image, Pressable, Text, VStack } from 'native-base';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
+import Loader from '../components/Loader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFavorites } from '../context/FavoritesContext';
 import HeaderBar from '../components/HeaderBar';
@@ -24,7 +25,7 @@ export default function Favourites() {
       <SafeAreaView style={styles.container}>
         <HeaderBar title='Favourites' showBack />
         <Box flex={1} justifyContent='center' alignItems='center'>
-          <ActivityIndicator size='large' color='#b94a01ff' />
+          <Loader size="large" color="orange" />
         </Box>
       </SafeAreaView>
     );
