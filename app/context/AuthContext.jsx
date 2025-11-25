@@ -18,15 +18,25 @@ export function AuthProvider({ children }) {
 
         if (!token) {
           setLoading(false);
+          setUser(null);
           return;
         }
 
         // attach token to axios headers immediately
         axios_.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-        // verify token and fetch user info
+        // verify token and fetch user info with timeout
         try {
-          const { data } = await axios_.get("/auth/me");
+          // Add timeout to prevent hanging
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), 8000)
+          );
+          
+          const { data } = await Promise.race([
+            axios_.get("/auth/me"),
+            timeoutPromise
+          ]);
+          
           if (data?.user) {
             const userData = {
               id: data.user._id || data.user.id,
@@ -49,11 +59,43 @@ export function AuthProvider({ children }) {
             delete axios_.defaults.headers.common.Authorization;
           }
         } catch (authError) {
-          // Token is invalid/expired - clear everything
-          console.log("Token verification failed on startup:", authError?.response?.status || authError?.message);
-          await AsyncStorage.multiRemove(["token", "role", "user"]);
-          delete axios_.defaults.headers.common.Authorization;
-          setUser(null);
+          // Token is invalid/expired or network error
+          const errorMessage = authError?.response?.status || authError?.message || authError?.code || 'Unknown error';
+          console.log("Token verification failed on startup:", errorMessage);
+          
+          // Check if it's a network/timeout error (not an auth error)
+          const isNetworkError = 
+            authError?.code === 'ECONNABORTED' || 
+            authError?.code === 'ECONNREFUSED' ||
+            authError?.code === 'ENOTFOUND' ||
+            authError?.code === 'ETIMEDOUT' ||
+            authError?.message?.includes('timeout') || 
+            authError?.message?.includes('Network') ||
+            authError?.message?.includes('Request timeout') ||
+            authError?.message?.includes('Network Error') ||
+            !authError?.response; // No response means network error
+          
+          // If it's a network error, try to use saved user data as fallback for offline mode
+          if (isNetworkError && savedUser) {
+            console.log("Network error detected - using saved user data for offline mode");
+            try {
+              const parsedUser = JSON.parse(savedUser);
+              setUser({ ...parsedUser, token });
+              // Don't clear storage on network errors, allow offline mode
+              setLoading(false);
+              return;
+            } catch (parseError) {
+              console.log("Failed to parse saved user:", parseError);
+            }
+          }
+          
+          // Clear storage only for auth errors (401, 403) or if no saved user
+          // For network errors without saved user, also clear to allow fresh login
+          if (!isNetworkError || !savedUser) {
+            await AsyncStorage.multiRemove(["token", "role", "user"]);
+            delete axios_.defaults.headers.common.Authorization;
+            setUser(null);
+          }
         }
       } catch (e) {
         console.log("Auth load error:", e);

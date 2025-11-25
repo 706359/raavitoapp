@@ -1,8 +1,34 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Constants from 'expo-constants';
+
+// Get API URL from environment or use default
+const getApiUrl = () => {
+  // Priority 1: Check for environment variable (for EAS builds and local dev)
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  
+  // Priority 2: Check for app.json extra config (for EAS builds)
+  if (Constants.expoConfig?.extra?.apiUrl) {
+    return Constants.expoConfig.extra.apiUrl;
+  }
+  
+  // Priority 3: For local development, use local IP
+  if (__DEV__) {
+    return 'http://192.168.1.50:5050/api/';
+  }
+  
+  // Priority 4: Default to production API
+  return 'https://api.raavito.in/api/';
+};
+
+const API_URL = getApiUrl();
+console.log('API Base URL:', API_URL);
 
 export const axios_ = axios.create({
-  baseURL: 'http://192.168.1.50:5050/api/',
+  baseURL: API_URL,
+  timeout: 10000, // 10 second timeout to prevent hanging
 });
 
 // Add request interceptor to attach token
