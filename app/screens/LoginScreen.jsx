@@ -130,34 +130,36 @@ export default function LoginScreen({ navigation }) {
               contentContainerStyle={styles.content}
               keyboardShouldPersistTaps='handled'
               keyboardDismissMode={Platform.OS === 'ios' ? 'on-drag' : 'none'}
+              showsVerticalScrollIndicator={false}
             >
-              <VStack space={10} alignItems='center' w='100%'>
+              <VStack space={3} alignItems='center' w='100%' pt={4}>
                 <Image
                   source={require('../assets/logo.png')}
                   alt='Raavito'
-                  w={120}
-                  h={120}
+                  w={90}
+                  h={90}
                   resizeMode='contain'
                 />
 
                 {/* Title */}
-                <VStack space={1} alignItems='center'>
+                <VStack space={1} alignItems='center' mb={1}>
                   <Text
                     fontSize='2xl'
                     fontFamily='Poppins'
                     fontWeight='700'
                     color='brand.dark'
                     shadow={1}
+                    letterSpacing={0.5}
                   >
                     Welcome Back
                   </Text>
-                  <Text fontSize='md' color='coolGray.700' textAlign='center'>
+                  <Text fontSize='sm' color='coolGray.700' textAlign='center' fontFamily='OpenSans'>
                     Trusted app for Desi Homemade food
                   </Text>
                 </VStack>
 
                 {/* Inputs */}
-                <VStack space={5} w='100%'>
+                <VStack space={3} w='100%'>
                   {/* Mobile */}
                   <View style={styles.inputWrapper}>
                     <Ionicons
@@ -217,6 +219,8 @@ export default function LoginScreen({ navigation }) {
                   <Button
                     onPress={handleLogin}
                     shadow={6}
+                    w='75%'
+                    alignSelf='center'
                     variant='outline'
                     borderColor='brand.light'
                     _text={{ fontWeight: '700', fontSize: 'md', color: 'white' }}
@@ -234,12 +238,22 @@ export default function LoginScreen({ navigation }) {
                   {/* Terms */}
                   <Text fontSize='xs' color='coolGray.600' textAlign='center' mt={2}>
                     By signing in, you agree to our{' '}
-                    <Text variant='label' color='brand.orange'>
+                    <Text
+                      variant='label'
+                      color='brand.orange'
+                      onPress={() => navigation.navigate('PrivacyPolicy')}
+                      style={{ textDecorationLine: 'underline' }}
+                    >
                       Privacy Policy
                     </Text>{' '}
                     &{' '}
-                    <Text variant='label' color='brand.orange'>
-                      Terms
+                    <Text
+                      variant='label'
+                      color='brand.orange'
+                      onPress={() => navigation.navigate('TermsConditions')}
+                      style={{ textDecorationLine: 'underline' }}
+                    >
+                      Terms & Conditions
                     </Text>
                   </Text>
                 </VStack>
@@ -292,19 +306,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 25,
     paddingVertical: 20,
+    minHeight: '100%',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 0.5,
+    borderWidth: 1.5,
+    borderColor: 'rgba(245, 117, 6, 0.2)',
     borderRadius: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   icon: { marginRight: 8 },
   input: {
     flex: 1,
-    height: 50,
+    height: 52,
     fontSize: 16,
+    fontFamily: 'OpenSans',
+    paddingLeft: 4,
   },
   partnerCard: {
     width: '100%',
@@ -318,7 +342,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1.5,
     borderColor: '#fed7aa',
-    shadowColor: '#f97316',
+    shadowColor: '#f57506',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,

@@ -49,20 +49,11 @@ export function AuthProvider({ children }) {
             delete axios_.defaults.headers.common.Authorization;
           }
         } catch (authError) {
-          // If token is invalid/expired, try to use saved user data as fallback
-          if (savedUser) {
-            try {
-              const parsedUser = JSON.parse(savedUser);
-              setUser({ ...parsedUser, token });
-              // Keep token for retry later
-            } catch (parseError) {
-              await AsyncStorage.multiRemove(["token", "role", "user"]);
-              delete axios_.defaults.headers.common.Authorization;
-            }
-          } else {
-            await AsyncStorage.multiRemove(["token", "role", "user"]);
-            delete axios_.defaults.headers.common.Authorization;
-          }
+          // Token is invalid/expired - clear everything
+          console.log("Token verification failed on startup:", authError?.response?.status || authError?.message);
+          await AsyncStorage.multiRemove(["token", "role", "user"]);
+          delete axios_.defaults.headers.common.Authorization;
+          setUser(null);
         }
       } catch (e) {
         console.log("Auth load error:", e);

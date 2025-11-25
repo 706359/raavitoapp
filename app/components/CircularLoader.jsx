@@ -59,7 +59,7 @@ const CircularLoader = ({ size = 40, segmentCount = 12, marginTop = 40, color = 
               styles.segment,
               {
                 transform: [{ rotate }, { scale }],
-                opacity,
+              opacity,
               },
             ]}>
             <View

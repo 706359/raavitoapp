@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { KitchenRegisterScreen, PartnerLoginScreen } from "../screens/PartnerAuth";
+import KitchenRegisterScreen from "../screens/KitchenRegisterScreen";
+import { PartnerLoginScreen } from "../screens/PartnerAuth";
 import PartnerDashboard from "../screens/PartnerDashboard";
 
 const Stack = createNativeStackNavigator();

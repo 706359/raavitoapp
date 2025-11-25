@@ -71,13 +71,13 @@ export default function PrivacySecurity() {
       id: 2,
       title: 'Privacy Policy',
       icon: 'privacy-tip',
-      onPress: () => Alert.alert('Privacy Policy', 'Privacy policy content goes here...'),
+      onPress: () => navigation.navigate('PrivacyPolicy'),
     },
     {
       id: 3,
       title: 'Terms & Conditions',
       icon: 'description',
-      onPress: () => Alert.alert('Terms & Conditions', 'Terms and conditions content goes here...'),
+      onPress: () => navigation.navigate('TermsConditions'),
     },
     {
       id: 4,

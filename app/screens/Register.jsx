@@ -94,24 +94,24 @@ export default function RegisterScreen({ navigation }) {
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}>
-          <Box flex={1} px={8} py={6} bg='transparent'>
-            <VStack flex={1} justifyContent='space-between'>
+          <Box flex={1} px={8} py={4} bg='transparent'>
+            <VStack flex={1} justifyContent='center'>
               {/* Header */}
-              <HStack alignItems='center' justifyContent='space-between' mb={-5} space={7}>
-                <VStack>
-                  <Text style={[styles.greeting, { color: theme.colors.brand.dark }]}>Hey,</Text>
-                  <Text style={styles.subtitle}>Please Sign up to Continue</Text>
-                </VStack>
+              <VStack alignItems='center' mb={2} space={1} pt={2}>
                 <Image
                   source={require("../assets/logo.png")}
                   alt='Raavito'
-                  size='105'
+                  size='85'
                   resizeMode='contain'
                 />
-              </HStack>
+                <VStack space={0.5} alignItems='center'>
+                  <Text style={[styles.greeting, { color: theme.colors.brand.dark }]}>Create Account</Text>
+                  <Text style={styles.subtitle}>Sign up to get started</Text>
+                </VStack>
+              </VStack>
 
               {/* Form */}
-              <VStack space={6} mt={6}>
+              <VStack space={3} mt={2}>
                 {/* First & Last Name */}
                 <HStack space={2}>
                   <TextInput
@@ -175,11 +175,17 @@ export default function RegisterScreen({ navigation }) {
                 {/* Terms */}
                 <Text style={styles.termsText}>
                   By clicking Sign Up you certify that you agree to our{" "}
-                  <Text style={[styles.linkText, { color: theme.colors.brand.orange }]}>
+                  <Text
+                    style={[styles.linkText, { color: theme.colors.brand.orange }]}
+                    onPress={() => navigation.navigate('PrivacyPolicy')}
+                  >
                     Privacy Policy
                   </Text>{" "}
                   and{" "}
-                  <Text style={[styles.linkText, { color: theme.colors.brand.orange }]}>
+                  <Text
+                    style={[styles.linkText, { color: theme.colors.brand.orange }]}
+                    onPress={() => navigation.navigate('TermsConditions')}
+                  >
                     Terms & Conditions
                   </Text>
                   .
@@ -189,7 +195,7 @@ export default function RegisterScreen({ navigation }) {
                 <Button
                   onPress={handleSignUp}
                   shadow={6}
-                  w='60%'
+                  w='75%'
                   alignSelf='center'
                   _text={{
                     fontFamily: "Poppins",
@@ -204,7 +210,7 @@ export default function RegisterScreen({ navigation }) {
               </VStack>
 
               {/* Footer */}
-              <VStack space={4} alignItems='center' mt={10}>
+              <VStack space={2} alignItems='center' mt={4}>
                 <Text style={styles.footerText}>
                   Already have an account?{" "}
                   <Text
@@ -224,16 +230,22 @@ export default function RegisterScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "white" },
-  greeting: { fontSize: 28, fontFamily: "Poppins", fontWeight: "700" },
-  subtitle: { fontSize: 16, fontFamily: "OpenSans", color: "#666" },
+  greeting: { fontSize: 24, fontFamily: "Poppins", fontWeight: "700" },
+  subtitle: { fontSize: 14, fontFamily: "OpenSans", color: "#666" },
   input: {
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: "rgba(245, 117, 6, 0.2)",
+    borderRadius: 12,
+    paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
     fontFamily: "OpenSans",
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   passwordToggle: {
     position: "absolute",

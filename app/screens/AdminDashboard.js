@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   Alert,
   Modal,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { axios_ } from "../../utils/utils";
 import ColorPicker from "../components/ColorPicker";

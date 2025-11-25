@@ -83,7 +83,8 @@ import { useAuth } from "../context/AuthContext";
 // Screens
 import AdminDashboard from "../screens/AdminDashboard"; // ✅ Admin dashboard screen
 import EditProfileScreen from "../screens/EditProfile";
-import { KitchenRegisterScreen, PartnerLoginScreen } from "../screens/PartnerAuth";
+import KitchenRegisterScreen from "../screens/KitchenRegisterScreen";
+import { PartnerLoginScreen } from "../screens/PartnerAuth";
 import PartnerDashboardScreen from "../screens/PartnerDashboard";
 import ProfileScreen from "../screens/ProfileScreen";
 import RoleSelectionScreen from "../screens/RoleSelectionScreen";

@@ -153,16 +153,17 @@ export function PartnerLoginScreen({ navigation }) {
                 />
 
                 {/* Title */}
-                <VStack space={1} alignItems='center'>
+                <VStack space={2} alignItems='center' mb={2}>
                   <Text
-                    fontSize='2xl'
+                    fontSize='3xl'
                     fontFamily='Poppins'
                     fontWeight='700'
                     color='brand.dark'
-                    shadow={1}>
+                    shadow={1}
+                    letterSpacing={0.5}>
                     Partner Login
                   </Text>
-                  <Text fontSize='md' color='coolGray.700' textAlign='center'>
+                  <Text fontSize='md' color='coolGray.700' textAlign='center' fontFamily='OpenSans'>
                     Access your kitchen dashboard
                   </Text>
                 </VStack>
@@ -237,6 +238,8 @@ export function PartnerLoginScreen({ navigation }) {
                   <Button
                     onPress={handleLogin}
                     shadow={6}
+                    w='75%'
+                    alignSelf='center'
                     variant='outline'
                     borderColor='brand.light'
                     _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
@@ -301,344 +304,6 @@ export function PartnerLoginScreen({ navigation }) {
   );
 }
 
-// Kitchen Register Screen
-export function KitchenRegisterScreen({ navigation }) {
-  const [agree, setAgree] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [formData, setFormData] = useState({});
-  const theme = useTheme();
-
-  function handleFormData(name, value) {
-    setFormData((prev) => {
-      let obj = { ...prev };
-      obj[name] = value;
-      return obj;
-    });
-  }
-
-  const handleRegister = async () => {
-    const required = ["kitchenName", "ownerName", "mobile", "email", "city", "pincode", "password"];
-    const missing = required.filter((k) => !formData[k]);
-    if (missing.length) {
-      return Alert.alert("Missing Fields", `Please fill: ${missing.join(", ")}`);
-    }
-    if (!agree) {
-      return Alert.alert("Terms Required", "Please accept the terms and conditions");
-    }
-
-    try {
-      setBusy(true);
-      const payload = {
-        name: formData.kitchenName,
-        ownerName: formData.ownerName,
-        mobile: formData.mobile,
-        email: formData.email,
-        address: formData.address,
-        city: formData.city,
-        pincode: formData.pincode,
-        fssai: formData.fssai || undefined,
-        password: formData.password,
-      };
-      const { data } = await axios_.post("/kitchens/register", payload);
-      if (data?._id) {
-        Alert.alert("Success!", "Kitchen registered. Please login to continue.");
-        navigation.replace("PartnerLogin");
-      } else {
-        Alert.alert("Registration Failed", data?.message || "Could not register");
-      }
-    } catch (_e) {
-      Alert.alert("Error", "Registration failed. Please try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ImageBackground
-        source={require("../assets/loginbg2.png")}
-        resizeMode='cover'
-        style={styles.backgroundImage}>
-        <SafeAreaView style={styles.safeArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.flex}>
-            <ScrollView
-              contentContainerStyle={styles.content}
-              keyboardShouldPersistTaps='handled'
-              keyboardDismissMode={Platform.OS === "ios" ? "on-drag" : "none"}>
-              <VStack space={5} alignItems='center' w='100%'>
-                <Image
-                  source={require("../assets/logo.png")}
-                  alt='Raavito'
-                  w={100}
-                  h={100}
-                  resizeMode='contain'
-                />
-
-                {/* Title */}
-                <VStack space={1} alignItems='center'>
-                  <Text
-                    fontSize='2xl'
-                    fontFamily='Poppins'
-                    fontWeight='700'
-                    color='brand.dark'
-                    shadow={1}>
-                    Register Kitchen
-                  </Text>
-                  <Text fontSize='md' color='coolGray.700' textAlign='center'>
-                    Start accepting orders today
-                  </Text>
-                </VStack>
-
-                {/* Inputs */}
-                <VStack space={4} w='100%'>
-                  {/* Kitchen Name */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='restaurant-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.kitchenName}
-                      onChangeText={(value) => handleFormData("kitchenName", value)}
-                      placeholder='Kitchen Name'
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Owner Name */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='person-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.ownerName}
-                      onChangeText={(value) => handleFormData("ownerName", value)}
-                      placeholder='Owner Name'
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Mobile */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='call-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.mobile}
-                      onChangeText={(value) =>
-                        handleFormData("mobile", value.replace(/[^0-9]/g, ""))
-                      }
-                      placeholder='Mobile Number'
-                      keyboardType='phone-pad'
-                      maxLength={10}
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Email */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='mail-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.email}
-                      onChangeText={(value) => handleFormData("email", value)}
-                      placeholder='Email Address'
-                      keyboardType='email-address'
-                      autoCapitalize='none'
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Address */}
-                  <View style={[styles.inputWrapper, styles.textAreaWrapper]}>
-                    <Ionicons
-                      name='location-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={[styles.icon, styles.textAreaIcon]}
-                    />
-                    <TextInput
-                      style={[styles.input, styles.textArea, { color: theme.colors.brand.dark }]}
-                      value={formData?.address}
-                      onChangeText={(value) => handleFormData("address", value)}
-                      placeholder='Complete Address'
-                      multiline
-                      numberOfLines={3}
-                      textAlignVertical='top'
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* City */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='business-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.city}
-                      onChangeText={(value) => handleFormData("city", value)}
-                      placeholder='City'
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Pincode */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='pricetag-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.pincode}
-                      onChangeText={(value) =>
-                        handleFormData("pincode", value.replace(/[^0-9]/g, ""))
-                      }
-                      placeholder='Pincode'
-                      keyboardType='number-pad'
-                      maxLength={6}
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* FSSAI */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='document-text-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.fssai}
-                      onChangeText={(value) => handleFormData("fssai", value)}
-                      placeholder='FSSAI Number (Optional)'
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Password */}
-                  <View style={styles.inputWrapper}>
-                    <Ionicons
-                      name='lock-closed-outline'
-                      size={20}
-                      color={theme.colors.brand.orange}
-                      style={styles.icon}
-                    />
-                    <TextInput
-                      style={[styles.input, { color: theme.colors.brand.dark }]}
-                      value={formData?.password}
-                      onChangeText={(value) => handleFormData("password", value)}
-                      placeholder='Create Password'
-                      secureTextEntry
-                      blurOnSubmit={true}
-                      placeholderTextColor={theme.colors.brand.gray}
-                    />
-                  </View>
-
-                  {/* Terms Checkbox */}
-                  <Checkbox
-                    value='agree'
-                    onChange={() => setAgree((prev) => !prev)}
-                    isChecked={agree}
-                    _checked={{
-                      bg: theme.colors.brand.orange,
-                      borderColor: theme.colors.brand.orange,
-                    }}>
-                    <Text fontSize='sm' color='coolGray.700'>
-                      I agree to the{" "}
-                      <Text color='brand.orange' fontWeight='600'>
-                        Terms
-                      </Text>{" "}
-                      and{" "}
-                      <Text color='brand.orange' fontWeight='600'>
-                        Privacy Policy
-                      </Text>
-                    </Text>
-                  </Checkbox>
-
-                  {/* Register Button */}
-                  <Button
-                    onPress={handleRegister}
-                    isLoading={busy}
-                    shadow={6}
-                    w='60%'
-                    rounded='xl'
-                    variant='solid'
-                    borderColor='brand.light'
-                    _text={{ fontWeight: "700", fontSize: "md", color: "white" }}
-                    leftIcon={<Icon as={Ionicons} name='save-outline' size={6} color='white' />}
-                    _pressed={{ bg: "brand.green" }}
-                    bg='brand.orange'>
-                    Register Kitchen
-                  </Button>
-
-                  {/* Terms */}
-                  <Text fontSize='xs' color='coolGray.600' textAlign='center' mt={2}>
-                    By registering, you agree to our{" "}
-                    <Text variant='label' color='brand.orange'>
-                      Privacy Policy
-                    </Text>{" "}
-                    &{" "}
-                    <Text variant='label' color='brand.orange'>
-                      Terms
-                    </Text>
-                  </Text>
-                </VStack>
-
-                {/* Login Link */}
-                <HStack mt={3}>
-                  <Text fontSize='md' color='coolGray.700'>
-                    Already registered?{" "}
-                  </Text>
-                  <Text
-                    variant='label'
-                    color='brand.orange'
-                    fontWeight='700'
-                    onPress={() => navigation.replace("PartnerLogin")}>
-                    Login
-                  </Text>
-                </HStack>
-              </VStack>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </ImageBackground>
-    </TouchableWithoutFeedback>
-  );
-}
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -659,11 +324,16 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 0.7,
-    borderColor: "#59595a",
+    borderWidth: 1.5,
+    borderColor: "rgba(249, 115, 22, 0.2)",
     borderRadius: 16,
-    paddingHorizontal: 12,
-    backgroundColor: "rgba(255,255,255,0.9)",
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(255,255,255,0.95)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   textAreaWrapper: {
     alignItems: "flex-start",
@@ -676,9 +346,10 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 52,
     fontSize: 16,
-    fontFamily: "Poppins",
+    fontFamily: "OpenSans",
+    paddingLeft: 4,
   },
   textArea: {
     height: 80,
@@ -697,7 +368,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1.5,
     borderColor: "#fed7aa",
-    shadowColor: "#f97316",
+    shadowColor: "#f57506",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,

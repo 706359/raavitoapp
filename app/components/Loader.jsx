@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   rotatingCenter: {
     position: 'absolute',
-    shadowColor: '#f97316',
+    shadowColor: '#f57506',
     shadowOffset: {
       width: 0,
       height: 2,

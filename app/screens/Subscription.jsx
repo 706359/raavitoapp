@@ -16,7 +16,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAddress } from "../context/AddressContext";
+import { useAuth } from "../context/AuthContext";
 import Loader from "../components/Loader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   fetchSubscriptionPlans,
   fetchActiveSubscription,
@@ -31,6 +33,7 @@ import theme from "../../theme";
 export default function Subscription({ navigation }) {
   const insets = useSafeAreaInsets();
   const { selectedAddress } = useAddress();
+  const { user, loading: authLoading, logout } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -44,8 +47,18 @@ export default function Subscription({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!authLoading && user) {
+      loadData();
+    } else if (!authLoading && !user) {
+      // User is not authenticated - AppNavigator will handle redirect
+      // Just show a message
+      Alert.alert(
+        "Authentication Required",
+        "Please login to access subscriptions",
+        [{ text: "OK" }]
+      );
+    }
+  }, [authLoading, user]);
 
   useEffect(() => {
     if (activeSubscription && showCalendar) {
@@ -54,6 +67,11 @@ export default function Subscription({ navigation }) {
   }, [activeSubscription, showCalendar, currentMonth, currentYear]);
 
   const loadData = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const [plansData, activeSub] = await Promise.all([
@@ -64,7 +82,26 @@ export default function Subscription({ navigation }) {
       setActiveSubscription(activeSub); // Will be null if no active subscription
     } catch (error) {
       console.error("Error loading subscription data:", error);
-      Alert.alert("Error", "Failed to load subscription plans");
+      
+      // Handle 401 specifically
+      if (error?.response?.status === 401) {
+        Alert.alert(
+          "Authentication Error",
+          "Your session has expired. Please login again.",
+          [
+            {
+              text: "Login",
+              onPress: async () => {
+                // Clear auth state - AppNavigator will automatically redirect to login
+                await logout();
+              },
+            },
+            { text: "Cancel", style: "cancel" },
+          ]
+        );
+      } else {
+        Alert.alert("Error", error?.response?.data?.message || "Failed to load subscription plans");
+      }
       setPlans([]);
       setActiveSubscription(null);
     } finally {
@@ -101,6 +138,16 @@ export default function Subscription({ navigation }) {
   };
 
   const handleSubscribe = async () => {
+    // Check if user is authenticated
+    if (!user) {
+      Alert.alert(
+        "Authentication Required",
+        "Please login to create a subscription",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
     if (!selectedAddress) {
       Alert.alert("Address Required", "Please select a delivery address first", [
         { text: "Cancel" },
@@ -133,7 +180,28 @@ export default function Subscription({ navigation }) {
         { text: "OK" },
       ]);
     } catch (error) {
-      Alert.alert("Error", error?.response?.data?.message || "Failed to create subscription");
+      console.error("Subscription creation error:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to create subscription";
+      
+      // Handle 401 specifically
+      if (error?.response?.status === 401) {
+        Alert.alert(
+          "Authentication Error",
+          "Your session has expired. Please login again.",
+          [
+            {
+              text: "Login",
+              onPress: async () => {
+                // Clear auth state - AppNavigator will automatically redirect to login
+                await logout();
+              },
+            },
+            { text: "Cancel", style: "cancel" },
+          ]
+        );
+      } else {
+        Alert.alert("Error", errorMessage);
+      }
     } finally {
       setSubscribing(false);
     }
@@ -163,7 +231,7 @@ export default function Subscription({ navigation }) {
       scheduled: "#3b82f6",
       preparing: "#f59e0b",
       out_for_delivery: "#8b5cf6",
-      delivered: "#10b981",
+      delivered: "#366d59",
       skipped: "#6b7280",
       cancelled: "#ef4444",
     };
@@ -287,7 +355,7 @@ export default function Subscription({ navigation }) {
             <Text style={styles.legendText}>Preparing</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: "#10b981" }]} />
+            <View style={[styles.legendDot, { backgroundColor: "#366d59" }]} />
             <Text style={styles.legendText}>Delivered</Text>
           </View>
         </View>
@@ -391,7 +459,7 @@ export default function Subscription({ navigation }) {
     );
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: "center", alignItems: "center" }]}>
         <Loader size="large" color="orange" text="Loading subscription plans..." />
@@ -402,7 +470,7 @@ export default function Subscription({ navigation }) {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <LinearGradient
-        colors={["#f97316", "#ef4444"]}
+        colors={["#f57506", "#d55623"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.header}>
@@ -431,7 +499,7 @@ export default function Subscription({ navigation }) {
                 </Text>
               </View>
               <View style={styles.statusBadge}>
-                <Ionicons name="checkmark-circle" size={24} color="#10b981" />
+                <Ionicons name="checkmark-circle" size={24} color="#366d59" />
               </View>
             </View>
 
@@ -608,7 +676,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 26,
     borderBottomRightRadius: 26,
     elevation: 10,
-    shadowColor: "#f97316",
+    shadowColor: "#f57506",
   },
   backButton: { padding: 8, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.15)" },
   headerContent: { flex: 1, marginLeft: 12 },

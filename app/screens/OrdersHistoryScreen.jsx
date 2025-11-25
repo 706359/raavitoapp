@@ -335,7 +335,7 @@ export default function OrdersHistoryScreen({ navigation }) {
                             end: [1, 1],
                           }}
                           onPress={() =>
-                            navigation.navigate('OrderTrackingScreen', { order: order })
+                            navigation.navigate('OrderTracking', { order: order })
                           }>
                           Track
                         </Button>

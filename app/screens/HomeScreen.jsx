@@ -67,8 +67,8 @@ export default function HomeScreen() {
   const theme = {
     colors: {
       brand: {
-        orange: "#f97316",
-        green: "#10b981",
+        orange: "#f57506",
+        green: "#366d59",
         dark: "#111827",
         light: "#fcf8ec",
         gray: "#9CA3AF",
@@ -162,7 +162,7 @@ export default function HomeScreen() {
           title: offer.title,
           sub: offer.description || "",
           icon: offer.icon || "pricetag",
-          colors: offer.colors || ["#f97316", "#ea580c"],
+          colors: offer.colors || ["#f57506", "#d55623"],
           code: offer.code,
           autoApply: offer.autoApply,
         }));
@@ -173,7 +173,7 @@ export default function HomeScreen() {
           id: deal._id,
           title: deal.title,
           subtitle: deal.subtitle || "",
-          gradient: deal.gradient || ["#f97316", "#fb923c"],
+          gradient: deal.gradient || ["#f57506", "#fb923c"],
           image: deal.image ? { uri: deal.image } : require("../assets/Rajasthani.jpg"),
         }));
         setDeals(transformedDeals);
@@ -306,7 +306,7 @@ export default function HomeScreen() {
             {item.discount && (
               <View style={styles.discountBadge}>
                 <LinearGradient
-                  colors={["#f97316", "#fb923c"]}
+                  colors={["#f57506", "#fb923c"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.discountGradient}>

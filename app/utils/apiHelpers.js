@@ -258,3 +258,188 @@ export const resumeSubscription = async () => {
   }
 };
 
+/**
+ * Admin Dashboard API Helpers
+ */
+
+/**
+ * Fetch admin dashboard stats
+ * @returns {Promise<Object>} Dashboard statistics
+ */
+export const fetchAdminStats = async () => {
+  try {
+    const { data } = await axios_.get('/admin/stats');
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch admin dashboard comprehensive stats
+ * @returns {Promise<Object>} Comprehensive dashboard statistics
+ */
+export const fetchAdminDashboard = async () => {
+  try {
+    const { data } = await axios_.get('/admin/dashboard');
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin dashboard:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all kitchens for admin
+ * @returns {Promise<Array>} Array of kitchens
+ */
+export const fetchAdminKitchens = async () => {
+  try {
+    const { data } = await axios_.get('/admin/kitchens');
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin kitchens:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all orders for admin
+ * @param {string} status - Optional status filter
+ * @returns {Promise<Array>} Array of orders
+ */
+export const fetchAdminOrders = async (status = null) => {
+  try {
+    const url = status ? `/admin/orders?status=${status}` : '/admin/orders';
+    const { data } = await axios_.get(url);
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin orders:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all users for admin
+ * @returns {Promise<Array>} Array of users
+ */
+export const fetchAdminUsers = async () => {
+  try {
+    const { data } = await axios_.get('/admin/users');
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin users:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all menu items for admin
+ * @returns {Promise<Array>} Array of menu items
+ */
+export const fetchAdminMenuItems = async () => {
+  try {
+    const { data } = await axios_.get('/admin/menu-items');
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin menu items:', error);
+    throw error;
+  }
+};
+
+/**
+ * Partner Dashboard API Helpers
+ */
+
+/**
+ * Fetch partner dashboard stats
+ * @returns {Promise<Object>} Partner dashboard statistics
+ */
+export const fetchPartnerDashboard = async () => {
+  try {
+    const { data } = await axios_.get('/partners/dashboard');
+    return data;
+  } catch (error) {
+    console.error('Error fetching partner dashboard:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch partner orders
+ * @param {string} status - Optional status filter
+ * @returns {Promise<Array>} Array of orders
+ */
+export const fetchPartnerOrders = async (status = null) => {
+  try {
+    const url = status ? `/partners/orders?status=${status}` : '/partners/orders';
+    const { data } = await axios_.get(url);
+    return data;
+  } catch (error) {
+    console.error('Error fetching partner orders:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update order status (partner)
+ * @param {string} orderId - Order ID
+ * @param {string} status - New status
+ * @returns {Promise<Object>} Updated order
+ */
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const { data } = await axios_.patch(`/partners/orders/${orderId}/status`, { status });
+    return data;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch partner menu items
+ * @returns {Promise<Array>} Array of menu items
+ */
+export const fetchPartnerMenuItems = async () => {
+  try {
+    const { data } = await axios_.get('/partners/menu-items');
+    return data;
+  } catch (error) {
+    console.error('Error fetching partner menu items:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update menu item availability (partner)
+ * @param {string} itemId - Menu item ID
+ * @param {boolean} available - Availability status
+ * @returns {Promise<Object>} Updated menu item
+ */
+export const updateMenuItemAvailability = async (itemId, available) => {
+  try {
+    const { data } = await axios_.patch(`/partners/menu-items/${itemId}/availability`, { available });
+    return data;
+  } catch (error) {
+    console.error('Error updating menu item availability:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update kitchen status (partner)
+ * @param {boolean} isActive - Kitchen active status
+ * @returns {Promise<Object>} Updated kitchen
+ */
+export const updateKitchenStatus = async (isActive) => {
+  try {
+    const { data } = await axios_.patch('/partners/kitchen/status', { isActive });
+    return data;
+  } catch (error) {
+    console.error('Error updating kitchen status:', error);
+    throw error;
+  }
+};
+

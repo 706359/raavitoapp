@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView, TextInput 
 
 // Predefined gradient color combinations
 const GRADIENT_PRESETS = [
-  { name: 'Orange', colors: ['#f97316', '#fb923c'] },
-  { name: 'Green', colors: ['#10b981', '#34d399'] },
+  { name: 'Orange', colors: ['#f57506', '#fb923c'] },
+  { name: 'Green', colors: ['#366d59', '#4a9d7a'] },
   { name: 'Blue', colors: ['#0ea5e9', '#38bdf8'] },
   { name: 'Purple', colors: ['#8b5cf6', '#a78bfa'] },
   { name: 'Red', colors: ['#ef4444', '#f87171'] },
@@ -20,7 +20,7 @@ const GRADIENT_PRESETS = [
 const ColorPicker = ({ value = [], onChange, label = 'Gradient Colors' }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(null);
-  const [customColors, setCustomColors] = useState(value.length > 0 ? value : ['#f97316', '#fb923c']);
+  const [customColors, setCustomColors] = useState(value.length > 0 ? value : ['#f57506', '#fb923c']);
 
   // Update colors when value prop changes (for editing existing deals)
   useEffect(() => {
@@ -76,7 +76,7 @@ const ColorPicker = ({ value = [], onChange, label = 'Gradient Colors' }) => {
               ))}
             </View>
           ) : (
-            <View style={[styles.colorSwatch, { backgroundColor: '#f97316' }]} />
+            <View style={[styles.colorSwatch, { backgroundColor: '#f57506' }]} />
           )}
         </View>
         <Text style={styles.previewText}>
@@ -135,7 +135,7 @@ const ColorPicker = ({ value = [], onChange, label = 'Gradient Colors' }) => {
                     style={styles.colorInput}
                     value={color}
                     onChangeText={(text) => handleCustomColorChange(index, text)}
-                    placeholder="#f97316"
+                    placeholder="#f57506"
                     placeholderTextColor="#9CA3AF"
                   />
                   {customColors.length > 1 && (

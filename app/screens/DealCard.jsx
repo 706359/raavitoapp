@@ -23,8 +23,8 @@ export default function DealsScreen() {
   const theme = {
     colors: {
       brand: {
-        orange: "#f97316",
-        green: "#10b981",
+        orange: "#f57506",
+        green: "#366d59",
         dark: "#111827",
         light: "#fcf8ec",
         gray: "#9CA3AF",
@@ -42,7 +42,7 @@ export default function DealsScreen() {
       terms: "Valid for new subscribers only. Auto-renewal after 6 months.",
       validUntil: "Dec 31, 2024",
       code: "PREMIUM60",
-      gradient: ["#f97316", "#fb923c"],
+      gradient: ["#f57506", "#fb923c"],
       image: require("../assets/Rajasthani.jpg"),
       savings: "₹2,999",
       minOrder: "No minimum order",
@@ -56,7 +56,7 @@ export default function DealsScreen() {
       terms: "Available Monday to Friday. Limited quantities daily.",
       validUntil: "Ongoing",
       code: "FRESH25",
-      gradient: ["#10b981", "#34d399"],
+      gradient: ["#366d59", "#4a9d7a"],
       image: require("../assets/Gujarati.jpeg"),
       savings: "25% OFF",
       minOrder: "₹500",

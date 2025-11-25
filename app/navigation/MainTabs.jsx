@@ -11,6 +11,8 @@ import HomeScreen from "../screens/HomeScreen";
 import KitchenScreen from "../screens/KitchenScreen";
 import ManageAddresses from "../screens/ManageAddresses";
 import MenuScreen from "../screens/MenuScreen";
+import OrderConfirmed from "../screens/OrderConfirmed";
+import OrderTrackingScreen from "../screens/OrderTrackingScreen";
 import OrdersHistoryScreen from "../screens/OrdersHistoryScreen";
 import OrdersStack from "./OrdersStack";
 import PaymentMethod from "../screens/PaymentMethod";
@@ -30,6 +32,8 @@ function HomeStackNavigator() {
       <Stack.Screen name='Cart' component={PremiumCartScreen} />
       <Stack.Screen name='ManageAddresses' component={ManageAddresses} />
       <Stack.Screen name='CheckoutScreen' component={CheckoutScreen} />
+      <Stack.Screen name='OrderConfirmed' component={OrderConfirmed} />
+      <Stack.Screen name='OrderTracking' component={OrderTrackingScreen} />
       <Stack.Screen name='PaymentMethod' component={PaymentMethod} />
     </Stack.Navigator>
   );

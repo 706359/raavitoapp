@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   FlatList,
@@ -10,15 +10,60 @@ import {
   Switch,
   Text,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import {
+  fetchPartnerDashboard,
+  fetchPartnerOrders,
+  updateOrderStatus,
+  updateKitchenStatus,
+} from "../utils/apiHelpers";
 
 export default function PartnerDashboard() {
-  // eslint-disable-next-line no-empty-pattern
-  const [] = React.useState(false);
-  const [isKitchenOpen, setIsKitchenOpen] = React.useState(true);
+  const [loading, setLoading] = useState(true);
+  const [isKitchenOpen, setIsKitchenOpen] = useState(true);
+  const [dashboardStats, setDashboardStats] = useState({
+    todaySales: 0,
+    todayOrders: 0,
+    pendingOrders: 0,
+    rating: 0,
+  });
   const { logout = () => {} } = useAuth() || {};
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [stats, ordersData] = await Promise.all([
+        fetchPartnerDashboard().catch(() => null),
+        fetchPartnerOrders().catch(() => []),
+      ]);
+
+      if (stats) {
+        setDashboardStats({
+          todaySales: stats.todaySales || 0,
+          todayOrders: stats.todayOrders || 0,
+          pendingOrders: stats.pendingOrders || 0,
+          rating: stats.rating || 0,
+        });
+        setIsKitchenOpen(stats.kitchenStatus === "open");
+      }
+
+      if (ordersData && ordersData.length > 0) {
+        setOrders(ordersData);
+      }
+    } catch (error) {
+      console.error("Error loading partner dashboard:", error);
+      Alert.alert("Error", "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -27,7 +72,7 @@ export default function PartnerDashboard() {
     ]);
   };
 
-  const toggleKitchenStatus = () => {
+  const toggleKitchenStatus = async () => {
     const newStatus = !isKitchenOpen;
     Alert.alert(
       newStatus ? "Open Kitchen?" : "Close Kitchen?",
@@ -39,36 +84,45 @@ export default function PartnerDashboard() {
         {
           text: newStatus ? "Open" : "Close",
           style: newStatus ? "default" : "destructive",
-          onPress: () => {
-            setIsKitchenOpen(newStatus);
+          onPress: async () => {
+            try {
+              await updateKitchenStatus(newStatus);
+              setIsKitchenOpen(newStatus);
+              Alert.alert("Success", `Kitchen ${newStatus ? "opened" : "closed"} successfully`);
+            } catch (error) {
+              console.error("Error updating kitchen status:", error);
+              Alert.alert("Error", "Failed to update kitchen status");
+            }
           },
         },
       ]
     );
   };
 
+  const [orders, setOrders] = useState([]);
+
   const stats = [
     {
       id: "1",
       label: "Today's Sales",
-      value: "₹4,850",
+      value: `₹${dashboardStats.todaySales.toLocaleString()}`,
       change: "+12.5%",
       icon: "trending-up",
       positive: true,
     },
-    { id: "2", label: "Orders", value: "24", change: "+8", icon: "receipt", positive: true },
+    { id: "2", label: "Orders", value: dashboardStats.todayOrders.toString(), change: "+8", icon: "receipt", positive: true },
     {
       id: "3",
       label: "Pending",
-      value: "3",
+      value: dashboardStats.pendingOrders.toString(),
       change: "Urgent",
       icon: "time-outline",
       positive: false,
     },
-    { id: "4", label: "Rating", value: "4.7", change: "156 reviews", icon: "star", positive: true },
+    { id: "4", label: "Rating", value: dashboardStats.rating.toFixed(1), change: "156 reviews", icon: "star", positive: true },
   ];
 
-  const orders = [
+  const dummyOrders = [
     {
       id: "1",
       orderId: "2451",
@@ -202,32 +256,83 @@ export default function PartnerDashboard() {
         </View>
 
         <View style={styles.orderActions}>
-          {item.status === "new" && (
+          {item.status === "new" || item.status === "pending" ? (
             <>
-              <Pressable style={[styles.actionBtn, styles.acceptBtn]}>
+              <Pressable
+                style={[styles.actionBtn, styles.acceptBtn]}
+                onPress={async () => {
+                  try {
+                    await updateOrderStatus(item._id || item.id, "confirmed");
+                    loadDashboardData();
+                    Alert.alert("Success", "Order accepted");
+                  } catch (error) {
+                    Alert.alert("Error", "Failed to accept order");
+                  }
+                }}>
                 <Text style={styles.actionBtnText}>Accept</Text>
               </Pressable>
-              <Pressable style={[styles.actionBtn, styles.declineBtn]}>
+              <Pressable
+                style={[styles.actionBtn, styles.declineBtn]}
+                onPress={async () => {
+                  try {
+                    await updateOrderStatus(item._id || item.id, "cancelled");
+                    loadDashboardData();
+                    Alert.alert("Success", "Order cancelled");
+                  } catch (error) {
+                    Alert.alert("Error", "Failed to cancel order");
+                  }
+                }}>
                 <Text style={[styles.actionBtnText, styles.declineBtnText]}>Decline</Text>
               </Pressable>
             </>
-          )}
-          {item.status === "preparing" && (
-            <Pressable style={[styles.actionBtn, styles.readyBtn]}>
+          ) : null}
+          {item.status === "preparing" || item.status === "confirmed" ? (
+            <Pressable
+              style={[styles.actionBtn, styles.readyBtn]}
+              onPress={async () => {
+                try {
+                  await updateOrderStatus(item._id || item.id, "ready");
+                  loadDashboardData();
+                  Alert.alert("Success", "Order marked as ready");
+                } catch (error) {
+                  Alert.alert("Error", "Failed to update order status");
+                }
+              }}>
               <Ionicons name='checkmark-circle' size={18} color='white' />
               <Text style={styles.actionBtnText}>Mark as Ready</Text>
             </Pressable>
-          )}
-          {item.status === "ready" && (
-            <Pressable style={[styles.actionBtn, styles.deliveryBtn]}>
+          ) : null}
+          {item.status === "ready" ? (
+            <Pressable
+              style={[styles.actionBtn, styles.deliveryBtn]}
+              onPress={async () => {
+                try {
+                  await updateOrderStatus(item._id || item.id, "out_for_delivery");
+                  loadDashboardData();
+                  Alert.alert("Success", "Order out for delivery");
+                } catch (error) {
+                  Alert.alert("Error", "Failed to update order status");
+                }
+              }}>
               <Ionicons name='bicycle' size={18} color='white' />
               <Text style={styles.actionBtnText}>Out for Delivery</Text>
             </Pressable>
-          )}
+          ) : null}
         </View>
       </Pressable>
     );
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#f57506" />
+          <Text style={{ marginTop: 10, color: '#666' }}>Loading dashboard...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>

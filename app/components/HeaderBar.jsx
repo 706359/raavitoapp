@@ -93,10 +93,10 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
               <View style={styles.locationContent}>
                 <View style={styles.deliverToRow}>
                   <Text style={styles.deliverToText}>DELIVER TO</Text>
-                  <Ionicons name='chevron-down' size={14} color='#10b981' />
+                  <Ionicons name='chevron-down' size={14} color='#366d59' />
                 </View>
                 <View style={styles.addressRow}>
-                  <Ionicons name='location' size={18} color='#10b981' />
+                  <Ionicons name='location' size={18} color='#366d59' />
                   <Text style={styles.addressText} numberOfLines={1} ellipsizeMode='tail'>
                     {getAddressText()}
                   </Text>
@@ -140,7 +140,8 @@ export default function HeaderBar({ showBack = false, showCart = true }) {
               style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}>
               <View style={styles.profileButton}>
                 <Image
-                  source={require('../assets/logo.png')} // 👈 make sure path is correct
+                  source={require('../assets/logo.png')}
+                  alt='Profile'
                   style={styles.profileImage}
                 />
               </View>

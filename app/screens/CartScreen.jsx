@@ -59,7 +59,7 @@ export default function PremiumCartScreen({ navigation }) {
           </Text>
           <TouchableOpacity
             style={styles.shopButton}
-            onPress={() => navigation.navigate('HomeTab')}>
+            onPress={() => navigation.navigate('MainTabs', { screen: 'HomeTab' })}>
             <Store size={20} color='#fff' />
             <Text style={styles.shopButtonText}>Start Shopping</Text>
           </TouchableOpacity>

@@ -258,9 +258,9 @@ export default function SplashScreen() {
                     inputRange: [0, 1],
                     outputRange: ['0%', '100%'],
                   }),
-                  backgroundColor: '#f97316',
+                  backgroundColor: '#f57506',
                   borderRadius: 9999,
-                  shadowColor: '#f97316',
+                  shadowColor: '#f57506',
                   shadowOffset: {
                     width: 0,
                     height: 2,

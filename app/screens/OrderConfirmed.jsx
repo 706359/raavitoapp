@@ -48,7 +48,7 @@ export default function OrderConfirmed() {
       <View style={styles.headerBox}>
         <View style={styles.headerInner}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.headerBack}>
+            <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Home' })} style={styles.headerBack}>
               <MaterialIcons name='arrow-back' size={24} color={'#fff'} />
             </TouchableOpacity>
             <View>
@@ -143,13 +143,13 @@ export default function OrderConfirmed() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => navigation.navigate('OrderTrackingScreen', { order: order || { id: orderId } })}>
+            onPress={() => navigation.navigate('OrderTracking', { order: order || { id: orderId } })}>
             <Ionicons name='location-outline' size={20} color='#fff' />
             <Text style={styles.primaryButtonText}>Track Order</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => navigation.navigate('Home')}>
+            onPress={() => navigation.navigate('MainTabs', { screen: 'HomeTab' })}>
             <Text style={styles.secondaryButtonText}>Continue Shopping</Text>
           </TouchableOpacity>
         </View>
